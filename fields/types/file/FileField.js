@@ -18,6 +18,48 @@ import ImageThumbnail from '../../components/ImageThumbnail';
 
 let uploadInc = 1000;
 
+const FileThumb = ({ url }) => {
+	const isPicture = url && url.match(/\.(jpeg|jpg|gif|png)$/i) != null;
+	if (!isPicture) {
+		// TODO generic icons
+		return false;
+	}
+	return (
+		<div style={{ width: 150, marginRight: 10, flexShrink: 0 }}>
+			<img style={{ width: '100%', height: '100%' }} src={url}/>
+		</div>
+	);
+};
+
+const FileDom = ({ url, filename }) => {
+	return (
+		<div style={{ display: 'flex' }}>
+			<FileThumb {...{ url }}/>
+			<div style={{
+				display: 'flex',
+				flexDirection: 'column',
+				justifyContent: 'flex-end',
+				alignItems: 'flex-start',
+				minHeight: 100,
+				width: '100%',
+			}}>
+				<FileChangeMessage>
+					{url ? (
+						<a href={url}>{filename}</a>
+					) : (
+						filename
+					)}
+				</FileChangeMessage>
+				{url && (
+					<span style={{ fontSize: 10 }}>
+						url: {url}
+					</span>
+				)}
+			</div>
+		</div>
+	);
+};
+
 const buildInitialState = (props) => ({
 	action: null,
 	removeExisting: false,
@@ -131,14 +173,16 @@ module.exports = Field.create({
 	// ==============================
 
 	renderFileNameAndChangeMessage () {
-		const href = this.props.value ? this.props.value.url : undefined;
+		const { value } = this.props;
+		let url;
+		let filename;
+		if (this.hasFile() && !this.state.removeExisting) {
+			url = value && value.url;
+			filename = this.getFilename();
+		}
 		return (
 			<div>
-				{(this.hasFile() && !this.state.removeExisting) ? (
-					<FileChangeMessage component={href ? 'a' : 'span'} href={href} target="_blank">
-						{this.getFilename()}
-					</FileChangeMessage>
-				) : null}
+				{filename && <FileDom {...{ url, filename }}/>}
 				{this.renderChangeMessage()}
 			</div>
 		);
