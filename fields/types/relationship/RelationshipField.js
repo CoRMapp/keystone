@@ -148,7 +148,7 @@ module.exports = Field.create({
 	valueChanged (value) {
 		this.props.onChange({
 			path: this.props.path,
-			value: value,
+			value: value === null ? ' ' : value,
 		});
 	},
 	openCreate () {
