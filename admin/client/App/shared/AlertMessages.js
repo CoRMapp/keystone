@@ -41,12 +41,14 @@ var AlertMessages = React.createClass({
 			if (errorCount > 1) {
 				return (
 					<li key={path}>
+						{`${upcase(path)}: `}
 						{upcase(errors[path].error || errors[path].message)}
 					</li>
 				);
 			} else {
 				return (
 					<div key={path}>
+						{`${upcase(path)}: `}
 						{upcase(errors[path].error || errors[path].message)}
 					</div>
 				);
