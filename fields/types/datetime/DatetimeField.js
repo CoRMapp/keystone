@@ -74,7 +74,7 @@ module.exports = Field.create({
 
 		this.props.onChange({
 			path: this.props.path,
-			value: this.isValid(value) ? this.moment(value, datetimeFormat).toISOString() : null,
+			value: this.isValid(value) ? this.moment(value, datetimeFormat).toISOString() : '',
 		});
 	},
 
@@ -98,6 +98,11 @@ module.exports = Field.create({
 			tzOffsetValue: tzOffsetValue,
 		});
 		this.handleChange(dateValue, timeValue, tzOffsetValue);
+	},
+
+	clearDate () {
+		this.setState({ dateValue: '', timeValue: '' });
+		this.handleChange('', '');
 	},
 
 	renderNote () {
@@ -131,6 +136,9 @@ module.exports = Field.create({
 						</Section>
 						<Section>
 							<Button onClick={this.setNow}>Now</Button>
+						</Section>
+						<Section>
+							<Button onClick={this.clearDate}>Clear</Button>
 						</Section>
 					</Group>
 					<input
