@@ -28,7 +28,6 @@ module.exports = Field.create({
 		note: React.PropTypes.string,
 		onChange: React.PropTypes.func,
 		path: React.PropTypes.string,
-		todayButton: React.PropTypes.bool,
 		value: React.PropTypes.string,
 	},
 
@@ -62,6 +61,9 @@ module.exports = Field.create({
 			value: this.toMoment(new Date()).format(this.props.inputFormat),
 		});
 	},
+	clearDate () {
+		this.valueChanged({ value: '' });
+	},
 	renderValue () {
 		return (
 			<FormInput noedit>
@@ -86,12 +88,12 @@ module.exports = Field.create({
 						value={value}
 					/>
 				</Section>
-				{
-					this.props.todayButton
-					&& <Section>
-						<Button onClick={this.setToday}>Today</Button>
-					</Section>
-				}
+				<Section>
+					<Button onClick={this.setToday}>Today</Button>
+				</Section>
+				<Section>
+					<Button onClick={this.clearDate}>Clear</Button>
+				</Section>
 			</Group>
 		);
 	},
