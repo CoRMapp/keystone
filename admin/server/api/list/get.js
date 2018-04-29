@@ -4,6 +4,10 @@ var listToArray = require('list-to-array');
 
 module.exports = function (req, res) {
 	var where = {};
+	// set scope by App ID for Tenant users
+	if (req.user.isTenant) {
+		where.app = req.applicationId;
+	}
 	var fields = req.query.fields;
 	var includeCount = req.query.count !== 'false';
 	var includeResults = req.query.results !== 'false';
