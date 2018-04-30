@@ -6,6 +6,9 @@ module.exports = function (req, res) {
 	req.list.model.findById(req.params.id, function (err, item) {
 		if (err) return res.status(500).json({ error: 'database error', detail: err });
 		if (!item) return res.status(404).json({ error: 'not found', id: req.params.id });
+		if (req.user.isTenant && (item.app && item.app.toString() !== req.applicationId.toString())) {
+			return res.apiError(403, 'forbidden')
+		}
 		req.list.updateItem(item, req.body, { files: req.files, user: req.user }, function (err) {
 			if (err) {
 				var status = err.error === 'validation errors' ? 400 : 500;
