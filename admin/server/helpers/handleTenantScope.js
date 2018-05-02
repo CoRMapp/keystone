@@ -1,4 +1,4 @@
-module.exports = function handleAdminScope (req, res, next) {
+module.exports = function handleTenantScope (req, res, next) {
 	if (req.user.isTenant) {
 		var App = req.keystone.lists['App'];
 		App.model.findOne({ tenant: req.user._id }).exec(function (err, app) {
