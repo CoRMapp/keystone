@@ -45,7 +45,7 @@ keystone.init({
   'view engine': 'pug',
 
   'auto update': true,
-  'mongo': 'mongodb://localhost/my-project',
+  'mongo': 'mongodb://localhost:27017/my-project'
 
   'session': true,
   'auth': true,

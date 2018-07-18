@@ -5,12 +5,12 @@ module.exports = function (req, res) {
 	var counts = {};
 	async.each(keystone.lists, function (list, next) {
 		if (req.user.isTenant) {
-			list.model.find({ app: req.applicationId }).count(function (err, count) {
+			list.model.find({ app: req.applicationId }).countDocuments(function (err, count) {
 				counts[list.key] = count;
 				next(err);
 			});
 		} else {
-			list.model.count(function (err, count) {
+			list.model.countDocuments(function (err, count) {
 				counts[list.key] = count;
 				next(err);
 			});
