@@ -68,7 +68,7 @@ relationship.prototype.getExpandedData = function (item) {
  * Registers the field on the List's Mongoose Schema.
  */
 relationship.prototype.addToSchema = function (schema) {
-	var field = this;
+	// var field = this;
 	var def = {
 		type: this._nativeType,
 		ref: this.options.ref,
@@ -76,14 +76,14 @@ relationship.prototype.addToSchema = function (schema) {
 		required: (this.options.required ? true : false),
 		unique: (this.options.unique ? true : false),
 	};
-	this.paths = {
-		refList: this.options.refListPath || this.path + 'RefList',
-	};
+	// this.paths = {
+	// 	refList: this.options.refListPath || this.path + 'RefList',
+	// };
 	schema.path(this.path, this.many ? [def] : def);
-	schema.virtual(this.paths.refList).get(function () {
-		return keystone.list(field.options.ref);
-	});
-	this.bindUnderscoreMethods();
+	// schema.virtual(this.paths.refList).get(function () {
+	// 	return keystone.list(field.options.ref);
+	// });
+	// this.bindUnderscoreMethods();
 };
 
 /**
