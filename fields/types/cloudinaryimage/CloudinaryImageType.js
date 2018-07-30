@@ -134,7 +134,7 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 	var folder = function (item) { // eslint-disable-line no-unused-vars
 		var folderValue = '';
 
-		if (keystone.get('cloudinary folders') || this.options.folder) {
+		if (keystone.get('cloudinary folders')) {
 			if (field.options.folder === 'string') {
 				folderValue = field.options.folder;
 			} else if (typeof this.options.folder === 'function') {
