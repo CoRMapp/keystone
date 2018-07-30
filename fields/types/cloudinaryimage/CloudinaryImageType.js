@@ -69,11 +69,13 @@ util.inherits(cloudinaryimage, FieldType);
 /**
  * Gets the folder for images in this field
  */
-cloudinaryimage.prototype.getFolder = function () {
+cloudinaryimage.prototype.getFolder = function (item) {
 	var folder = null;
 	if (keystone.get('cloudinary folders') || this.options.folder) {
 		if (typeof this.options.folder === 'string') {
 			folder = this.options.folder;
+		} else if (typeof this.options.folder === 'function') {
+			folder = this.options.folder(item);
 		} else {
 			var folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
 			folderList.push(this.list.path);
@@ -129,14 +131,33 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 		return (item.get(paths.public_id) ? true : false);
 	};
 
+	var folder = function (item) { // eslint-disable-line no-unused-vars
+		var folderValue = '';
+
+		if (keystone.get('cloudinary folders') || this.options.folder) {
+			if (field.options.folder === 'string') {
+				folderValue = field.options.folder;
+			} else if (typeof this.options.folder === 'function') {
+				folderValue = this.options.folder(item);
+			} else {
+				var folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
+				folderList.push(field.list.path);
+				folderList.push(field.path);
+				folderValue = folderList.join('/');
+			}
+		}
+
+		return folderValue;
+	};
+
 	// The .exists virtual indicates whether an image is stored
 	schema.virtual(paths.exists).get(function () {
 		return schemaMethods.exists.apply(this);
 	});
 
 	// The .folder virtual returns the cloudinary folder used to upload/select images
-	schema.virtual(paths.folder).get(function () {
-		return schemaMethods.folder.apply(this);
+	schema.virtual(field.paths.folder).get(function () {
+		return folder(this);
 	});
 
 	var src = function (item, options) {
@@ -175,9 +196,6 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 	var schemaMethods = {
 		exists: function () {
 			return exists(this);
-		},
-		folder: function () {
-			return field.getFolder();
 		},
 		src: function (options) {
 			return src(this, options);
@@ -428,7 +446,7 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 		if (keystone.get('env') !== 'production') {
 			uploadOptions.tags.push(tagPrefix + 'dev');
 		}
-		var folder = this.getFolder();
+		var folder = this.getFolder(item);
 		if (folder) {
 			uploadOptions.folder = folder;
 		}
