@@ -68,12 +68,14 @@ util.inherits(cloudinaryimages, FieldType);
 /**
  * Gets the folder for images in this field
  */
-cloudinaryimages.prototype.getFolder = function () {
+cloudinaryimages.prototype.getFolder = function (item) {
 	var folder = null;
 
 	if (keystone.get('cloudinary folders') || this.options.folder) {
 		if (typeof this.options.folder === 'string') {
 			folder = this.options.folder;
+		} else if (typeof this.options.folder === 'function') {
+			folder = this.options.folder(item)
 		} else {
 			folder = this.list.path + '/' + this.path;
 		}
@@ -116,9 +118,11 @@ cloudinaryimages.prototype.addToSchema = function (schema) {
 	var folder = function (item) { // eslint-disable-line no-unused-vars
 		var folderValue = '';
 
-		if (keystone.get('cloudinary folders')) {
-			if (field.options.folder) {
+		if (keystone.get('cloudinary folders') || this.options.folder) {
+			if (field.options.folder === 'string') {
 				folderValue = field.options.folder;
+			} else if (typeof this.options.folder === 'function') {
+				folderValue = this.options.folder(item);
 			} else {
 				var folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
 				folderList.push(field.list.path);
@@ -311,7 +315,7 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 		if (keystone.get('env') !== 'production') {
 			uploadOptions.tags.push(tagPrefix + 'dev');
 		}
-		var folder = field.getFolder();
+		var folder = field.getFolder(item);
 		if (folder) {
 			uploadOptions.folder = folder;
 		}
