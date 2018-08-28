@@ -11,9 +11,6 @@ module.exports = function (req, res, next) {
 
 	var format = req.params.format.split('.')[1]; // json or csv
 	var where = {};
-	if (req.user.isTenant) {
-		where.app = req.applicationId;
-	}
 	var filters = req.query.filters;
 	if (filters && typeof filters === 'string') {
 		try { filters = JSON.parse(req.query.filters); }
