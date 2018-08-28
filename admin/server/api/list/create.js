@@ -1,6 +1,6 @@
 module.exports = function (req, res) {
 	var keystone = req.keystone;
-	if (!req.openAPI && !keystone.security.csrf.validate(req)) {
+	if (!keystone.security.csrf.validate(req)) {
 		return res.apiError(403, 'invalid csrf');
 	}
 
