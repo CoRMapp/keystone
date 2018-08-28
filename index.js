@@ -127,20 +127,6 @@ Keystone.prototype.redirect = require('./lib/core/redirect');
 Keystone.prototype.start = require('./lib/core/start');
 Keystone.prototype.wrapHTMLError = require('./lib/core/wrapHTMLError');
 Keystone.prototype.createKeystoneHash = require('./lib/core/createKeystoneHash');
-// Workaround to allow API access
-// Lists
-Keystone.prototype.initList = require('./admin/server/middleware/initList');
-Keystone.prototype.countList = require('./admin/server/api/counts');
-Keystone.prototype.getList = require('./admin/server/api/list/get');
-Keystone.prototype.downloadList = require('./admin/server/api/list/download');
-Keystone.prototype.createList = require('./admin/server/api/list/create');
-Keystone.prototype.updateList = require('./admin/server/api/list/update');
-Keystone.prototype.deleteList = require('./admin/server/api/list/delete');
-// Items
-Keystone.prototype.getItem = require('./admin/server/api/item/get');
-Keystone.prototype.updateItem = require('./admin/server/api/item/update');
-Keystone.prototype.deleteItem = require('./admin/server/api/list/delete');
-Keystone.prototype.sortItem = require('./admin/server/api/item/sortOrder');
 
 /* Deprecation / Change warnings for 0.4 */
 Keystone.prototype.routes = function () {
