@@ -6,17 +6,7 @@ var keystone = require('../../../');
 var util = require('util');
 
 function getEmptyValue () {
-	return {
-		public_id: '',
-		version: 0,
-		signature: '',
-		format: '',
-		resource_type: '',
-		url: '',
-		width: 0,
-		height: 0,
-		secure_url: '',
-	};
+	return undefined;
 }
 
 function truthy (value) {
