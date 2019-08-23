@@ -62,7 +62,7 @@ module.exports = Field.create({
 		});
 	},
 	clearDate () {
-		this.valueChanged({value: '',});
+		this.valueChanged({ value: '' });
 	},
 	renderValue () {
 		return (

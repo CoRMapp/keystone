@@ -24,8 +24,8 @@ module.exports = function (req, res) {
 		var userId = String(req.user.id);
 		// check if user can delete this resources based on resources ids and userId
 		if (checkResourceId && ids.some(function (id) {
-				return id === userId;
-			})) {
+			return id === userId;
+		})) {
 			console.log('Refusing to delete ' + req.list.key + ' items; ids contains current User id');
 			return res.apiError(403, 'not allowed', 'You can not delete yourself');
 		}
@@ -38,13 +38,15 @@ module.exports = function (req, res) {
 			return res.apiError('database error', err);
 		}
 		async.forEachLimit(results, 10, function (item, next) {
+			item._req_user = req.user;
 			item.remove(function (err) {
 				if (err) return next(err);
 				deletedCount++;
 				deletedIds.push(item.id);
 				next();
 			});
-		}, function () {
+		}, function (err) {
+			if (err) return res.apiError(err);
 			return res.json({
 				success: true,
 				ids: deletedIds,
