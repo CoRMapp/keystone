@@ -21,9 +21,6 @@ module.exports = function (req, res) {
 
 		if (err) return res.status(500).json({ err: 'database error', detail: err });
 		if (!item) return res.status(404).json({ err: 'not found', id: req.params.id });
-		if (req.user.isTenant && (item.app && item.app.toString() !== req.applicationId.toString())) {
-			return res.apiError(403, 'forbidden')
-		}
 
 		var tasks = [];
 		var drilldown;
