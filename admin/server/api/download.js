@@ -78,11 +78,10 @@ module.exports = function (req, res) {
 	if (relFields) {
 		query.populate(relFields.join(' '));
 	}
-	query.exec(function (err, results) {
+	query.exec()
+		.then(function (results) {
 
-		if (err) return res.status(500).json(err);
-
-		var sendCSV = function (data) {
+			var sendCSV = function (data) {
 
 			res.attachment(req.list.path + '-' + moment().format('YYYYMMDD-HHMMSS') + '.csv');
 			res.setHeader('Content-Type', 'application/octet-stream');
@@ -90,7 +89,6 @@ module.exports = function (req, res) {
 			var content = baby.unparse(data, {
 				delimiter: keystone.get('csv field delimiter') || ',',
 			});
-
 			res.end(content, 'utf-8');
 		};
 
@@ -182,6 +180,8 @@ module.exports = function (req, res) {
 			return sendCSV(data);
 		}
 
-	});
-
+})
+.catch(function (err) {
+	return res.status(500).json(err);
+});
 };

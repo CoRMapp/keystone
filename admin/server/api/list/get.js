@@ -44,21 +44,29 @@ module.exports = function (req, res) {
 			if (!includeCount) {
 				return next(null, 0);
 			}
-			query.countDocuments(next);
+			// Mongoose 7: countDocuments returns a Promise
+			req.list.model
+				.countDocuments(where)
+				.then(function (count) { next(null, count); })
+				.catch(next);
 		},
 		function (count, next) {
 			if (!includeResults) {
 				return next(null, count, []);
 			}
-			query.find();
+			// Mongoose 6: Use the original query for find
 			query.limit(Number(req.query.limit) || 100);
 			query.skip(Number(req.query.skip) || 0);
 			if (sort.string) {
 				query.sort(sort.string);
 			}
-			query.exec(function (err, items) {
-				next(err, count, items);
-			});
+			query.exec()
+				.then(function (items) {
+					next(null, count, items);
+				})
+				.catch(function (err) {
+					next(err);
+				});
 		},
 	], function (err, count, items) {
 		if (err) {

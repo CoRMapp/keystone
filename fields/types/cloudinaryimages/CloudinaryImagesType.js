@@ -196,7 +196,15 @@ cloudinaryimages.prototype.addToSchema = function (schema) {
 		}
 		images.splice(id, 1);
 		if (callback) {
-			item.save((typeof callback !== 'function') ? callback : undefined);
+			var saveOptions = (typeof callback !== 'function') ? callback : undefined;
+			var savePromise = item.save(saveOptions);
+			if (typeof callback === 'function') {
+				savePromise.then(function () {
+					callback();
+				}).catch(function (err) {
+					callback(err);
+				});
+			}
 		}
 	};
 	this.underscoreMethod('remove', function (id, callback) {
