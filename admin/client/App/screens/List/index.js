@@ -59,6 +59,7 @@ const ListView = React.createClass({
 			checkedItems: {},
 			constrainTableWidth: true,
 			manageMode: false,
+			selectAllItemsLoading: false,
 			showCreateForm: false,
 			showUpdateForm: false,
 		};
@@ -315,20 +316,43 @@ const ListView = React.createClass({
 		});
 	},
 	checkAllItems () {
-		const checkedItems = { ...this.state.checkedItems };
+		const checkedItems = {};
+		const { currentList, active, lists } = this.props;
+		const pageSize = (lists.page && lists.page.size) ? lists.page.size : 100;
 		// Just in case this API call takes a long time, we'll update the select all button with
 		// a spinner.
 		this.setState({ selectAllItemsLoading: true });
-		var self = this;
-		this.props.currentList.loadItems({ expandRelationshipFilters: false, filters: {} }, function (err, data) {
-			data.results.forEach(item => {
-				checkedItems[item.id] = true;
+
+		const loadPage = (pageIndex, totalCount = null) => {
+			currentList.loadItems({
+				search: active.search,
+				filters: active.filters,
+				sort: active.sort,
+				page: { size: pageSize, index: pageIndex },
+			}, (err, data) => {
+				if (err) {
+					console.log('Error loading items for select all:', err);
+					this.setState({ selectAllItemsLoading: false });
+					return;
+				}
+				const results = (data && data.results) ? data.results : [];
+				results.forEach(item => {
+					checkedItems[item.id] = true;
+				});
+				const count = (typeof data.count === 'number') ? data.count : (totalCount || results.length);
+				const totalPages = Math.ceil(count / pageSize);
+				if (!totalPages || pageIndex >= totalPages) {
+					this.setState({
+						checkedItems: checkedItems,
+						selectAllItemsLoading: false,
+					});
+					return;
+				}
+				loadPage(pageIndex + 1, count);
 			});
-			self.setState({
-				checkedItems: checkedItems,
-				selectAllItemsLoading: false,
-			});
-		});
+		};
+
+		loadPage(1);
 	},
 	uncheckAllTableItems () {
 		this.setState({

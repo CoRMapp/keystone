@@ -47,7 +47,9 @@ module.exports = function (req, res) {
 						next(err);
 					});
 			}, function (err) {
-				if (err) return res.apiError(err);
+				if (err) {
+					return res.apiError(err);
+				}
 				return res.json({
 					success: true,
 					ids: deletedIds,
