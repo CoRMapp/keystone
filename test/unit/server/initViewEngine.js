@@ -1,14 +1,14 @@
-var express = require('express');
-var demand = require('must');
+const express = require('express');
+const demand = require('must');
 
-var ReactEngine = require('react-engine');
-var view = require('react-engine/lib/expressView');
+const ReactEngine = require('react-engine');
+const view = require('react-engine/lib/expressView');
 
-var engine = ReactEngine.server.create({});
+const engine = ReactEngine.server.create({});
 
-var init = require('../../../server/initViewEngine.js');
+const init = require('../../../server/initViewEngine.js');
 
-var options = {
+const options = {
 
 	'name': 'foo',
 	'brand': 'foo',
@@ -30,8 +30,8 @@ var options = {
 };
 
 describe("initViewEngine", function () {
-	var keystone = require('../../../index.js');
-	var app = express();
+	const keystone = require('../../../index.js');
+	const app = express();
 	keystone.init(options);
 	keystone.set('app', app);
 	it("should set view", function () {

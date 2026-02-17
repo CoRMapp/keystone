@@ -1,7 +1,7 @@
-var keystone = require('../../index.js');
-var demand = require('must');
-var path = require('path');
-var getExpressApp = require('../helpers/getExpressApp');
+const keystone = require('../../index.js');
+const demand = require('must');
+const path = require('path');
+const getExpressApp = require('../helpers/getExpressApp');
 
 describe('Keystone "module root" setting', function () {
 
@@ -16,7 +16,7 @@ describe('Keystone "module root" setting', function () {
 		});
 
 		it('should be used by keystone.getPath()', function () {
-			var viewsPath = 'relative/path/to/views'
+			const viewsPath = 'relative/path/to/views';
 			keystone.set('views', viewsPath);
 			demand(keystone.getPath('views')).to.be(path.resolve(__dirname, viewsPath));
 		});
@@ -24,7 +24,7 @@ describe('Keystone "module root" setting', function () {
 	});
 
 	describe('custom with relative path', function () {
-		var customPath = '../..';
+		const customPath = '../..';
 
 		before(function () {
 			keystone.set('module root', customPath);
@@ -35,14 +35,14 @@ describe('Keystone "module root" setting', function () {
 		});
 
 		it('should be used by keystone.getPath() to resolve relative paths', function () {
-			var viewsPath = 'relative/path/to/views'
+			const viewsPath = 'relative/path/to/views';
 			keystone.set('views', viewsPath);
 			demand(keystone.getPath('views')).to.be(path.resolve(__dirname, customPath, viewsPath));
 		});
 	});
 
 	describe('custom with absolute path', function () {
-		var customPath = path.resolve(__dirname, '../..');
+		const customPath = path.resolve(__dirname, '../..');
 
 		before(function () {
 			keystone.set('module root', customPath);
@@ -53,7 +53,7 @@ describe('Keystone "module root" setting', function () {
 		});
 
 		it('should be used by keystone.getPath() to resolve relative paths', function () {
-			var viewsPath = 'relative/path/to/views'
+			const viewsPath = 'relative/path/to/views';
 			keystone.set('views', viewsPath);
 			demand(keystone.getPath('views')).to.be(path.resolve(customPath, viewsPath));
 		});

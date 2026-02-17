@@ -1,13 +1,13 @@
-var demand = require('must');
-var proxyquire = require('proxyquire');
-var sinon = require('sinon');
+const demand = require('must');
+const proxyquire = require('proxyquire');
+const sinon = require('sinon');
 
 describe('Email', function () {
 	/**
 	 * SETUP
 	 */
-	var keystoneEmail;
-	var Email;
+	let keystoneEmail;
+	let Email;
 
 	beforeEach(function () {
 		// Make the tests work no matter if keystone-email is installed or not, spying on the mocked

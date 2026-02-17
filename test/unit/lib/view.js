@@ -1,11 +1,11 @@
-var demand = require('must');
-var request = require('supertest');
-var methodOverride = require('method-override');
-var bodyParser = require('body-parser');
-var keystone = require('../../../index.js');
+const demand = require('must');
+const request = require('supertest');
+const methodOverride = require('method-override');
+const bodyParser = require('body-parser');
+const keystone = require('../../../index.js');
 
-var getApp = function () {
-	var app = keystone.express();
+const getApp = () => {
+	const app = keystone.express();
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({
 		extended: true,
@@ -18,9 +18,9 @@ describe('Keystone.View', function () {
 
 	describe('new', function () {
 		it('must be an instance of View', function (done) {
-			var app = getApp();
-			app.get('/', function (req, res) {
-				var view = new keystone.View(req, res);
+			const app = getApp();
+			app.get('/', (req, res) => {
+				const view = new keystone.View(req, res);
 				view.must.be.an.instanceof(keystone.View);
 				res.send('OK');
 			});
@@ -32,10 +32,10 @@ describe('Keystone.View', function () {
 
 	describe('.render(callback)', function () {
 		it('must call the callback function', function (done) {
-			var app = getApp();
-			app.get('/', function (req, res) {
-				var view = new keystone.View(req, res);
-				view.render(function () {
+			const app = getApp();
+			app.get('/', (req, res) => {
+				const view = new keystone.View(req, res);
+				view.render(() => {
 					res.send('OK');
 				});
 			});
@@ -47,10 +47,10 @@ describe('Keystone.View', function () {
 
 	describe('.render(callback)', function () {
 		it('must pass (err, req, res) to the callback', function (done) {
-			var app = getApp();
-			app.get('/', function (req, res) {
-				var view = new keystone.View(req, res);
-				view.render(function (err, req2, res2) {
+			const app = getApp();
+			app.get('/', (req, res) => {
+				const view = new keystone.View(req, res);
+				view.render((err, req2, res2) => {
 					demand(err).not.exist();
 					req2.must.equal(req);
 					res2.must.equal(res);
@@ -66,15 +66,15 @@ describe('Keystone.View', function () {
 	describe('.on(event, [match,] fn)', function () {
 
 		it('must call init methods first', function (done) {
-			var app = getApp();
-			app.get('/', function (req, res) {
-				var view = new keystone.View(req, res);
-				var status = 'NOT OK';
-				view.on('init', function (next) {
+			const app = getApp();
+			app.get('/', (req, res) => {
+				const view = new keystone.View(req, res);
+				let status = 'NOT OK';
+				view.on('init', (next) => {
 					status = 'OK';
 					next();
 				});
-				view.render(function () {
+				view.render(() => {
 					res.send(status);
 				});
 			});
@@ -83,25 +83,25 @@ describe('Keystone.View', function () {
 				.expect('OK', done);
 		});
 
-		function getApp_getAndPost() {
-			var app = getApp();
-			app.all('/', function (req, res) {
-				var view = new keystone.View(req, res);
-				var status = 'OK';
-				view.on('get', function (next) {
+		const getApp_getAndPost = () => {
+			const app = getApp();
+			app.all('/', (req, res) => {
+				const view = new keystone.View(req, res);
+				let status = 'OK';
+				view.on('get', (next) => {
 					status = 'OK GET';
 					next();
 				});
-				view.on('post', function (next) {
+				view.on('post', (next) => {
 					status = 'OK POST';
 					next();
 				});
-				view.render(function () {
+				view.render(() => {
 					res.send(status);
 				});
 			});
 			return app;
-		}
+		};
 
 		it('must call get actions correctly', function (done) {
 			request(getApp_getAndPost())
@@ -115,21 +115,21 @@ describe('Keystone.View', function () {
 				.expect('OK POST', done);
 		});
 
-		function getApp_conditionalGet() {
-			var app = getApp();
-			app.get('/', function (req, res) {
-				var view = new keystone.View(req, res);
-				var status = 'OK';
-				view.on('get', { test: 'yes' }, function (next) {
+		const getApp_conditionalGet = () => {
+			const app = getApp();
+			app.get('/', (req, res) => {
+				const view = new keystone.View(req, res);
+				let status = 'OK';
+				view.on('get', { test: 'yes' }, (next) => {
 					status = 'OK GET';
 					next();
 				});
-				view.render(function () {
+				view.render(() => {
 					res.send(status);
 				});
 			});
 			return app;
-		}
+		};
 
 		it('must invoke get actions with matching query parameters', function (done) {
 			request(getApp_conditionalGet())
@@ -143,21 +143,21 @@ describe('Keystone.View', function () {
 				.expect('OK', done);
 		});
 
-		function getApp_conditionalPostValue() {
-			var app = getApp();
-			app.post('/', function (req, res) {
-				var view = new keystone.View(req, res);
-				var status = 'OK';
-				view.on('post', { test: 'yes' }, function (next) {
+		const getApp_conditionalPostValue = () => {
+			const app = getApp();
+			app.post('/', (req, res) => {
+				const view = new keystone.View(req, res);
+				let status = 'OK';
+				view.on('post', { test: 'yes' }, (next) => {
 					status = 'OK POST';
 					next();
 				});
-				view.render(function () {
+				view.render(() => {
 					res.send(status);
 				});
 			});
 			return app;
-		}
+		};
 
 		it('must invoke post actions with matching body data', function (done) {
 			request(getApp_conditionalPostValue())
@@ -173,21 +173,21 @@ describe('Keystone.View', function () {
 				.expect('OK', done);
 		});
 
-		function getApp_conditionalPostTruthy() {
-			var app = getApp();
-			app.post('/', function (req, res) {
-				var view = new keystone.View(req, res);
-				var status = 'OK';
-				view.on('post', { test: true }, function (next) {
+		const getApp_conditionalPostTruthy = () => {
+			const app = getApp();
+			app.post('/', (req, res) => {
+				const view = new keystone.View(req, res);
+				let status = 'OK';
+				view.on('post', { test: true }, (next) => {
 					status = 'OK POST';
 					next();
 				});
-				view.render(function () {
+				view.render(() => {
 					res.send(status);
 				});
 			});
 			return app;
-		}
+		};
 
 		it('must invoke post actions with body data present', function (done) {
 			request(getApp_conditionalPostTruthy())
@@ -202,22 +202,22 @@ describe('Keystone.View', function () {
 				.expect('OK', done);
 		});
 
-		function getApp_extRequest() {
-			var app = getApp();
-			app.get('/', function (req, res) {
+		const getApp_extRequest = () => {
+			const app = getApp();
+			app.get('/', (req, res) => {
 				req.ext = { prop: 'value' };
-				var view = new keystone.View(req, res);
-				var status = 'NOT OK';
-				view.on({ 'ext.prop': 'value' }, function (next) {
+				const view = new keystone.View(req, res);
+				let status = 'NOT OK';
+				view.on({ 'ext.prop': 'value' }, (next) => {
 					status = 'OK';
 					next();
 				});
-				view.render(function () {
+				view.render(() => {
 					res.send(status);
 				});
 			});
 			return app;
-		}
+		};
 
 		it('must invoke actions based on req properties', function (done) {
 			request(getApp_extRequest())

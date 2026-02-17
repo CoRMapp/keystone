@@ -1,8 +1,8 @@
-var keystone = require('../../index.js'),
-	Types = keystone.Field.Types;
+const keystone = require('../../index.js');
+const { Types } = keystone.Field;
 
 // Simple model
-var Post = new keystone.List('Post', {
+const Post = new keystone.List('Post', {
 	autokey: { path: 'slug', from: 'title', unique: true },
 });
 
@@ -14,13 +14,13 @@ Post.add({
 
 Post.schema.index({
 	title: 'text',
-	content: 'text'
+	content: 'text',
 }, {
 	name: 'searchIndex',
 	weights: {
 		content: 2,
-		title: 1
-	}
+		title: 1,
+	},
 });
 
 Post.register();

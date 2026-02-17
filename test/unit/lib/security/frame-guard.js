@@ -1,15 +1,14 @@
-var keystone = require('../../../../index.js');
-var demand = require('must');
-var request = require('supertest');
-var demand = require('must');
-var getExpressApp = require('../../../helpers/getExpressApp');
-var app = getExpressApp();
-var frameGuard = require('../../../../lib/security/frameGuard');
+const keystone = require('../../../../index.js');
+const demand = require('must');
+const request = require('supertest');
+const getExpressApp = require('../../../helpers/getExpressApp');
+const app = getExpressApp();
+const frameGuard = require('../../../../lib/security/frameGuard');
 
 describe('Keystone "frame guard" setting', function () {
 	before(function () {
 		app.use(frameGuard(keystone));
-		app.get('/', function (req, res) {
+		app.get('/', (req, res) => {
 			res.send('OK');
 		});
 	});
@@ -87,7 +86,7 @@ describe('Keystone "frame guard" setting', function () {
 			keystone.set('frame guard', false);
 			request(app)
 				.get('/')
-				.expect(function (res) {
+				.expect((res) => {
 					if (res.headers['x-frame-options']) {
 						return 'X-Frame-Options key exists';
 					}

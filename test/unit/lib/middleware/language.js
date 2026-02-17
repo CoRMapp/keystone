@@ -1,17 +1,17 @@
-var demand = require('must');
-var sinon = require('sinon');
-var assign = require('object-assign');
-var language = require('../../../../lib/middleware/language');
+const demand = require('must');
+const sinon = require('sinon');
+const assign = require('object-assign');
+const language = require('../../../../lib/middleware/language');
 
-var COOKIE_NAME_ARG = 0;
-var COOKIE_LANGUAGE_ARG = 1;
-var COOKIE_OPTIONS_ARG = 2;
+const COOKIE_NAME_ARG = 0;
+const COOKIE_LANGUAGE_ARG = 1;
+const COOKIE_OPTIONS_ARG = 2;
 
-function getNoop () { return function noop () {} }
+const getNoop = () => function noop () {};
 
-function mockRequest (acceptLanguage, storedLanguage) {
-	var args = [].slice.call(arguments);
-	var options = typeof args[0] === 'object' ? args[0] : {};
+const mockRequest = function (acceptLanguage, storedLanguage) {
+	const args = [].slice.call(arguments);
+	const options = typeof args[0] === 'object' ? args[0] : {};
 
 	if (Object.keys(options).length) {
 		acceptLanguage = options.acceptLanguage;
@@ -30,54 +30,42 @@ function mockRequest (acceptLanguage, storedLanguage) {
 	}, options);
 };
 
-function mockResponse () {
-	return {
-		redirect: sinon.spy(),
-		cookie: sinon.spy()
-	};
-}
+const mockResponse = () => ({
+	redirect: sinon.spy(),
+	cookie: sinon.spy()
+});
 
-function keystoneOptions (options) {
+const keystoneOptions = (options) => {
 	options = assign({}, options);
 
 	return {
-		get: function (key) {
-			return options[key];
-		}
+		get: (key) => options[key]
 	};
-}
+};
 
-function mockApp () {
-	return {
-		use: sinon.spy()
-	}
-}
+const mockApp = () => ({
+	use: sinon.spy()
+});
 
-function getCookieName (res) {
-	return res.cookie.getCall(0).args[COOKIE_NAME_ARG];
-}
+const getCookieName = (res) => res.cookie.getCall(0).args[COOKIE_NAME_ARG];
 
-function getCookieLanguage (res) {
-	return res.cookie.getCall(0).args[COOKIE_LANGUAGE_ARG];
-}
+const getCookieLanguage = (res) => res.cookie.getCall(0).args[COOKIE_LANGUAGE_ARG];
 
-function getCookieOptions (res, option) {
-	return res.cookie.getCall(0).args[COOKIE_OPTIONS_ARG][option];
-}
+const getCookieOptions = (res, option) => res.cookie.getCall(0).args[COOKIE_OPTIONS_ARG][option];
 
 describe('language', function () {
 	it('must allow Accept-Language selection', function () {
-		var keystone = keystoneOptions({
+		const keystone = keystoneOptions({
 			'language options': {
 				'supported languages': ['en-US', 'zh-CN']
 			}
 		});
-		var expected = 'zh-CN';
-		var req = mockRequest({
+		const expected = 'zh-CN';
+		const req = mockRequest({
 			acceptLanguage: 'zh-CN;q=1,en-US;q=0.8'
 		});
-		var res = mockResponse();
-		var middleware = language(keystone);
+		const res = mockResponse();
+		const middleware = language(keystone);
 
 		middleware(req, res, getNoop());
 
@@ -89,11 +77,11 @@ describe('language', function () {
 
 			it('must create a language cookie', function (done) {
 
-				var keystone = keystoneOptions();
-				var res = mockResponse();
-				var expected = 'en-US';
+				const keystone = keystoneOptions();
+				const res = mockResponse();
+				const expected = 'en-US';
 
-				language(keystone)(mockRequest(), res, function (err) {
+				language(keystone)(mockRequest(), res, (err) => {
 					demand(err).be(undefined);
 					demand(getCookieLanguage(res)).eql(expected);
 					done();
@@ -105,15 +93,15 @@ describe('language', function () {
 		describe('with custom cookie name', function () {
 			it('must create a custom language cookie', function (done) {
 
-				var keystone = keystoneOptions({
+				const keystone = keystoneOptions({
 					'language options': {
 						'language cookie': 'locale'
 					}
 				});
-				var res = mockResponse();
-				var expected = 'locale';
+				const res = mockResponse();
+				const expected = 'locale';
 
-				language(keystone)(mockRequest(), res, function (err) {
+				language(keystone)(mockRequest(), res, (err) => {
 					demand(err).be(undefined);
 					demand(getCookieName(res)).eql(expected);
 					done();
@@ -124,7 +112,7 @@ describe('language', function () {
 
 		describe('with custom cookie options', function () {
 			it('must create a custom language cookie', function (done) {
-				var keystone = keystoneOptions({
+				const keystone = keystoneOptions({
 					'language options': {
 						'language cookie options': {
 							maxAge: 24*3600*1000,
@@ -132,11 +120,11 @@ describe('language', function () {
 						}
 					}
 				});
-				var res = mockResponse();
-				var expectedSecure = true;
-				var expectedMaxAge = 86400000
+				const res = mockResponse();
+				const expectedSecure = true;
+				const expectedMaxAge = 86400000;
 
-				language(keystone)(mockRequest(), res, function (err) {
+				language(keystone)(mockRequest(), res, (err) => {
 					demand(err).be(undefined);
 					demand(getCookieOptions(res, 'secure')).eql(expectedSecure);
 					demand(getCookieOptions(res, 'maxAge')).eql(expectedMaxAge);
@@ -151,15 +139,15 @@ describe('language', function () {
 		describe('with default options', function () {
 			it('must create /language route to change language', function () {
 
-				var keystone = keystoneOptions();
-				var req = mockRequest({
+				const keystone = keystoneOptions();
+				const req = mockRequest({
 					acceptLanguage: 'zh-CN;q=0.8,en-US;q=1',
 					storedLanguage: 'zh-CN',
 					url: '/languages/en-US'
 				});
-				var res = mockResponse();
-				var middleware = language(keystone);
-				var expected = 'en-US';
+				const res = mockResponse();
+				const middleware = language(keystone);
+				const expected = 'en-US';
 
 				middleware(req, res, getNoop());
 
@@ -172,19 +160,19 @@ describe('language', function () {
 		describe('with default options', function () {
 			it('must create custom route to change language', function () {
 
-				var keystone = keystoneOptions({
+				const keystone = keystoneOptions({
 					'language options': {
 						'language select url': '/locale/{language}'
 					}
 				});
-				var req = mockRequest({
+				const req = mockRequest({
 					acceptLanguage: 'zh-CN;q=0.8,en-US;q=1',
 					storedLanguage: 'zh-CN',
 					url: '/locale/en-US'
 				});
-				var res = mockResponse();
-				var middleware = language(keystone);
-				var expected = 'en-US';
+				const res = mockResponse();
+				const middleware = language(keystone);
+				const expected = 'en-US';
 
 				middleware(req, res, getNoop());
 
@@ -198,20 +186,20 @@ describe('language', function () {
 	describe('query string language setting', function () {
 		describe('with default query name', function () {
 			it('must allow query string language setting', function () {
-				var keystone = keystoneOptions({
+				const keystone = keystoneOptions({
 					'language options': {
 						'supported languages': ['en-US', 'zh-CN']
 					}
 				});
-				var expected = 'en-US';
-				var req = mockRequest({
+				const expected = 'en-US';
+				const req = mockRequest({
 					acceptLanguage: 'zh-CN;1,en-US;q=0.8',
 					query: {
 						language: 'en-US'
 					}
 				});
-				var res = mockResponse();
-				var middleware = language(keystone);
+				const res = mockResponse();
+				const middleware = language(keystone);
 
 				middleware(req, res, getNoop());
 
@@ -221,21 +209,21 @@ describe('language', function () {
 
 		describe('with custom query name', function () {
 			it('must allow query string language setting', function () {
-				var keystone = keystoneOptions({
+				const keystone = keystoneOptions({
 					'language options': {
 						'supported languages': ['en-US', 'zh-CN'],
 						'language query name': 'locale'
 					}
 				});
-				var expected = 'en-US';
-				var req = mockRequest({
+				const expected = 'en-US';
+				const req = mockRequest({
 					acceptLanguage: 'zh-CN;1,en-US;q=0.8',
 					query: {
 						locale: 'en-US'
 					}
 				});
-				var res = mockResponse();
-				var middleware = language(keystone);
+				const res = mockResponse();
+				const middleware = language(keystone);
 
 				middleware(req, res, getNoop());
 
