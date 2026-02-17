@@ -1,0 +1,6 @@
+spec: test/unit
+recursive: true
+require:
+  - must
+reporter: progress
+timeout: 10000

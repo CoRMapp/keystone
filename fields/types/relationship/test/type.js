@@ -1,5 +1,5 @@
-var demand = require('must');
-var RelationshipType = require('../RelationshipType');
+const demand = require('must');
+const RelationshipType = require('../RelationshipType');
 
 exports.initList = function (List) {
 	// We can use relationships that refer to the same List to test
@@ -11,9 +11,9 @@ exports.initList = function (List) {
 
 exports.testFieldType = function (List) {
 
-	var relatedItem = new List.model();
-	before(function (done) {
-		relatedItem.save(done);
+	let relatedItem = new List.model();
+	before(async function () {
+		relatedItem = await relatedItem.save();
 	});
 
 	describe('single', function () {
@@ -74,7 +74,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should validate required present input', function (done) {
-			var testItem = new List.model();
+			const testItem = new List.model();
 			List.fields.single.validateRequiredInput(testItem, { single: relatedItem.id }, function (result) {
 				demand(result).be.true();
 				done();
@@ -82,7 +82,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should validate required present input with item', function (done) {
-			var testItem = new List.model();
+			const testItem = new List.model();
 			List.fields.single.validateRequiredInput(testItem, { single: relatedItem }, function (result) {
 				demand(result).be.true();
 				done();
@@ -90,7 +90,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should validate required present input with existing value', function (done) {
-			var testItem = new List.model({
+			const testItem = new List.model({
 				single: relatedItem.id,
 			});
 			List.fields.single.validateRequiredInput(testItem, { single: relatedItem.id }, function (result) {
@@ -100,7 +100,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should invalidate required not present input', function (done) {
-			var testItem = new List.model();
+			const testItem = new List.model();
 			List.fields.single.validateRequiredInput(testItem, {}, function (result) {
 				demand(result).be.false();
 				done();
@@ -108,7 +108,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should validate required input with existing value', function (done) {
-			var testItem = new List.model({
+			const testItem = new List.model({
 				single: relatedItem.id,
 			});
 			List.fields.single.validateRequiredInput(testItem, {}, function (result) {
@@ -118,7 +118,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should invalidate required blank input with existing value', function (done) {
-			var testItem = new List.model({
+			const testItem = new List.model({
 				single: relatedItem.id,
 			});
 			List.fields.single.validateRequiredInput(testItem, { single: '' }, function (result) {
@@ -127,80 +127,78 @@ exports.testFieldType = function (List) {
 			});
 		});
 
-		it('should save the provided value', function (done) {
-			var testItem = new List.model();
-			List.fields.single.updateItem(testItem, { single: relatedItem.id }, function () {
-				// TODO: We should be testing for errors here
-				testItem.save(function (err, updatedItem) {
-					List.model.findById(updatedItem.id, function (err, persistedData) {
-						demand(String(persistedData.single)).equal(String(relatedItem.id));
-						done();
-					});
+		it('should save the provided value', async function () {
+			const testItem = new List.model();
+			await new Promise(function (resolve, reject) {
+				List.fields.single.updateItem(testItem, { single: relatedItem.id }, function (err) {
+					if (err) return reject(err);
+					resolve();
 				});
 			});
+			const updatedItem = await testItem.save();
+			const persistedData = await List.model.findById(updatedItem.id);
+			demand(String(persistedData.single)).equal(String(relatedItem.id));
 		});
 
-		it('should save the provided value with an item object', function (done) {
-			var testItem = new List.model();
-			List.fields.single.updateItem(testItem, { single: relatedItem }, function () {
-				// TODO: We should be testing for errors here
-				testItem.save(function (err, updatedItem) {
-					List.model.findById(updatedItem.id, function (err, persistedData) {
-						demand(String(persistedData.single)).equal(String(relatedItem.id));
-						done();
-					});
+		it('should save the provided value with an item object', async function () {
+			const testItem = new List.model();
+			await new Promise(function (resolve, reject) {
+				List.fields.single.updateItem(testItem, { single: relatedItem }, function (err) {
+					if (err) return reject(err);
+					resolve();
 				});
 			});
+			const updatedItem = await testItem.save();
+			const persistedData = await List.model.findById(updatedItem.id);
+			demand(String(persistedData.single)).equal(String(relatedItem.id));
 		});
 
-		it('should clear the current value when provided null', function (done) {
-			var testItem = new List.model({
+		it('should clear the current value when provided null', async function () {
+			const testItem = new List.model({
 				single: relatedItem.id,
 			});
-			testItem.save(function (err) {
-				List.fields.single.updateItem(testItem, { single: null }, function () {
-					// TODO: We should be testing for errors here
-					testItem.save(function (err, updatedItem) {
-						List.model.findById(updatedItem.id, function (err, persistedData) {
-							demand(persistedData.single).be.null();
-							done();
-						});
-					});
+			await testItem.save();
+			await new Promise(function (resolve, reject) {
+				List.fields.single.updateItem(testItem, { single: null }, function (err) {
+					if (err) return reject(err);
+					resolve();
 				});
 			});
+			const updatedItem = await testItem.save();
+			const persistedData = await List.model.findById(updatedItem.id);
+			demand(persistedData.single).be.null();
 		});
 
-		it('should clear the current value when provided ""', function (done) {
-			var testItem = new List.model({
+		it('should clear the current value when provided ""', async function () {
+			const testItem = new List.model({
 				single: relatedItem.id,
 			});
-			testItem.save(function (err) {
-				List.fields.single.updateItem(testItem, { single: '' }, function () {
-					// TODO: We should be testing for errors here
-					testItem.save(function (err, updatedItem) {
-						List.model.findById(updatedItem.id, function (err, persistedData) {
-							demand(persistedData.single).be.null();
-							done();
-						});
-					});
+			await testItem.save();
+			await new Promise(function (resolve, reject) {
+				List.fields.single.updateItem(testItem, { single: '' }, function (err) {
+					if (err) return reject(err);
+					resolve();
 				});
 			});
+			const updatedItem = await testItem.save();
+			const persistedData = await List.model.findById(updatedItem.id);
+			demand(persistedData.single).be.null();
 		});
 
-		it('should not clear the current value when data object does not contain the field', function (done) {
-			var testItem = new List.model({
+		it('should not clear the current value when data object does not contain the field', async function () {
+			const testItem = new List.model({
 				single: relatedItem.id,
 			});
-			testItem.save(function (err) {
-				List.fields.single.updateItem(testItem, {}, function () {
-					testItem.save(function (err, updatedItem) {
-						List.model.findById(updatedItem.id, function (err, persistedData) {
-							demand(String(persistedData.single)).equal(String(relatedItem.id));
-							done();
-						});
-					});
+			await testItem.save();
+			await new Promise(function (resolve, reject) {
+				List.fields.single.updateItem(testItem, {}, function (err) {
+					if (err) return reject(err);
+					resolve();
 				});
 			});
+			const updatedItem = await testItem.save();
+			const persistedData = await List.model.findById(updatedItem.id);
+			demand(String(persistedData.single)).equal(String(relatedItem.id));
 		});
 	});
 
@@ -247,44 +245,44 @@ exports.testFieldType = function (List) {
 			});
 		});
 
-		it('should not clear the current values when data object does not contain the field', function (done) {
-			var testItem = new List.model({
+		it('should not clear the current values when data object does not contain the field', async function () {
+			const testItem = new List.model({
 				many: [relatedItem.id, relatedItem.id],
 			});
-			testItem.save(function (err) {
-				List.fields.many.updateItem(testItem, {}, function () {
-					testItem.save(function (err, updatedItem) {
-						List.model.findById(updatedItem.id, function (err, persistedData) {
-							demand(persistedData.many.length).equal(2);
-							demand(String(persistedData.many[0])).equal(String(relatedItem.id));
-							demand(String(persistedData.many[1])).equal(String(relatedItem.id));
-							done();
-						});
-					});
+			await testItem.save();
+			await new Promise(function (resolve, reject) {
+				List.fields.many.updateItem(testItem, {}, function (err) {
+					if (err) return reject(err);
+					resolve();
 				});
 			});
+			const updatedItem = await testItem.save();
+			const persistedData = await List.model.findById(updatedItem.id);
+			demand(persistedData.many.length).equal(2);
+			demand(String(persistedData.many[0])).equal(String(relatedItem.id));
+			demand(String(persistedData.many[1])).equal(String(relatedItem.id));
 		});
 
-		it('should update the current values with the new values from the data object', function (done) {
-			var testItem = new List.model({
+		it('should update the current values with the new values from the data object', async function () {
+			const testItem = new List.model({
 				many: [relatedItem.id, relatedItem.id, relatedItem.id],
 			});
-			testItem.save(function (err) {
-				List.fields.many.updateItem(testItem, { many: [relatedItem.id, relatedItem.id] }, function () {
-					testItem.save(function (err, updatedItem) {
-						List.model.findById(updatedItem.id, function (err, persistedData) {
-							demand(String(persistedData.many)).to.eql(String([relatedItem.id, relatedItem.id]));
-							done();
-						});
-					});
+			await testItem.save();
+			await new Promise(function (resolve, reject) {
+				List.fields.many.updateItem(testItem, { many: [relatedItem.id, relatedItem.id] }, function (err) {
+					if (err) return reject(err);
+					resolve();
 				});
 			});
+			const updatedItem = await testItem.save();
+			const persistedData = await List.model.findById(updatedItem.id);
+			demand(String(persistedData.many)).to.eql(String([relatedItem.id, relatedItem.id]));
 		});
 	});
 
 	describe('addFilterToQuery', function () {
 		it('should filter arrays', function () {
-			var result = List.fields.single.addFilterToQuery({
+			const result = List.fields.single.addFilterToQuery({
 				value: ['Some', 'strings'],
 			});
 			demand(result.single).eql({
@@ -293,7 +291,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should convert a single string to an array and filter that', function () {
-			var result = List.fields.single.addFilterToQuery({
+			const result = List.fields.single.addFilterToQuery({
 				value: 'a string',
 			});
 			demand(result.single).eql({
@@ -302,7 +300,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should support inverted filtering with an array', function () {
-			var result = List.fields.single.addFilterToQuery({
+			const result = List.fields.single.addFilterToQuery({
 				value: ['Some', 'strings'],
 				inverted: true,
 			});
@@ -312,12 +310,12 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should filter by existance if no value is specified', function () {
-			var result = List.fields.single.addFilterToQuery({});
+			const result = List.fields.single.addFilterToQuery({});
 			demand(result.single).be.null();
 		});
 
 		it('should filter by non-existance if no value is specified', function () {
-			var result = List.fields.single.addFilterToQuery({
+			const result = List.fields.single.addFilterToQuery({
 				inverted: true,
 			});
 			demand(result.single).eql({
@@ -326,14 +324,14 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should filter by emptiness if many is true and no value is specified', function () {
-			var result = List.fields.many.addFilterToQuery({});
+			const result = List.fields.many.addFilterToQuery({});
 			demand(result.many).eql({
 				$size: 0,
 			});
 		});
 
 		it('should filter by non-emptiness if many is true and no value is specified', function () {
-			var result = List.fields.many.addFilterToQuery({
+			const result = List.fields.many.addFilterToQuery({
 				inverted: true,
 			});
 			demand(result.many).eql({

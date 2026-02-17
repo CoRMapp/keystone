@@ -1,24 +1,21 @@
-var keystone = require('../../index.js');
-var Types = require('../../lib/fieldTypes');
-var request = require('supertest');
-var demand = require('must');
-var async = require('async');
-var getExpressApp = require('../helpers/getExpressApp');
-var removeModel = require('../helpers/removeModel');
+const keystone = require('../../index.js');
+const Types = require('../../lib/fieldTypes');
+const request = require('supertest');
+const demand = require('must');
+const getExpressApp = require('../helpers/getExpressApp');
+const removeModel = require('../helpers/removeModel');
 
 describe('List "track" option', function () {
-	var app = getExpressApp();
-	var userModelName = 'User';
-	var testModelName = 'Test';
-	var User;
-	var Test;
-	var dummyUser1;
-	var dummyUser2;
-	var post;
+	const app = getExpressApp();
+	const userModelName = 'User';
+	const testModelName = 'Test';
+	let User;
+	let Test;
+	let dummyUser1;
+	let dummyUser2;
+	let post;
 
-	before(function (done) {
-		var tasks = [];
-
+	before(async function () {
 		// in case model names were previously used and not cleaned up
 		removeModel(userModelName);
 		removeModel(testModelName);
@@ -27,27 +24,20 @@ describe('List "track" option', function () {
 		keystone.set('user model', userModelName);
 		User = keystone.List(userModelName);
 		User.add({
-			name: { type: String, required: true, index: true }
+			name: { type: String, required: true, index: true },
 		});
 		User.register();
 
 		function getItem(id, done) {
 			if (id) {
-				Test.model.findById(id).exec(function (err, found) {
-					if (err) {
-						throw err;
-					}
-
+				Test.model.findById(id).exec().then(function (found) {
 					if (!found) {
-						throw new Error('test document not found')
+						throw new Error('test document not found');
 					}
-
-					item = found;
-					done(item);
-				});
+					done(found);
+				}).catch(function (err) { throw err; });
 			} else {
-				item = new Test.model();
-				done(item);
+				done(new Test.model());
 			}
 		}
 
@@ -55,8 +45,8 @@ describe('List "track" option', function () {
 		app.post('/using-update-handler/:id?', function (req, res) {
 			getItem(req.params.id, function (item) {
 				req.user = req.params.id ? dummyUser2 : dummyUser1;
-				var updateHandler = item.getUpdateHandler(req);
-				updateHandler.process(req.body, function (err, data) {
+				const updateHandler = item.getUpdateHandler(req);
+				updateHandler.process(req.body, function (err) {
 					if (err) {
 						res.send('BAD');
 					} else {
@@ -71,55 +61,17 @@ describe('List "track" option', function () {
 			getItem(req.params.id, function (item) {
 				item._req_user = req.params.id ? dummyUser2 : dummyUser1;
 				item.set(req.body);
-				item.save(function (err, data) {
-					if (err) {
-						res.send('BAD');
-					} else {
-						res.send('GOOD');
-					}
+				item.save().then(function () {
+					res.send('GOOD');
+				}).catch(function () {
+					res.send('BAD');
 				});
 			});
 		});
 
-		tasks.push(function (done) {
-			User.model.remove({}, function (err) {
-				if (err) {
-					throw err;
-				}
-				done();
-			});
-		});
-
-		tasks.push(function (done) {
-			dummyUser1 = new User.model({
-				'name': 'John Doe'
-			}).save(function (err, data) {
-				if (err) {
-					throw err;
-				}
-				dummyUser1 = data;
-				done();
-			});
-		});
-
-		tasks.push(function (done) {
-			dummyUser2 = new User.model({
-				'name': 'Jane Doe'
-			}).save(function (err, data) {
-				if (err) {
-					throw err;
-				}
-				dummyUser2 = data;
-				done();
-			});
-		});
-
-		async.series(tasks, function (err) {
-			if (err) {
-				throw err;
-			}
-			done();
-		});
+		await User.model.deleteMany({});
+		dummyUser1 = await new User.model({ name: 'John Doe' }).save();
+		dummyUser2 = await new User.model({ name: 'Jane Doe' }).save();
 	});
 
 	describe('when "track" option is not valid', function () {
@@ -157,7 +109,7 @@ describe('List "track" option', function () {
 
 		it('should not register the plugin if all fields are false', function () {
 			Test = keystone.List(testModelName, {
-				track: { createdAt: false, createdBy: false, updatedAt: false, updatedBy: false }
+				track: { createdAt: false, createdBy: false, updatedAt: false, updatedBy: false },
 			});
 			Test.add({ name: { type: String } });
 			Test.register();
@@ -185,15 +137,9 @@ describe('List "track" option', function () {
 				Test.register();
 			});
 
-			after(function (done) {
-				// post test cleanup
-				Test.model.remove({}, function (err) {
-					if (err) {
-						throw err;
-					}
-					removeModel(testModelName);
-					done();
-				});
+			after(async function () {
+				await Test.model.deleteMany({});
+				removeModel(testModelName);
 			});
 
 			it('should have all the default fields', function () {
@@ -212,7 +158,7 @@ describe('List "track" option', function () {
 					.post('/using-update-handler')
 					.send({ name: 'test1' })
 					.expect('GOOD')
-					.end(function (err, res) {
+					.end(function (err) {
 						if (err) {
 							return done(err);
 						}
@@ -233,9 +179,9 @@ describe('List "track" option', function () {
 				setTimeout(function () {
 					request(app)
 						.post('/using-update-handler/' + post.get('id'))
-						.send({ name: 'test2', 'updatedBy': dummyUser2.get('id'), 'createdBy': dummyUser1.get('id') })
+						.send({ name: 'test2', updatedBy: dummyUser2.get('id'), createdBy: dummyUser1.get('id') })
 						.expect('GOOD')
-						.end(function (err, res) {
+						.end(function (err) {
 							if (err) {
 								return done(err);
 							}
@@ -267,15 +213,9 @@ describe('List "track" option', function () {
 				Test.register();
 			});
 
-			after(function (done) {
-				// post test cleanup
-				Test.model.remove({}, function (err) {
-					if (err) {
-						throw err;
-					}
-					removeModel(testModelName);
-					done();
-				});
+			after(async function () {
+				await Test.model.deleteMany({});
+				removeModel(testModelName);
 			});
 
 			it('should have all the default fields', function () {
@@ -296,7 +236,7 @@ describe('List "track" option', function () {
 					.post('/using-save')
 					.send({ name: 'test1' })
 					.expect('GOOD')
-					.end(function (err, res) {
+					.end(function (err) {
 						if (err) {
 							return done(err);
 						}
@@ -320,7 +260,7 @@ describe('List "track" option', function () {
 						.post('/using-save/' + post._id)
 						.send({ name: 'test2' })
 						.expect('GOOD')
-						.end(function (err, res) {
+						.end(function (err) {
 							if (err) {
 								return done(err);
 							}
@@ -343,13 +283,13 @@ describe('List "track" option', function () {
 	});
 
 	describe('when "track" option fields are selectively enabled', function () {
-		var previousUpdatedAt;
+		let previousUpdatedAt;
 
 		describe('using updateHandler()', function () {
 
 			before(function () {
 				Test = keystone.List(testModelName, {
-					track: { updatedAt: true, updatedBy: true }
+					track: { updatedAt: true, updatedBy: true },
 				});
 				Test.add({ name: { type: String } });
 
@@ -360,15 +300,9 @@ describe('List "track" option', function () {
 				Test.register();
 			});
 
-			after(function (done) {
-				// post test cleanup
-				Test.model.remove({}, function (err) {
-					if (err) {
-						throw err;
-					}
-					removeModel(testModelName);
-					done();
-				});
+			after(async function () {
+				await Test.model.deleteMany({});
+				removeModel(testModelName);
 			});
 
 			it('should have all the default fields', function () {
@@ -386,7 +320,7 @@ describe('List "track" option', function () {
 					.post('/using-update-handler')
 					.send({ name: 'test1' })
 					.expect('GOOD')
-					.end(function (err, res) {
+					.end(function (err) {
 						if (err) {
 							return done(err);
 						}
@@ -405,7 +339,7 @@ describe('List "track" option', function () {
 						.post('/using-update-handler/' + post._id)
 						.send({ name: 'test2' })
 						.expect('GOOD')
-						.end(function (err, res) {
+						.end(function (err) {
 							if (err) {
 								return done(err);
 							}
@@ -426,7 +360,7 @@ describe('List "track" option', function () {
 
 			before(function () {
 				Test = keystone.List(testModelName, {
-					track: { updatedAt: true, updatedBy: true }
+					track: { updatedAt: true, updatedBy: true },
 				});
 				Test.add({ name: { type: String } });
 
@@ -437,15 +371,9 @@ describe('List "track" option', function () {
 				Test.register();
 			});
 
-			after(function (done) {
-				// post test cleanup
-				Test.model.remove({}, function (err) {
-					if (err) {
-						throw err;
-					}
-					removeModel(testModelName);
-					done();
-				});
+			after(async function () {
+				await Test.model.deleteMany({});
+				removeModel(testModelName);
 			});
 
 			it('should have all the default fields', function () {
@@ -463,7 +391,7 @@ describe('List "track" option', function () {
 					.post('/using-save')
 					.send({ name: 'test1' })
 					.expect('GOOD')
-					.end(function (err, res) {
+					.end(function (err) {
 						if (err) {
 							return done(err);
 						}
@@ -482,7 +410,7 @@ describe('List "track" option', function () {
 						.post('/using-save/' + post._id)
 						.send({ name: 'test2' })
 						.expect('GOOD')
-						.end(function (err, res) {
+						.end(function (err) {
 							if (err) {
 								return done(err);
 							}
@@ -502,7 +430,7 @@ describe('List "track" option', function () {
 	});
 
 	describe('when "track" option has custom field names', function () {
-		var previousUpdatedAt;
+		let previousUpdatedAt;
 
 		describe('using updateHandler()', function () {
 
@@ -512,8 +440,8 @@ describe('List "track" option', function () {
 						createdAt: 'customCreatedAt',
 						createdBy: 'customCreatedBy',
 						updatedAt: 'customUpdatedAt',
-						updatedBy: 'customUpdatedBy'
-					}
+						updatedBy: 'customUpdatedBy',
+					},
 				});
 				Test.add({ name: { type: String } });
 
@@ -524,15 +452,9 @@ describe('List "track" option', function () {
 				Test.register();
 			});
 
-			after(function (done) {
-				// post test cleanup
-				Test.model.remove({}, function (err) {
-					if (err) {
-						throw err;
-					}
-					removeModel(testModelName);
-					done();
-				});
+			after(async function () {
+				await Test.model.deleteMany({});
+				removeModel(testModelName);
 			});
 
 			it('should no have any of the default fields', function () {
@@ -559,7 +481,7 @@ describe('List "track" option', function () {
 					.post('/using-update-handler')
 					.send({ name: 'test1' })
 					.expect('GOOD')
-					.end(function (err, res) {
+					.end(function (err) {
 						if (err) {
 							return done(err);
 						}
@@ -582,7 +504,7 @@ describe('List "track" option', function () {
 						.post('/using-update-handler/' + post._id)
 						.send({ name: 'test2' })
 						.expect('GOOD')
-						.end(function (err, res) {
+						.end(function (err) {
 							if (err) {
 								return done(err);
 							}
@@ -607,8 +529,8 @@ describe('List "track" option', function () {
 						createdAt: 'customCreatedAt',
 						createdBy: 'customCreatedBy',
 						updatedAt: 'customUpdatedAt',
-						updatedBy: 'customUpdatedBy'
-					}
+						updatedBy: 'customUpdatedBy',
+					},
 				});
 				Test.add({ name: { type: String } });
 
@@ -619,15 +541,9 @@ describe('List "track" option', function () {
 				Test.register();
 			});
 
-			after(function (done) {
-				// post test cleanup
-				Test.model.remove({}, function (err) {
-					if (err) {
-						throw err;
-					}
-					removeModel(testModelName);
-					done();
-				});
+			after(async function () {
+				await Test.model.deleteMany({});
+				removeModel(testModelName);
 			});
 
 			it('should no have any of the default fields', function () {
@@ -654,7 +570,7 @@ describe('List "track" option', function () {
 					.post('/using-save')
 					.send({ name: 'test1' })
 					.expect('GOOD')
-					.end(function (err, res) {
+					.end(function (err) {
 						if (err) {
 							return done(err);
 						}
@@ -677,7 +593,7 @@ describe('List "track" option', function () {
 						.post('/using-save/' + post._id)
 						.send({ name: 'test2' })
 						.expect('GOOD')
-						.end(function (err, res) {
+						.end(function (err) {
 							if (err) {
 								return done(err);
 							}

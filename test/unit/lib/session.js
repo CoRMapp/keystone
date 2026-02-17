@@ -1,17 +1,17 @@
-var keystone = require('../../../index.js');
-var sinon = require('sinon');
-var demand = require('must');
+const keystone = require('../../../index.js');
+const sinon = require('sinon');
+const demand = require('must');
 
 describe('Keystone.session', function () {
 
 	describe('keystone.session.signinWithUser()', function () {
 		// mock args for signinWithUser(user, req, res, onSuccess)
-		var res = { cookie: sinon.stub() };
-		var onSuccess = sinon.stub();
-		var user;
-		var req;
+		const res = { cookie: sinon.stub() };
+		const onSuccess = sinon.stub();
+		let user;
+		let req;
 
-		function resetMocks() {
+		function resetMocks () {
 			user = {
 				id: 'USERID',
 				password: 'PASSWORD',
@@ -22,8 +22,8 @@ describe('Keystone.session', function () {
 					userId: null,
 					regenerate: function (callback) {
 						callback();
-					}
-				}
+					},
+				},
 			};
 		}
 
@@ -38,9 +38,9 @@ describe('Keystone.session', function () {
 		});
 
 		afterEach(function () {
-			req.session.regenerate.reset();
-			res.cookie.reset();
-			onSuccess.reset();
+			req.session.regenerate.resetHistory();
+			res.cookie.resetHistory();
+			onSuccess.resetHistory();
 		});
 
 		describe('with valid args, "cookie signin" on', function () {
@@ -84,50 +84,50 @@ describe('Keystone.session', function () {
 
 		describe('with invalid args', function () {
 			it('should error when called less then 4 args', function () {
-				function callWithNoArgs() {
+				function callWithNoArgs () {
 					keystone.session.signinWithUser();
 				}
 				callWithNoArgs.must.throw('keystone.session.signinWithUser requires user, req and res objects, and an onSuccess callback.');
 
-				function callWithOneArg() {
+				function callWithOneArg () {
 					keystone.session.signinWithUser(user);
 				}
 				callWithOneArg.must.throw('keystone.session.signinWithUser requires user, req and res objects, and an onSuccess callback.');
 
-				function callWithTwoArgs() {
+				function callWithTwoArgs () {
 					keystone.session.signinWithUser(user, req);
 				}
-				callWithOneArg.must.throw('keystone.session.signinWithUser requires user, req and res objects, and an onSuccess callback.');
+				callWithTwoArgs.must.throw('keystone.session.signinWithUser requires user, req and res objects, and an onSuccess callback.');
 
-				function callWithThreeArgs() {
+				function callWithThreeArgs () {
 					keystone.session.signinWithUser(user, req, res);
 				}
-				callWithOneArg.must.throw('keystone.session.signinWithUser requires user, req and res objects, and an onSuccess callback.');
+				callWithThreeArgs.must.throw('keystone.session.signinWithUser requires user, req and res objects, and an onSuccess callback.');
 			});
 
 			it('should error when user arg is not an object', function () {
-				function callWithInvalidUser() {
+				function callWithInvalidUser () {
 					keystone.session.signinWithUser('user', req, res, onSuccess);
 				}
 				callWithInvalidUser.must.throw('keystone.session.signinWithUser requires user to be an object.');
 			});
 
 			it('should error when req arg is not an object', function () {
-				function callWithInvalidReq() {
+				function callWithInvalidReq () {
 					keystone.session.signinWithUser(user, 'req', res, onSuccess);
 				}
 				callWithInvalidReq.must.throw('keystone.session.signinWithUser requires req to be an object.');
 			});
 
 			it('should error when res arg is not an object', function () {
-				function callWithInvalidRes() {
+				function callWithInvalidRes () {
 					keystone.session.signinWithUser(user, req, 'res', onSuccess);
 				}
 				callWithInvalidRes.must.throw('keystone.session.signinWithUser requires res to be an object.');
 			});
 
 			it('should error when onSuccess arg is not a function', function () {
-				function callWithInvalidCallback() {
+				function callWithInvalidCallback () {
 					keystone.session.signinWithUser(user, req, res, 'onSuccess');
 				}
 				callWithInvalidCallback.must.throw('keystone.session.signinWithUser requires onSuccess to be a function.');
@@ -143,26 +143,23 @@ describe('Keystone.session', function () {
 		describe('case-insensitive email lookup', function () {
 
 			before(function () {
-				var self = this;
+				const self = this;
 				this.onSuccess = sinon.stub();
 				this.onFailure = sinon.stub();
 
-				// simulate User model
+				// simulate User model - findOne must return a thenable (Mongoose 7+)
 				this.User = {
 					model: {
 						findOne: sinon.spy(function (query) {
 							self.query = query;
-							return this;
-						}),
-						exec: sinon.spy(function (callback) {
-							var email = 'test@test.com';
+							const email = 'test@test.com';
 							self.query.match = self.query.email.test(email);
 							if (self.query.match) {
-								return callback(null, self.user);
+								return Promise.resolve(self.user);
 							}
-							callback(new Error('not found'))
-						})
-					}
+							return Promise.resolve(null);
+						}),
+					},
 				};
 
 				// simulate user instance
@@ -189,24 +186,20 @@ describe('Keystone.session', function () {
 			afterEach(function () {
 				delete this.query;
 
-				this.User.model.findOne.reset();
-				this.User.model.exec.reset();
-				this.onSuccess.reset();
-				this.onFailure.reset();
+				this.User.model.findOne.resetHistory();
+				this.onSuccess.resetHistory();
+				this.onFailure.resetHistory();
 
-				keystone.list.reset();
-				keystone.session.signinWithUser.reset();
+				keystone.list.resetHistory();
+				keystone.session.signinWithUser.resetHistory();
 			});
 
 			it('should match email with mixed case', function (done) {
-				var lookup = { email: 'Test@Test.Com', password: 'password' };
+				const lookup = { email: 'Test@Test.Com', password: 'password' };
 				keystone.session.signin(lookup, null, null, function () {
 					// make sure .findOne() is called with a regular expression
 					sinon.assert.calledOnce(this.User.model.findOne);
 					this.User.model.findOne.getCall(0).args[0].email.must.be.instanceof(RegExp);
-					// make sure .exec() is called after
-					sinon.assert.calledOnce(this.User.model.exec);
-					this.User.model.exec.calledAfter(this.User.model.findOne).must.be.true;
 					// make sure .signinWithUser() is called on successful match
 					sinon.assert.calledOnce(keystone.session.signinWithUser);
 					done();
@@ -215,14 +208,11 @@ describe('Keystone.session', function () {
 			});
 
 			it('should not match email when invalid', function (done) {
-				var lookup = { email: 'xxx', password: 'password' };
+				const lookup = { email: 'xxx', password: 'password' };
 				keystone.session.signin(lookup, null, null, this.onSuccess, function (err) {
 					// make sure .findOne() was not called
 					sinon.assert.notCalled(this.User.model.findOne);
-					// make sure .exec() was not called
-					sinon.assert.notCalled(this.User.model.exec);
-					this.User.model.exec.calledAfter(this.User.model.findOne).must.be.true;
-					err.must.be.an.instanceof(Error)
+					err.must.be.an.instanceof(Error);
 					// make sure .signinWithUser() is NOT called on failed match
 					sinon.assert.notCalled(keystone.session.signinWithUser);
 					done();
@@ -230,14 +220,11 @@ describe('Keystone.session', function () {
 			});
 
 			it('should not match email when just a regex', function (done) {
-				var lookup = { email: '\.', password: 'password' };
+				const lookup = { email: '\\.', password: 'password' };
 				keystone.session.signin(lookup, null, null, this.onSuccess, function (err) {
 					// make sure .findOne() was not called
 					sinon.assert.notCalled(this.User.model.findOne);
-					// make sure .exec() was not called
-					sinon.assert.notCalled(this.User.model.exec);
-					this.User.model.exec.calledAfter(this.User.model.findOne).must.be.true;
-					err.must.be.an.instanceof(Error)
+					err.must.be.an.instanceof(Error);
 					// make sure .signinWithUser() is NOT called on failed match
 					sinon.assert.notCalled(keystone.session.signinWithUser);
 					done();
@@ -250,11 +237,11 @@ describe('Keystone.session', function () {
 
 	describe('keystone.session.signout()', function () {
 
-		var res = { cookie: sinon.stub() };
-		var user;
-		var req;
+		const res = { cookie: sinon.stub(), clearCookie: sinon.stub() };
+		let user;
+		let req;
 
-		function resetMocks() {
+		function resetMocks () {
 			user = {
 				id: 'USERID',
 				password: 'PASSWORD',
@@ -264,9 +251,17 @@ describe('Keystone.session', function () {
 				session: {
 					userId: null,
 					regenerate: function (callback) {
+						// Simulate express-session regenerate: clear session data
+						var regenerate = this.regenerate;
+						for (var key in req.session) {
+							if (key !== 'regenerate') {
+								delete req.session[key];
+							}
+						}
+						req.session.regenerate = regenerate;
 						callback();
-					}
-				}
+					},
+				},
 			};
 		}
 
@@ -281,19 +276,25 @@ describe('Keystone.session', function () {
 		});
 
 		afterEach(function () {
-			req.session.regenerate.reset();
-			res.cookie.reset();
+			req.session.regenerate.resetHistory();
+			res.cookie.resetHistory();
+			res.clearCookie.resetHistory();
 		});
 
-		it('should unset user, session.userId and cookie', function () {
+		it('should unset user, session.userId and cookie', function (done) {
 			keystone.set('cookie signin', true);
-			keystone.session.signinWithUser(user, req, res, function() {
-				keystone.session.signout(req, res, function() {
-					demand(req.user).be.null();
-					demand(req.session.userId).be.null();
+			keystone.session.signinWithUser(user, req, res, function () {
+				keystone.session.signout(req, res, function () {
+					try {
+						demand(req.user).be.null();
+						demand(req.session.userId).be.undefined();
 
-					sinon.assert.calledOnce(res.clearCookie);
-					sinon.assert.calledWith(res.clearCookie, 'keystone.uid');
+						sinon.assert.calledOnce(res.clearCookie);
+						sinon.assert.calledWith(res.clearCookie, 'keystone.uid');
+						done();
+					} catch (err) {
+						done(err);
+					}
 				});
 			});
 		});

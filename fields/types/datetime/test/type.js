@@ -8,7 +8,7 @@ exports.initList = function (List) {
 		datetime: DatetimeType,
 		customFormat: {
 			type: DatetimeType,
-			parseFormat: 'DD.MM.YY h:m a',
+			parseFormat: 'DD.MM.YY hh:mm a',
 		},
 		nested: {
 			datetime: DatetimeType,

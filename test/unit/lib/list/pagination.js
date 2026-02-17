@@ -1,180 +1,148 @@
-var keystone = require('../../../../index.js');
-var assert = require('core-assert');
-var async = require('async');
-var _ = require('lodash');
+const keystone = require('../../../../index.js');
+const assert = require('assert');
+const _ = require('lodash');
 
 keystone.import('../models');
 
-var Post = keystone.list('Post');
+const Post = keystone.list('Post');
 
 // Test data for Post(s)
-var testData = {
+const testData = {
 	posts: [{
 		title: 'Test Post 1',
-		content: 'keyword'
+		content: 'keyword',
 	}, {
 		title: 'Test Post 2',
-		content: 'keyword keyword'
+		content: 'keyword keyword',
 	}, {
 		title: 'Test Post 3',
-		content: 'keyword keyword keyword'
+		content: 'keyword keyword keyword',
 	}, {
 		title: 'Test Post 4',
-		content: 'keyword keyword keyword keyword'
+		content: 'keyword keyword keyword keyword',
 	}, {
 		title: 'Test Post 5',
-		content: 'keyword keyword keyword keyword keyword'
+		content: 'keyword keyword keyword keyword keyword',
 	}, {
 		title: 'Test Post 6',
-		content: 'keyword keyword keyword keyword keyword keyword'
+		content: 'keyword keyword keyword keyword keyword keyword',
 	}, {
 		title: 'Test Post 7',
-		content: 'keyword keyword keyword keyword keyword keyword keyword'
-	}]
+		content: 'keyword keyword keyword keyword keyword keyword keyword',
+	}],
 };
 
 describe('When paginating results', function () {
 
-	beforeEach(function (done) {
-		// remove any Post documents
-		Post.model.find({}).remove(function (error) {
-			if (error) {
-				done(error);
-			}
-
-			// Add the test Post data
-			async.forEach(testData.posts, function (post, callback) {
-				var newPost = new Post.model(post);
-				newPost.save(callback);
-			}, function (error) {
-				done(error);
-			});
-		});
+	beforeEach(async function () {
+		await Post.model.deleteMany({});
+		for (const post of testData.posts) {
+			const newPost = new Post.model(post);
+			await newPost.save();
+		}
 	});
 
-	after(function (done) {
-		// remove any remaining test data
-		Post.model.find({}).remove(function (error) {
-			done(error);
-		});
+	after(async function () {
+		await Post.model.deleteMany({});
 	});
 
 	// regression test for pagination after adding `options.optionalExpression`
 	describe('without an optional expression', function () {
 		it('should return results plus pagination metadata', function (done) {
 
-			var regressionTestData = _.extend(testData, {
+			const regressionTestData = _.extend(testData, {
 				expectedPages: [1, 2, 3, 4],
-				perPage: 2
+				perPage: 2,
 			});
 
-			async.forEach(regressionTestData.expectedPages, function (pageNumber, callback) {
+			let completed = 0;
+			const total = regressionTestData.expectedPages.length;
 
+			regressionTestData.expectedPages.forEach(function (pageNumber) {
 				Post.paginate({
 					page: pageNumber,
 					perPage: regressionTestData.perPage,
-					select: 'title'
+					select: 'title',
 				}).sort({
-					title: 'asc'
+					title: 'asc',
 				}).exec(function (error, results) {
-					if (!error) {
-						assert.equal(results.currentPage, pageNumber);
-						assert.equal(results.totalPages, regressionTestData.expectedPages.length);
-						assert.deepStrictEqual(results.pages, regressionTestData.expectedPages);
+					if (error) return done(error);
 
-						// If we're on the first page of results, test that there is no
-						// `previous` page to go back to.
-						//
-						// If it's the last page, test that there is no `next`.
-						//
-						// Otherwise test that there are both `previous` and `next`
-						// pages to go to.
-						if (_.first(regressionTestData.expectedPages) === pageNumber) {
-							assert(!results.previous);
-							assert(results.next);
-						}
-						else if (_.last(regressionTestData.expectedPages) === pageNumber) {
-							assert(results.previous);
-							assert(!results.next);
-						}
-						else {
-							assert(results.previous);
-							assert(results.next);
-						}
+					assert.equal(results.currentPage, pageNumber);
+					assert.equal(results.totalPages, regressionTestData.expectedPages.length);
+					assert.deepStrictEqual(results.pages, regressionTestData.expectedPages);
 
-						// Ensure we don't have more results per page than we
-						// defined.
-						assert(results.results.length <= regressionTestData.perPage);
+					if (_.first(regressionTestData.expectedPages) === pageNumber) {
+						assert(!results.previous);
+						assert(results.next);
+					} else if (_.last(regressionTestData.expectedPages) === pageNumber) {
+						assert(results.previous);
+						assert(!results.next);
+					} else {
+						assert(results.previous);
+						assert(results.next);
 					}
-					callback(error);
+
+					assert(results.results.length <= regressionTestData.perPage);
+
+					completed++;
+					if (completed === total) done();
 				});
-
-			}, function (error) {
-				done(error);
 			});
-
 		});
 	});
 
 	describe('with an optional expression', function () {
 		it('should return results plus query metadata and pagination metadata', function (done) {
 
-			var searchTestData = _.extend(testData, {
+			const searchTestData = _.extend(testData, {
 				expectedPages: [1, 2],
-				perPage: 5
+				perPage: 5,
 			});
 
-			// Perform a $text search on a weighted 'keyword'. Since all of the
-			// test documents contain this keyword, we should get back the
-			// all Posts, but sorted by `textScore` descending.
-			async.forEach(searchTestData.expectedPages, function (pageNumber, callback) {
+			let completed = 0;
+			const total = searchTestData.expectedPages.length;
 
+			searchTestData.expectedPages.forEach(function (pageNumber) {
 				Post.paginate({
 					page: pageNumber,
 					perPage: searchTestData.perPage,
 					filters: {
-						$text: { $search: 'keyword' }
+						$text: { $search: 'keyword' },
 					},
 					optionalExpression: {
-						score: { $meta: 'textScore' }
-					}
+						score: { $meta: 'textScore' },
+					},
 				}).sort({
-					score: { $meta: 'textScore' }
+					score: { $meta: 'textScore' },
 				}).exec(function (error, results) {
+					if (error) return done(error);
 
-					if (!error) {
-						// Ensure our optional $meta expression has added a value.
-						// Each result should have a 'score'
-						_.each(results.results, function (result) {
-							var score = result.get('score');
-							assert.notEqual(score, undefined);
-						});
+					_.each(results.results, function (result) {
+						const score = result.get('score');
+						assert.notEqual(score, undefined);
+					});
 
-						// Ensure our paginated result set works as expected
-						assert.equal(results.currentPage, pageNumber);
-						assert.equal(results.totalPages, searchTestData.expectedPages.length);
-						assert.deepStrictEqual(results.pages, searchTestData.expectedPages);
+					assert.equal(results.currentPage, pageNumber);
+					assert.equal(results.totalPages, searchTestData.expectedPages.length);
+					assert.deepStrictEqual(results.pages, searchTestData.expectedPages);
 
-						if (_.first(searchTestData.expectedPages) === pageNumber) {
-							assert(!results.previous);
-							assert(results.next);
-						}
-						else if (_.last(searchTestData.expectedPages) === pageNumber) {
-							assert(results.previous);
-							assert(!results.next);
-						}
-						else {
-							assert(results.previous);
-							assert(results.next);
-						}
-
-						assert(results.results.length <= searchTestData.perPage);
+					if (_.first(searchTestData.expectedPages) === pageNumber) {
+						assert(!results.previous);
+						assert(results.next);
+					} else if (_.last(searchTestData.expectedPages) === pageNumber) {
+						assert(results.previous);
+						assert(!results.next);
+					} else {
+						assert(results.previous);
+						assert(results.next);
 					}
-					callback(error);
-				});
 
-			}, function (error) {
-				done(error);
+					assert(results.results.length <= searchTestData.perPage);
+
+					completed++;
+					if (completed === total) done();
+				});
 			});
 		});
 	});

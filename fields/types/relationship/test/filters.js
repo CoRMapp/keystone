@@ -1,6 +1,5 @@
-var async = require('async');
-var demand = require('must');
-var RelationshipType = require('../RelationshipType');
+const demand = require('must');
+const RelationshipType = require('../RelationshipType');
 
 exports.initList = function (List) {
 	List.add({
@@ -8,25 +7,27 @@ exports.initList = function (List) {
 	});
 };
 
-var items;
+let items;
 
 exports.getTestItems = function (List, callback) {
-	async.mapValues({
+	const data = {
 		jed: new List.model({ name: 'Jed' }),
 		max: new List.model({ name: 'Max' }),
-	}, function (item, key, done) {
-		item.save(function (err, doc) {
-			if (err) return done(err);
-			return done(null, String(doc.id));
-		});
-	}, function (err, results) {
-		if (err) return callback(err);
-		items = results;
+	};
+
+	Promise.all([
+		data.jed.save(),
+		data.max.save(),
+	]).then(function (results) {
+		items = {
+			jed: String(results[0].id),
+			max: String(results[1].id),
+		};
 		callback(null, [
 			{ single: items.jed },
 			{ single: items.max },
 		]);
-	});
+	}).catch(callback);
 };
 
 exports.testFilters = function (List, filter) {

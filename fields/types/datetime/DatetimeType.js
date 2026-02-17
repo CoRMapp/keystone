@@ -5,7 +5,7 @@ var util = require('util');
 var utils = require('keystone-utils');
 
 // ISO_8601 is needed for the automatically created createdAt and updatedAt fields
-var parseFormats = ['YYYY-MM-DD', 'YYYY-MM-DD h:m:s a', 'YYYY-MM-DD h:m a', 'YYYY-MM-DD H:m:s', 'YYYY-MM-DD H:m', 'YYYY-MM-DD h:mm:s a Z', moment.ISO_8601];
+var parseFormats = ['YYYY-MM-DD', 'YYYY-MM-DD hh:mm:ss a', 'YYYY-MM-DD h:mm:ss a', 'YYYY-MM-DD h:m:s a', 'YYYY-MM-DD hh:mm a', 'YYYY-MM-DD h:m a', 'YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD H:m:s', 'YYYY-MM-DD HH:mm', 'YYYY-MM-DD H:m', 'YYYY-MM-DD hh:mm:ss a Z', 'YYYY-MM-DD h:mm:s a Z', moment.ISO_8601];
 /**
  * DateTime FieldType Constructor
  * @extends Field

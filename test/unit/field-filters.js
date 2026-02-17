@@ -1,12 +1,12 @@
-var _ = require('lodash');
-var fs = require('fs');
-var keystone = require('../../index.js');
-var path = require('path');
+const _ = require('lodash');
+const fs = require('fs');
+const keystone = require('../../index.js');
+const path = require('path');
 
 keystone.init();
 
-var typesLoc = path.resolve('fields/types');
-var types = fs.readdirSync(typesLoc);
+const typesLoc = path.resolve('fields/types');
+const types = fs.readdirSync(typesLoc);
 
 function stringifyValue (value) {
 	if (Array.isArray(value)) {
@@ -16,19 +16,19 @@ function stringifyValue (value) {
 }
 
 types.forEach(function (name) {
-	var filtersTestPath = typesLoc + '/' + name + '/test/filters.js';
+	const filtersTestPath = typesLoc + '/' + name + '/test/filters.js';
 	if (!fs.existsSync(filtersTestPath)) return;
 
-	var listKey = name + 'FiltersTest';
+	const listKey = name + 'FiltersTest';
 
 	// nocreate option prevents warnings for required / not initial fields
-	var List = keystone.List(listKey, { nocreate: true });
-	var test = require(filtersTestPath);
+	const List = keystone.List(listKey, { nocreate: true });
+	const test = require(filtersTestPath);
 
 	test.initList(List);
 	List.register();
 
-	var filter = function (filters, prop, stringify, callback) {
+	const filter = function (filters, prop, stringify, callback) {
 		if (typeof stringify === 'function' && !callback) {
 			callback = stringify;
 			stringify = false;
@@ -37,8 +37,8 @@ types.forEach(function (name) {
 			callback = prop;
 			prop = null;
 		}
-		var where = List.addFiltersToQuery(filters);
-		List.model.find(where, function (err, results) {
+		const where = List.addFiltersToQuery(filters);
+		List.model.find(where).then(function (results) {
 			if (prop) {
 				results = _.map(results, prop);
 				if (stringify) {
@@ -47,24 +47,35 @@ types.forEach(function (name) {
 			}
 			callback(results);
 		});
-	}
+	};
 
-	describe('FieldType: ' + name.substr(0,1).toUpperCase() + name.substr(1) + ': Filter', function () {
-		before(function (done) {
-			List.model.remove().exec(function (err) {
-				if (err) throw err;
-				var testItems = {};
-				if (test.getTestItems.length < 2) {
-					testItems[listKey] = test.getTestItems(List);
-					return keystone.createItems(testItems, done);
-				} else {
-					test.getTestItems(List, function (err, data) {
-						if (err) throw err;
-						testItems[listKey] = data;
-						keystone.createItems(testItems, done);
+	describe('FieldType: ' + name.substr(0, 1).toUpperCase() + name.substr(1) + ': Filter', function () {
+		before(async function () {
+			await List.model.deleteMany({});
+			const testItems = {};
+			if (test.getTestItems.length < 2) {
+				testItems[listKey] = test.getTestItems(List);
+				return new Promise(function (resolve, reject) {
+					keystone.createItems(testItems, function (err) {
+						if (err) return reject(err);
+						resolve();
 					});
-				}
-			});
+				});
+			} else {
+				const data = await new Promise(function (resolve, reject) {
+					test.getTestItems(List, function (err, data) {
+						if (err) return reject(err);
+						resolve(data);
+					});
+				});
+				testItems[listKey] = data;
+				return new Promise(function (resolve, reject) {
+					keystone.createItems(testItems, function (err) {
+						if (err) return reject(err);
+						resolve();
+					});
+				});
+			}
 		});
 		test.testFilters(List, filter);
 	});

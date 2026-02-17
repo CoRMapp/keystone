@@ -1,82 +1,59 @@
-var keystone = require('../../../../index.js');
-var demand = require('must');
+const keystone = require('../../../../index.js');
+const demand = require('must');
 
 keystone.mongoose = require('../../../helpers/getMongooseConnection.js');
 
 keystone.import('../models');
 
-var DependsOn = keystone.list('DependsOn');
+const DependsOn = keystone.list('DependsOn');
 
 describe('Test dependsOn and required', function () {
 
-	it('Ignore required if evalDependsOn is not `true` by setting `state` to `draft`', function (done) {
-		// remove any Post documents
-		DependsOn.model.find({}).remove(function (error) {
-			if (error) {
-				done(error);
-			}
+	it('Ignore required if evalDependsOn is not `true` by setting `state` to `draft`', async function () {
+		await DependsOn.model.deleteMany({});
 
-			var newPost = new DependsOn.model({
-				title: 'new post',
-				state: 'draft'
-			});
-
-			newPost.save(done);
-
+		const newPost = new DependsOn.model({
+			title: 'new post',
+			state: 'draft',
 		});
+
+		await newPost.save();
 	});
 
+	it('Save will fail if `state` set to `published` and `publishedDate` is not defined', async function () {
+		await DependsOn.model.deleteMany({});
 
+		// suppressing console log output
+		const backupLog = console.error;
+		console.error = () => null;
 
-	it('Save will fail if `state` set to `published` and `publishedDate` is not defined', function (done) {
-		// remove any Post documents
-		DependsOn.model.find({}).remove(function (error) {
-			if (error) {
-				done(error);
-			}
-
-			// suppressing console log output
-			const backupLog = console.error;
-			console.error = () => null;
-
-			var newPost = new DependsOn.model({
-				title: 'new post',
-				state: 'published',
-				publishedDate: undefined,
-			});
-
-			newPost.save(function (err) {
-				demand(err).be.a.object();
-
-				console.error = backupLog;
-				done();
-			});
+		const newPost = new DependsOn.model({
+			title: 'new post',
+			state: 'published',
+			publishedDate: undefined,
 		});
 
+		try {
+			await newPost.save();
+			throw new Error('Expected validation error');
+		} catch (err) {
+			demand(err).be.a.object();
+			console.error = backupLog;
+		}
 	});
 
-	it('Save will succeed if `state` set to `published` and `publishedDate` is defined', function (done) {
+	it('Save will succeed if `state` set to `published` and `publishedDate` is defined', async function () {
+		await DependsOn.model.deleteMany({});
 
-		// remove any Post documents
-		DependsOn.model.find({}).remove(function (error) {
-			if (error) {
-				done(error);
-			}
-
-			var newPost = new DependsOn.model({
-				title: 'new post',
-				state: 'published',
-				publishedDate: new Date()
-			});
-			newPost.save(done);
-
+		const newPost = new DependsOn.model({
+			title: 'new post',
+			state: 'published',
+			publishedDate: new Date(),
 		});
+		await newPost.save();
 	});
 
-	after(function (done) {
-		// remove any remaining test data
-		DependsOn.model.find({}).remove(function (error) {
-			done(error);
-		});
+	after(async function () {
+		await DependsOn.model.deleteMany({});
 	});
 });
