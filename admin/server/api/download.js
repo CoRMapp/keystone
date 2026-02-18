@@ -14,7 +14,7 @@ var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
 
 module.exports = function (req, res) {
 
-	var baby = require('babyparse');
+	var baby = require('papaparse');
 	var keystone = req.keystone;
 
 	var filters = req.list.processFilters(req.query.q);

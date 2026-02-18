@@ -1,4 +1,3 @@
-var objectAssign = require('object-assign');
 var fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
 var path = require('path');
 var NameFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'NameFieldTestObject'));
@@ -9,11 +8,11 @@ var BooleanFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'Boolean
 
 module.exports = function UserModelTestConfig (config) {
 	return {
-		name: new NameFieldTestObject(objectAssign({}, config, {fieldName: 'name'})),
-		email: new EmailFieldTestObject(objectAssign({}, config, {fieldName: 'email'})),
-		password: new PasswordFieldTestObject(objectAssign({}, config, {fieldName: 'password'})),
-		resetPasswordKey: new TextFieldTestObject(objectAssign({}, config, {fieldName: 'resetPasswordKey'})),
-		isAdmin: new BooleanFieldTestObject(objectAssign({}, config, {fieldName: 'isAdmin'})),
-		isMember: new BooleanFieldTestObject(objectAssign({}, config, {fieldName: 'isMember'})),
+		name: new NameFieldTestObject(Object.assign({}, config, {fieldName: 'name'})),
+		email: new EmailFieldTestObject(Object.assign({}, config, {fieldName: 'email'})),
+		password: new PasswordFieldTestObject(Object.assign({}, config, {fieldName: 'password'})),
+		resetPasswordKey: new TextFieldTestObject(Object.assign({}, config, {fieldName: 'resetPasswordKey'})),
+		isAdmin: new BooleanFieldTestObject(Object.assign({}, config, {fieldName: 'isAdmin'})),
+		isMember: new BooleanFieldTestObject(Object.assign({}, config, {fieldName: 'isMember'})),
 	};
 };

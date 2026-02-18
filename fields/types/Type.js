@@ -2,7 +2,6 @@
  * Module dependencies.
  */
 const _ = require('lodash');
-const assign = require('object-assign');
 const di = require('asyncdi');
 const marked = require('marked');
 const Path = require('../../lib/path');
@@ -90,7 +89,7 @@ function Field (list, path, options) {
 	let note = null;
 	Object.defineProperty(this, 'note', {
 		get: function () {
-			return (note === null) ? (note = (this.options.note) ? marked(this.options.note) : '') : note;
+			return (note === null) ? (note = (this.options.note) ? marked.parse(this.options.note) : '') : note;
 		},
 	});
 
@@ -114,7 +113,7 @@ Field.prototype.getOptions = function () {
 			}
 		});
 		if (this.getProperties) {
-			assign(this.__options, this.getProperties());
+			Object.assign(this.__options, this.getProperties());
 		}
 		this.__options.hasFilterMethod = this.addFilterToQuery ? true : false;
 		this.__options.defaultValue = this.getDefaultValue();

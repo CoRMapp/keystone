@@ -6,7 +6,6 @@
 const listToArray = require('list-to-array');
 const qs = require('qs');
 const xhr = require('xhr');
-const assign = require('object-assign');
 // Filters for truthy elements in an array
 const truthy = (i) => i;
 
@@ -79,7 +78,7 @@ function buildQueryString (options) {
  */
 const List = function (options) {
 	// TODO these options are possibly unused
-	assign(this, options);
+	Object.assign(this, options);
 	this.columns = getColumns(this);
 	this.expandedDefaultColumns = this.expandColumns(this.defaultColumns);
 	this.defaultColumnPaths = this.expandedDefaultColumns.map(i => i.path).join(',');
@@ -96,7 +95,7 @@ List.prototype.createItem = function (formData, callback) {
 		url: `${Keystone.adminPath}/api/${this.path}/create`,
 		responseType: 'json',
 		method: 'POST',
-		headers: assign({}, Keystone.csrf.header),
+		headers: Object.assign({}, Keystone.csrf.header),
 		body: formData,
 	}, (err, resp, data) => {
 		if (err) callback(err);
@@ -124,7 +123,7 @@ List.prototype.updateItem = function (id, formData, callback) {
 		url: `${Keystone.adminPath}/api/${this.path}/${id}`,
 		responseType: 'json',
 		method: 'POST',
-		headers: assign({}, Keystone.csrf.header),
+		headers: Object.assign({}, Keystone.csrf.header),
 		body: formData,
 	}, (err, resp, data) => {
 		if (err) return callback(err);
@@ -309,7 +308,7 @@ List.prototype.deleteItems = function (itemIds, callback) {
 	xhr({
 		url: url,
 		method: 'POST',
-		headers: assign({}, Keystone.csrf.header),
+		headers: Object.assign({}, Keystone.csrf.header),
 		json: {
 			ids: itemIds,
 		},
@@ -329,7 +328,7 @@ List.prototype.reorderItems = function (item, oldSortOrder, newSortOrder, pageOp
 	xhr({
 		url: url,
 		method: 'POST',
-		headers: assign({}, Keystone.csrf.header),
+		headers: Object.assign({}, Keystone.csrf.header),
 	}, (err, resp, body) => {
 		if (err) return callback(err);
 		try {

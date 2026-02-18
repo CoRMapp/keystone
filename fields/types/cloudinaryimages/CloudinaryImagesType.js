@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const assign = require('object-assign');
 const async = require('async');
 const FieldType = require('../Type');
 const keystone = require('../../../');
@@ -134,7 +133,7 @@ cloudinaryimages.prototype.addToSchema = function (schema) {
 		if (width) options.width = width;
 		if (height) options.height = height;
 		if (typeof other === 'object') {
-			assign(options, other);
+			Object.assign(options, other);
 		}
 		return options;
 	};
@@ -344,7 +343,7 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 			// Cloudinary Image data provided
 			if (value.public_id) {
 				// Default the object with empty values
-				const v = assign(getEmptyValue(), value);
+				const v = Object.assign(getEmptyValue(), value);
 				return next(null, v);
 			} else {
 				// public_id is falsy, remove the value
@@ -355,7 +354,7 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 			let uploadOptions = getUploadOptions();
 			// NOTE: field.options.publicID has been deprecated (tbc)
 			if (field.options.filenameAsPublicID && value.originalname && typeof value.originalname === 'string') {
-				uploadOptions = assign({}, uploadOptions, {
+				uploadOptions = Object.assign({}, uploadOptions, {
 					public_id: value.originalname.substring(0, value.originalname.lastIndexOf('.')),
 				});
 			}

@@ -10,7 +10,6 @@ TODO: this is used by keystone/admin/server/api/s3.js to generate headers, and s
 
 /* eslint-disable */
 const _ = require("lodash");
-const assign = require("object-assign");
 const loggedWarning = false;
 
 /**
@@ -298,11 +297,11 @@ s3file.prototype.generateHeaders = function(item, file, callback) {
 				const _header = {};
 				if (validateHeader(header, callback)) {
 					_header[header.name] = header.value;
-					customHeaders = assign(customHeaders, _header);
+					customHeaders = Object.assign(customHeaders, _header);
 				}
 			});
 		} else if (_.isObject(defaultHeaders)) {
-			customHeaders = assign(customHeaders, defaultHeaders);
+			customHeaders = Object.assign(customHeaders, defaultHeaders);
 		} else {
 			return callback(
 				new Error(
@@ -323,11 +322,11 @@ s3file.prototype.generateHeaders = function(item, file, callback) {
 					const _header = {};
 					if (validateHeader(header, callback)) {
 						_header[header.name] = header.value;
-						customHeaders = assign(customHeaders, _header);
+						customHeaders = Object.assign(customHeaders, _header);
 					}
 				});
 			} else if (_.isObject(computedHeaders)) {
-				customHeaders = assign(customHeaders, computedHeaders);
+				customHeaders = Object.assign(customHeaders, computedHeaders);
 			} else {
 				return callback(
 					new Error(
@@ -340,16 +339,16 @@ s3file.prototype.generateHeaders = function(item, file, callback) {
 				const _header = {};
 				if (validateHeader(header, callback)) {
 					_header[header.name] = header.value;
-					customHeaders = assign(customHeaders, _header);
+					customHeaders = Object.assign(customHeaders, _header);
 				}
 			});
 		} else if (_.isObject(headersOption)) {
-			customHeaders = assign(customHeaders, headersOption);
+			customHeaders = Object.assign(customHeaders, headersOption);
 		}
 	}
 
 	if (validateHeaders(customHeaders, callback)) {
-		headers = assign(headers, customHeaders);
+		headers = Object.assign(headers, customHeaders);
 	}
 
 	return headers;

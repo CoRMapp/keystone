@@ -1,4 +1,3 @@
-var objectAssign = require('object-assign');
 var fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
 var path = require('path');
 var TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
@@ -6,10 +5,10 @@ var MarkdownFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'Markdo
 
 module.exports = function MarkdownModelTestConfig (config) {
 	return {
-		name: new TextFieldTestObject(objectAssign({}, config, {fieldName: 'name'})),
-		fieldA: new MarkdownFieldTestObject(objectAssign({}, config, {fieldName: 'fieldA'})),
-		fieldB: new MarkdownFieldTestObject(objectAssign({}, config, {fieldName: 'fieldB'})),
-		fieldC: new MarkdownFieldTestObject(objectAssign({}, config, {fieldName: 'fieldC'})),
-		fieldD: new TextFieldTestObject(objectAssign({}, config, {fieldName: 'fieldD'})),
+		name: new TextFieldTestObject(Object.assign({}, config, {fieldName: 'name'})),
+		fieldA: new MarkdownFieldTestObject(Object.assign({}, config, {fieldName: 'fieldA'})),
+		fieldB: new MarkdownFieldTestObject(Object.assign({}, config, {fieldName: 'fieldB'})),
+		fieldC: new MarkdownFieldTestObject(Object.assign({}, config, {fieldName: 'fieldC'})),
+		fieldD: new TextFieldTestObject(Object.assign({}, config, {fieldName: 'fieldD'})),
 	};
 };

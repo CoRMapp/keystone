@@ -1,6 +1,5 @@
 const demand = require('must');
 const sinon = require('sinon');
-const assign = require('object-assign');
 const language = require('../../../../lib/middleware/language');
 
 const COOKIE_NAME_ARG = 0;
@@ -17,7 +16,7 @@ const mockRequest = function (acceptLanguage, storedLanguage) {
 		acceptLanguage = options.acceptLanguage;
 	}
 
-	return assign({
+	return Object.assign({
 		locals: {},
 		headers: {
 			'accept-language': acceptLanguage
@@ -36,7 +35,7 @@ const mockResponse = () => ({
 });
 
 const keystoneOptions = (options) => {
-	options = assign({}, options);
+	options = Object.assign({}, options);
 
 	return {
 		get: (key) => options[key]

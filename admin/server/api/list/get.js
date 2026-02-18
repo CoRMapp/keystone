@@ -1,5 +1,4 @@
 var async = require('async');
-var assign = require('object-assign');
 var listToArray = require('list-to-array');
 
 module.exports = function (req, res) {
@@ -24,10 +23,10 @@ module.exports = function (req, res) {
 		catch (e) { } // eslint-disable-line no-empty
 	}
 	if (typeof filters === 'object') {
-		assign(where, req.list.addFiltersToQuery(filters));
+		Object.assign(where, req.list.addFiltersToQuery(filters));
 	}
 	if (req.query.search) {
-		assign(where, req.list.addSearchToQuery(req.query.search));
+		Object.assign(where, req.list.addSearchToQuery(req.query.search));
 	}
 	var query = req.list.model.find(where);
 	if (req.query.populate) {

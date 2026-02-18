@@ -1,4 +1,3 @@
-var objectAssign = require('object-assign');
 var fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
 var path = require('path');
 var TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
@@ -6,8 +5,8 @@ var NumberFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'NumberFi
 
 module.exports = function NumberModelTestConfig (config) {
 	return {
-		name: new TextFieldTestObject(objectAssign({}, config, {fieldName: 'name'})),
-		fieldA: new NumberFieldTestObject(objectAssign({}, config, {fieldName: 'fieldA'})),
-		fieldB: new NumberFieldTestObject(objectAssign({}, config, {fieldName: 'fieldB'})),
+		name: new TextFieldTestObject(Object.assign({}, config, {fieldName: 'name'})),
+		fieldA: new NumberFieldTestObject(Object.assign({}, config, {fieldName: 'fieldA'})),
+		fieldB: new NumberFieldTestObject(Object.assign({}, config, {fieldName: 'fieldB'})),
 	};
 };

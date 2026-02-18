@@ -436,6 +436,8 @@ Markdown.prototype = {
 			var val = this.$textarea.val();
 			if(typeof markdown == 'object') {
 				content = markdown.toHTML(val);
+			}else if(typeof marked == 'object' && typeof marked.parse == 'function') {
+				content = marked.parse(val);
 			}else if(typeof marked == 'function') {
 				content = marked(val);
 			} else {

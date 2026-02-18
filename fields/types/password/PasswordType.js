@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt');
 const FieldType = require('../Type');
 const util = require('util');
 const utils = require('keystone-utils');
@@ -97,7 +97,7 @@ password.prototype.addToSchema = function (schema) {
 			if (err) {
 				return next(err);
 			}
-			bcrypt.hash(item.get(field.path), salt, () => {}, (err, hash) => {
+			bcrypt.hash(item.get(field.path), salt, (err, hash) => {
 				if (err) {
 					return next(err);
 				}

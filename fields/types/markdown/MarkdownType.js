@@ -69,7 +69,7 @@ markdown.prototype.addToSchema = function (schema) {
 		}
 
 		const newMd = sanitizeHtml(value, sanitizeOptions);
-		const newHtml = marked(newMd, markedOptions);
+		const newHtml = marked.parse(newMd, markedOptions);
 
 		// Return early if no changes to save
 		if (newMd === this.get(paths.md) && newHtml === this.get(paths.html)) {

@@ -3,10 +3,8 @@ TODO: Needs Review and Spec
 */
 
 var moment = require('moment');
-var assign = require('object-assign');
-
 module.exports = function (req, res, next) {
-	var baby = require('babyparse');
+	var baby = require('papaparse');
 	var keystone = req.keystone;
 
 	var format = req.params.format.split('.')[1]; // json or csv
@@ -17,10 +15,10 @@ module.exports = function (req, res, next) {
 		catch (e) { /* */ }
 	}
 	if (typeof filters === 'object') {
-		assign(where, req.list.addFiltersToQuery(filters));
+		Object.assign(where, req.list.addFiltersToQuery(filters));
 	}
 	if (req.query.search) {
-		assign(where, req.list.addSearchToQuery(req.query.search));
+		Object.assign(where, req.list.addSearchToQuery(req.query.search));
 	}
 	var query = req.list.model.find(where);
 	if (req.query.populate) {
