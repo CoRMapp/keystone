@@ -9,15 +9,13 @@ import evalDependsOn from '../../utils/evalDependsOn';
  * - Remove dependency on underscore
  */
 
-var lastId = 0;
+let lastId = 0;
 
-function getId () {
-	return 'keystone-html-' + lastId++;
-}
+const getId = () => `keystone-html-${lastId++}`;
 
 // Workaround for #2834 found here https://github.com/tinymce/tinymce/issues/794#issuecomment-203701329
 function removeTinyMCEInstance (editor) {
-	var oldLength = tinymce.editors.length;
+	const oldLength = tinymce.editors.length;
 	tinymce.remove(editor);
 	if (oldLength === tinymce.editors.length) {
 		tinymce.editors.remove(editor);
@@ -42,8 +40,8 @@ module.exports = Field.create({
 	initWysiwyg () {
 		if (!this.props.wysiwyg) return;
 
-		var self = this;
-		var opts = this.getOptions();
+		const self = this;
+		const opts = this.getOptions();
 
 		opts.setup = function (editor) {
 			self.editor = editor;
@@ -97,7 +95,7 @@ module.exports = Field.create({
 	},
 
 	valueChanged  (event) {
-		var content;
+		let content;
 		if (this.editor) {
 			content = this.editor.getContent();
 		} else {
@@ -112,14 +110,14 @@ module.exports = Field.create({
 	},
 
 	getOptions () {
-		var plugins = ['code', 'link'];
-		var options = Object.assign(
+		const plugins = ['code', 'link'];
+		const options = Object.assign(
 			{},
 			Keystone.wysiwyg.options,
 			this.props.wysiwyg
 		);
-		var toolbar = options.overrideToolbar ? '' : 'bold italic | alignleft aligncenter alignright | bullist numlist | outdent indent | removeformat | link ';
-		var i;
+		let toolbar = options.overrideToolbar ? '' : 'bold italic | alignleft aligncenter alignright | bullist numlist | outdent indent | removeformat | link ';
+		let i;
 
 		if (options.enableImages) {
 			plugins.push('image');
@@ -132,20 +130,20 @@ module.exports = Field.create({
 		}
 
 		if (options.additionalButtons) {
-			var additionalButtons = options.additionalButtons.split(',');
+			const additionalButtons = options.additionalButtons.split(',');
 			for (i = 0; i < additionalButtons.length; i++) {
-				toolbar += (' | ' + additionalButtons[i]);
+				toolbar += (` | ${additionalButtons[i]}`);
 			}
 		}
 		if (options.additionalPlugins) {
-			var additionalPlugins = options.additionalPlugins.split(',');
+			const additionalPlugins = options.additionalPlugins.split(',');
 			for (i = 0; i < additionalPlugins.length; i++) {
 				plugins.push(additionalPlugins[i]);
 			}
 		}
 		if (options.importcss) {
 			plugins.push('importcss');
-			var importcssOptions = {
+			const importcssOptions = {
 				content_css: options.importcss,
 				importcss_append: true,
 				importcss_merge_classes: true,
@@ -158,8 +156,8 @@ module.exports = Field.create({
 			toolbar += ' | code';
 		}
 
-		var opts = {
-			selector: '#' + this.state.id,
+		const opts = {
+			selector: `#${this.state.id}`,
 			toolbar: toolbar,
 			plugins: plugins,
 			menubar: options.menubar || false,
@@ -168,7 +166,7 @@ module.exports = Field.create({
 		};
 
 		if (this.shouldRenderField()) {
-			opts.uploadimage_form_url = options.enableS3Uploads ? Keystone.adminPath + '/api/s3/upload' : Keystone.adminPath + '/api/cloudinary/upload';
+			opts.uploadimage_form_url = options.enableS3Uploads ? `${Keystone.adminPath}/api/s3/upload` : `${Keystone.adminPath}/api/cloudinary/upload`;
 		} else {
 			Object.assign(opts, {
 				mode: 'textareas',
@@ -187,8 +185,8 @@ module.exports = Field.create({
 	},
 
 	renderField () {
-		var className = this.state.isFocused ? 'is-focused' : '';
-		var style = {
+		const className = this.state.isFocused ? 'is-focused' : '';
+		const style = {
 			height: this.props.height,
 		};
 		return (

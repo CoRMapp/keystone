@@ -2,7 +2,7 @@ import React from 'react';
 import ItemsTableCell from '../../components/ItemsTableCell';
 import ItemsTableValue from '../../components/ItemsTableValue';
 
-var MarkdownColumn = React.createClass({
+const MarkdownColumn = React.createClass({
 	displayName: 'MarkdownColumn',
 	propTypes: {
 		col: React.PropTypes.object,

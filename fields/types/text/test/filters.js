@@ -1,49 +1,47 @@
-var demand = require('must');
+const demand = require('must');
 
-exports.initList = function (List) {
+exports.initList = (List) => {
 	List.add({
 		text1: String,
 		text2: String,
 	});
 };
 
-exports.getTestItems = function () {
-	return [
-		{},
-		{ text1: '' },
-		{ text1: ' ' },
-		{ text1: 'abc' },
-		{ text1: 'ABCD' },
-		{ text1: 'abcd', text2: '123' },
-		{ text1: 'Ab Cd', text2: '1 2 3' },
-		{ text1: 'a/b\c@d' },
-	];
-};
+exports.getTestItems = () => [
+	{},
+	{ text1: '' },
+	{ text1: ' ' },
+	{ text1: 'abc' },
+	{ text1: 'ABCD' },
+	{ text1: 'abcd', text2: '123' },
+	{ text1: 'Ab Cd', text2: '1 2 3' },
+	{ text1: 'a/b\c@d' },
+];
 
-exports.testFilters = function (List, filter) {
+exports.testFilters = (List, filter) => {
 
-	describe('match', function () {
+	describe('match', () => {
 
-		it('should find exact string matches', function (done) {
+		it('should find exact string matches', (done) => {
 			filter({
 				text1: {
 					mode: 'exactly',
 					value: 'abc',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql(['abc']);
 				done();
 			});
 		});
 
-		it('should invert exact string matches', function (done) {
+		it('should invert exact string matches', (done) => {
 			filter({
 				text1: {
 					mode: 'exactly',
 					inverted: true,
 					value: 'abc',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql([
 					undefined,
 					'',
@@ -57,26 +55,26 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should find empty and null string matches', function (done) {
+		it('should find empty and null string matches', (done) => {
 			filter({
 				text1: {
 					mode: 'exactly',
 					value: '',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql([undefined, '']);
 				done();
 			});
 		});
 
-		it('should invert empty and null string matches', function (done) {
+		it('should invert empty and null string matches', (done) => {
 			filter({
 				text1: {
 					mode: 'exactly',
 					inverted: true,
 					value: '',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql([
 					' ',
 					'abc',
@@ -89,56 +87,56 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should find whitespace matches', function (done) {
+		it('should find whitespace matches', (done) => {
 			filter({
 				text1: {
 					mode: 'exactly',
 					value: ' ',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql([' ']);
 				done();
 			});
 		});
 
-		it('should work with special characters', function (done) {
+		it('should work with special characters', (done) => {
 			filter({
 				text1: {
 					mode: 'exactly',
 					value: 'a/b\c@d',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql(['a/b\c@d']);
 				done();
 			});
 		});
 
-		it('should be case insensitive by default', function (done) {
+		it('should be case insensitive by default', (done) => {
 			filter({
 				text1: {
 					mode: 'exactly',
 					value: 'abcd',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql(['ABCD', 'abcd']);
 				done();
 			});
 		});
 
-		it('should allow case sensitivity', function (done) {
+		it('should allow case sensitivity', (done) => {
 			filter({
 				text1: {
 					caseSensitive: true,
 					mode: 'exactly',
 					value: 'abcd',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql(['abcd']);
 				done();
 			});
 		});
 
-		it('should combine correctly', function (done) {
+		it('should combine correctly', (done) => {
 			filter({
 				text1: {
 					mode: 'exactly',
@@ -148,22 +146,22 @@ exports.testFilters = function (List, filter) {
 					mode: 'exactly',
 					value: '123',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql(['abcd']);
 				done();
 			});
 		});
 	});
 
-	describe('beginsWith', function () {
+	describe('beginsWith', () => {
 
-		it('should match the start of strings', function (done) {
+		it('should match the start of strings', (done) => {
 			filter({
 				text1: {
 					mode: 'beginsWith',
 					value: 'abc',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql([
 					'abc',
 					'ABCD',
@@ -173,14 +171,14 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should invert correctly', function (done) {
+		it('should invert correctly', (done) => {
 			filter({
 				text1: {
 					mode: 'beginsWith',
 					inverted: true,
 					value: 'abc',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql([
 					undefined,
 					'',
@@ -193,15 +191,15 @@ exports.testFilters = function (List, filter) {
 		});
 	});
 
-	describe('endsWith', function () {
+	describe('endsWith', () => {
 
-		it('should match the end of strings', function (done) {
+		it('should match the end of strings', (done) => {
 			filter({
 				text1: {
 					mode: 'endsWith',
 					value: 'cd',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql([
 					'ABCD',
 					'abcd',
@@ -211,14 +209,14 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should invert correctly', function (done) {
+		it('should invert correctly', (done) => {
 			filter({
 				text1: {
 					mode: 'endsWith',
 					inverted: true,
 					value: 'cd',
 				},
-			}, 'text1', function (results) {
+			}, 'text1', (results) => {
 				demand(results).eql([
 					undefined,
 					'',

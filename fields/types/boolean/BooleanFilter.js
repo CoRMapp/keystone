@@ -6,13 +6,13 @@ const VALUE_OPTIONS = [
 	{ label: 'Is NOT Checked', value: false },
 ];
 
-function getDefaultValue () {
+const getDefaultValue = () => {
 	return {
 		value: true,
 	};
-}
+};
 
-var BooleanFilter = React.createClass({
+const BooleanFilter = React.createClass({
 	propTypes: {
 		filter: React.PropTypes.shape({
 			value: React.PropTypes.bool,

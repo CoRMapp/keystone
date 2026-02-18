@@ -1,9 +1,9 @@
-var demand = require('must');
-var TextType = require('../../text/TextType');
-var DateType = require('../../date/DateType');
-var DatetimeType = require('../DatetimeType');
+const demand = require('must');
+const TextType = require('../../text/TextType');
+const DateType = require('../../date/DateType');
+const DatetimeType = require('../DatetimeType');
 
-exports.initList = function (List) {
+exports.initList = (List) => {
 	List.add({
 		datetime: DatetimeType,
 		customFormat: {
@@ -16,7 +16,7 @@ exports.initList = function (List) {
 	});
 };
 
-exports.testFieldType = function (List) {
+exports.testFieldType = (List) => {
 	describe('invalid options', function () {
 		it('should throw when format is not a string', function (done) {
 			try {
@@ -32,7 +32,7 @@ exports.testFieldType = function (List) {
 
 	describe('updateItem', function () {
 		it('should update the date', function (done) {
-			var testItem = new List.model();
+			const testItem = new List.model();
 			List.fields.datetime.updateItem(testItem, {
 				datetime: '2015-01-01 01:01:01 am',
 			}, function () {
@@ -42,7 +42,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should null value with empty string', function (done) {
-			var testItem = new List.model();
+			const testItem = new List.model();
 			testItem.datetime = '2014-12-31T14:01:01.000Z';
 			List.fields.datetime.updateItem(testItem, {
 				datetime: '',
@@ -53,7 +53,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should null value when null', function (done) {
-			var testItem = new List.model();
+			const testItem = new List.model();
 			testItem.datetime = '2014-12-31T14:01:01.000Z';
 			List.fields.datetime.updateItem(testItem, {
 				datetime: null,
@@ -64,7 +64,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should not null value when undefined', function (done) {
-			var testItem = new List.model();
+			const testItem = new List.model();
 			testItem.datetime = '2015-01-01 01:01:01 am';
 			List.fields.datetime.updateItem(testItem, {
 				datetime: undefined,
@@ -77,28 +77,28 @@ exports.testFieldType = function (List) {
 
 	describe('getInputFromData', function () {
 		it('should get input from data', function () {
-			var value = List.fields.datetime.getInputFromData({
+			const value = List.fields.datetime.getInputFromData({
 				datetime: '2016-02-25 04:45:00',
 			});
 			demand(value).to.equal('2016-02-25 04:45:00');
 		});
 
 		it('should get nested input from data', function () {
-			var value = List.fields['nested.datetime'].getInputFromData({
+			const value = List.fields['nested.datetime'].getInputFromData({
 				nested: { datetime: '2016-02-25 04:45:00' },
 			});
 			demand(value).to.equal('2016-02-25 04:45:00');
 		});
 
 		it('should get flat nested input from data', function () {
-			var value = List.fields['nested.datetime'].getInputFromData({
+			const value = List.fields['nested.datetime'].getInputFromData({
 				'nested.datetime': '2016-02-25 04:45:00',
 			});
 			demand(value).to.equal('2016-02-25 04:45:00');
 		});
 
 		it('should get split input from data', function () {
-			var value = List.fields.datetime.getInputFromData({
+			const value = List.fields.datetime.getInputFromData({
 				datetime_date: '2016-02-25',
 				datetime_time: '04:45:00',
 			});
@@ -106,7 +106,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should get nested split input from data', function () {
-			var value = List.fields['nested.datetime'].getInputFromData({
+			const value = List.fields['nested.datetime'].getInputFromData({
 				nested: {
 					datetime_date: '2016-02-25',
 					datetime_time: '04:45:00',
@@ -116,7 +116,7 @@ exports.testFieldType = function (List) {
 		});
 
 		it('should get flat nested split input from data', function () {
-			var value = List.fields['nested.datetime'].getInputFromData({
+			const value = List.fields['nested.datetime'].getInputFromData({
 				'nested.datetime_date': '2016-02-25',
 				'nested.datetime_time': '04:45:00',
 			});

@@ -1,35 +1,33 @@
-var demand = require('must');
-var TextArrayType = require('../TextArrayType');
+const demand = require('must');
+const TextArrayType = require('../TextArrayType');
 
-exports.initList = function (List) {
+exports.initList = (List) => {
 	List.add({
 		textarr: TextArrayType,
 	});
 };
 
-exports.getTestItems = function () {
-	return [
-		{},
-		{ textarr: [] },
-		{ textarr: [''] },
-		{ textarr: ['', ''] },
-		{ textarr: [' '] },
-		{ textarr: ['a', 'b', 'c'] },
-		{ textarr: ['A', 'B', 'C'] },
-		{ textarr: ['abc', 'def'] },
-		{ textarr: ['ace', 'gik'] },
-		{ textarr: [1, 2, 3] },
-	];
-};
+exports.getTestItems = () => [
+	{},
+	{ textarr: [] },
+	{ textarr: [''] },
+	{ textarr: ['', ''] },
+	{ textarr: [' '] },
+	{ textarr: ['a', 'b', 'c'] },
+	{ textarr: ['A', 'B', 'C'] },
+	{ textarr: ['abc', 'def'] },
+	{ textarr: ['ace', 'gik'] },
+	{ textarr: [1, 2, 3] },
+];
 
-exports.testFilters = function (List, filter) {
-	describe('no presence specified', function () {
-		it('should filter a string', function (done) {
+exports.testFilters = (List, filter) => {
+	describe('no presence specified', () => {
+		it('should filter a string', (done) => {
 			filter({
 				textarr: {
 					value: 'a',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['a', 'b', 'c'],
 					['A', 'B', 'C'],
@@ -40,13 +38,13 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter case sensitively', function (done) {
+		it('should filter case sensitively', (done) => {
 			filter({
 				textarr: {
 					value: 'a',
 					caseSensitive: true,
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['a', 'b', 'c'],
 					['abc', 'def'],
@@ -56,12 +54,12 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter a number', function (done) {
+		it('should filter a number', (done) => {
 			filter({
 				textarr: {
 					value: 1,
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['1', '2', '3'],
 				]);
@@ -69,13 +67,13 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter a string exactly', function (done) {
+		it('should filter a string exactly', (done) => {
 			filter({
 				textarr: {
 					value: 'a',
 					mode: 'exactly',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['a', 'b', 'c'],
 					['A', 'B', 'C'],
@@ -84,13 +82,13 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter for strings beginning with something', function (done) {
+		it('should filter for strings beginning with something', (done) => {
 			filter({
 				textarr: {
 					value: 'ab',
 					mode: 'beginsWith',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['abc', 'def'],
 				]);
@@ -98,13 +96,13 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter for strings ending with something', function (done) {
+		it('should filter for strings ending with something', (done) => {
 			filter({
 				textarr: {
 					value: 'bc',
 					mode: 'endsWith',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['abc', 'def'],
 				]);
@@ -112,35 +110,35 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter arrays with empty values', function (done) {
+		it('should filter arrays with empty values', (done) => {
 			filter({
 				textarr: {},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results.length).be(4);
 				done();
 			});
 		});
 	});
 
-	describe('"none" present', function () {
-		it('should not filter empty fields out', function (done) {
+	describe('"none" present', () => {
+		it('should not filter empty fields out', (done) => {
 			filter({
 				textarr: {
 					presence: 'none',
 					value: 'a',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results.length).be(6);
 				done();
 			});
 		});
 
-		it('should filter for non-empty fields', function (done) {
+		it('should filter for non-empty fields', (done) => {
 			filter({
 				textarr: {
 					presence: 'none',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results.length).be(6);
 				done();
 			});
@@ -150,14 +148,14 @@ exports.testFilters = function (List, filter) {
 	});
 
 	// Should behave exactly like no presence specified
-	describe('"some" present', function () {
-		it('should filter a string', function (done) {
+	describe('"some" present', () => {
+		it('should filter a string', (done) => {
 			filter({
 				textarr: {
 					presence: 'some',
 					value: 'a',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['a', 'b', 'c'],
 					['A', 'B', 'C'],
@@ -168,14 +166,14 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter case sensitively', function (done) {
+		it('should filter case sensitively', (done) => {
 			filter({
 				textarr: {
 					presence: 'some',
 					value: 'a',
 					caseSensitive: true,
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['a', 'b', 'c'],
 					['abc', 'def'],
@@ -185,13 +183,13 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter a number', function (done) {
+		it('should filter a number', (done) => {
 			filter({
 				textarr: {
 					presence: 'some',
 					value: 1,
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['1', '2', '3'],
 				]);
@@ -199,14 +197,14 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter a string exactly', function (done) {
+		it('should filter a string exactly', (done) => {
 			filter({
 				textarr: {
 					presence: 'some',
 					value: 'a',
 					mode: 'exactly',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['a', 'b', 'c'],
 					['A', 'B', 'C'],
@@ -215,14 +213,14 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter for strings beginning with something', function (done) {
+		it('should filter for strings beginning with something', (done) => {
 			filter({
 				textarr: {
 					presence: 'some',
 					value: 'ab',
 					mode: 'beginsWith',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['abc', 'def'],
 				]);
@@ -230,14 +228,14 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter for strings ending with something', function (done) {
+		it('should filter for strings ending with something', (done) => {
 			filter({
 				textarr: {
 					presence: 'some',
 					value: 'bc',
 					mode: 'endsWith',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results).eql([
 					['abc', 'def'],
 				]);
@@ -245,12 +243,12 @@ exports.testFilters = function (List, filter) {
 			});
 		});
 
-		it('should filter arrays with empty values', function (done) {
+		it('should filter arrays with empty values', (done) => {
 			filter({
 				textarr: {
 					presence: 'some',
 				},
-			}, 'textarr', function (results) {
+			}, 'textarr', (results) => {
 				demand(results.length).be(4);
 				done();
 			});

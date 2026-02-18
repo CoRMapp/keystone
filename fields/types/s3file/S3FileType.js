@@ -9,9 +9,9 @@ TODO: this is used by keystone/admin/server/api/s3.js to generate headers, and s
 */
 
 /* eslint-disable */
-var _ = require("lodash");
-var assign = require("object-assign");
-var loggedWarning = false;
+const _ = require("lodash");
+const assign = require("object-assign");
+const loggedWarning = false;
 
 /**
  * S3File FieldType Constructor
@@ -70,24 +70,24 @@ Object.defineProperty(s3file.prototype, "s3config", {
  * Registers the field on the List's Mongoose Schema.
  */
 s3file.prototype.addToSchema = function(schema) {
-	var knox = require("knox-s3");
-	var field = this;
+	const knox = require("knox-s3");
+	const field = this;
 
-	var paths = (this.paths = {
+	const paths = (this.paths = {
 		// fields
-		filename: this.path + ".filename",
-		originalname: this.path + ".originalname",
-		path: this.path + ".path",
-		size: this.path + ".size",
-		filetype: this.path + ".filetype",
-		url: this.path + ".url",
+		filename: `${this.path}.filename`,
+		originalname: `${this.path}.originalname`,
+		path: `${this.path}.path`,
+		size: `${this.path}.size`,
+		filetype: `${this.path}.filetype`,
+		url: `${this.path}.url`,
 		// virtuals
-		exists: this.path + ".exists",
-		upload: this.path + "_upload",
-		action: this.path + "_action"
+		exists: `${this.path}.exists`,
+		upload: `${this.path}_upload`,
+		action: `${this.path}_action`
 	});
 
-	var schemaPaths = this._path.addTo(
+	const schemaPaths = this._path.addTo(
 		{},
 		{
 			filename: String,
@@ -101,16 +101,14 @@ s3file.prototype.addToSchema = function(schema) {
 
 	schema.add(schemaPaths);
 
-	var exists = function(item) {
-		return item.get(paths.url) ? true : false;
-	};
+	const exists = (item) => item.get(paths.url) ? true : false;
 
 	// The .exists virtual indicates whether a file is stored
 	schema.virtual(paths.exists).get(function() {
 		return schemaMethods.exists.apply(this);
 	});
 
-	var reset = function(item) {
+	const reset = (item) => {
 		item.set(field.path, {
 			filename: "",
 			originalname: "",
@@ -121,7 +119,7 @@ s3file.prototype.addToSchema = function(schema) {
 		});
 	};
 
-	var schemaMethods = {
+	const schemaMethods = {
 		exists: function() {
 			return exists(this);
 		},
@@ -140,29 +138,25 @@ s3file.prototype.addToSchema = function(schema) {
 		 */
 		delete: function() {
 			try {
-				var client = knox.createClient(field.s3config);
+				const client = knox.createClient(field.s3config);
 				client.deleteFile(
 					this.get(paths.path) + this.get(paths.filename),
-					function(err, res) {
-						return res ? res.resume() : false;
-					}
+					(err, res) => res ? res.resume() : false
 				); // eslint-disable-line handle-callback-err
 			} catch (e) {} // eslint-disable-line no-empty
 			reset(this);
 		}
 	};
 
-	_.forEach(schemaMethods, function(fn, key) {
+	_.forEach(schemaMethods, (fn, key) => {
 		field.underscoreMethod(key, fn);
 	});
 
 	// expose a method on the field to call schema methods
-	this.apply = function(item, method) {
-		return schemaMethods[method].apply(
-			item,
-			Array.prototype.slice.call(arguments, 2)
-		);
-	};
+	this.apply = (item, method) => schemaMethods[method].apply(
+		item,
+		Array.prototype.slice.call(arguments, 2)
+	);
 
 	this.bindUnderscoreMethods();
 };
@@ -217,45 +211,33 @@ s3file.prototype.updateItem = function(item, data, callback) {
  * @param callback {Function} a callback function to call when validation is complete
  * @return {Boolean}
  */
-var validateHeader = function(header, callback) {
-	var HEADER_NAME_KEY = "name";
-	var HEADER_VALUE_KEY = "value";
-	var validKeys = [HEADER_NAME_KEY, HEADER_VALUE_KEY];
-	var filteredKeys;
+const validateHeader = (header, callback) => {
+	const HEADER_NAME_KEY = "name";
+	const HEADER_VALUE_KEY = "value";
+	const validKeys = [HEADER_NAME_KEY, HEADER_VALUE_KEY];
 
 	if (!_.has(header, HEADER_NAME_KEY)) {
 		return callback(
 			new Error(
-				'Unsupported Header option: missing required key "' +
-					HEADER_NAME_KEY +
-					'" in ' +
-					JSON.stringify(header)
+				`Unsupported Header option: missing required key "${HEADER_NAME_KEY}" in ${JSON.stringify(header)}`
 			)
 		);
 	}
 	if (!_.has(header, HEADER_VALUE_KEY)) {
 		return callback(
 			new Error(
-				'Unsupported Header option: missing required key "' +
-					HEADER_VALUE_KEY +
-					'" in ' +
-					JSON.stringify(header)
+				`Unsupported Header option: missing required key "${HEADER_VALUE_KEY}" in ${JSON.stringify(header)}`
 			)
 		);
 	}
 
-	filteredKeys = _.filter(_.keys(header), function(key) {
-		return _.indexOf(validKeys, key) > -1;
-	});
+	const filteredKeys = _.filter(_.keys(header), (key) => _.indexOf(validKeys, key) > -1);
 
-	_.forEach(filteredKeys, function(key) {
+	_.forEach(filteredKeys, (key) => {
 		if (!_.isString(header[key])) {
 			return callback(
 				new Error(
-					"Unsupported Header option: value for " +
-						key +
-						" header must be a String " +
-						header[key].toString()
+					`Unsupported Header option: value for ${key} header must be a String ${header[key].toString()}`
 				)
 			);
 		}
@@ -270,23 +252,22 @@ var validateHeader = function(header, callback) {
  * @param callback {Function} a callback function to call when validation is complete
  * @return {Boolean}
  */
-var validateHeaders = function(headers, callback) {
-	var _headers = [];
+const validateHeaders = (headers, callback) => {
+	const _headers = [];
 
 	if (!_.isObject(headers)) {
 		return callback(
 			new Error(
-				"Unsupported Header option: headers must be an Object " +
-					JSON.stringify(headers)
+				`Unsupported Header option: headers must be an Object ${JSON.stringify(headers)}`
 			)
 		);
 	}
 
-	_.forEach(headers, function(value, key) {
+	_.forEach(headers, (value, key) => {
 		_headers.push({ name: key, value: value });
 	});
 
-	_.forEach(_headers, function(header) {
+	_.forEach(_headers, (header) => {
 		validateHeader(header, callback);
 	});
 
@@ -301,22 +282,20 @@ var validateHeaders = function(headers, callback) {
  * @return {Object}
  */
 s3file.prototype.generateHeaders = function(item, file, callback) {
-	var field = this;
-	var filetype = file.mimetype || file.type;
-	var headers = {
+	const field = this;
+	const filetype = file.mimetype || file.type;
+	let headers = {
 		"Content-Type": filetype,
 		"x-amz-acl": "public-read"
 	};
-	var customHeaders = {};
-	var headersOption = {};
-	var computedHeaders;
-	var defaultHeaders;
+	let customHeaders = {};
+	let headersOption = {};
 
 	if (_.has(field.s3config, "default headers")) {
-		defaultHeaders = field.s3config["default headers"];
+		const defaultHeaders = field.s3config["default headers"];
 		if (_.isArray(defaultHeaders)) {
-			_.forEach(defaultHeaders, function(header) {
-				var _header = {};
+			_.forEach(defaultHeaders, (header) => {
+				const _header = {};
 				if (validateHeader(header, callback)) {
 					_header[header.name] = header.value;
 					customHeaders = assign(customHeaders, _header);
@@ -327,8 +306,7 @@ s3file.prototype.generateHeaders = function(item, file, callback) {
 		} else {
 			return callback(
 				new Error(
-					"Unsupported Header option: defaults headers must be either an Object or Array " +
-						JSON.stringify(defaultHeaders)
+					`Unsupported Header option: defaults headers must be either an Object or Array ${JSON.stringify(defaultHeaders)}`
 				)
 			);
 		}
@@ -338,11 +316,11 @@ s3file.prototype.generateHeaders = function(item, file, callback) {
 		headersOption = field.options.headers;
 
 		if (_.isFunction(headersOption)) {
-			computedHeaders = headersOption.call(field, item, file);
+			const computedHeaders = headersOption.call(field, item, file);
 
 			if (_.isArray(computedHeaders)) {
-				_.forEach(computedHeaders, function(header) {
-					var _header = {};
+				_.forEach(computedHeaders, (header) => {
+					const _header = {};
 					if (validateHeader(header, callback)) {
 						_header[header.name] = header.value;
 						customHeaders = assign(customHeaders, _header);
@@ -353,14 +331,13 @@ s3file.prototype.generateHeaders = function(item, file, callback) {
 			} else {
 				return callback(
 					new Error(
-						"Unsupported Header option: computed headers must be either an Object or Array " +
-							JSON.stringify(computedHeaders)
+						`Unsupported Header option: computed headers must be either an Object or Array ${JSON.stringify(computedHeaders)}`
 					)
 				);
 			}
 		} else if (_.isArray(headersOption)) {
-			_.forEach(headersOption, function(header) {
-				var _header = {};
+			_.forEach(headersOption, (header) => {
+				const _header = {};
 				if (validateHeader(header, callback)) {
 					_header[header.name] = header.value;
 					customHeaders = assign(customHeaders, _header);
@@ -382,16 +359,15 @@ s3file.prototype.generateHeaders = function(item, file, callback) {
  * Uploads the file for this field
  */
 s3file.prototype.uploadFile = function(item, file, update, callback) {
-	var knox = require("knox-s3");
-	var field = this;
-	var path = field.options.s3path ? field.options.s3path + "/" : "";
-	var prefix = field.options.datePrefix
-		? moment().format(field.options.datePrefix) + "-"
+	const knox = require("knox-s3");
+	const field = this;
+	let path = field.options.s3path ? `${field.options.s3path}/` : "";
+	const prefix = field.options.datePrefix
+		? `${moment().format(field.options.datePrefix)}-`
 		: "";
-	var filename = prefix + file.name;
-	var originalname = file.originalname;
-	var filetype = file.mimetype || file.type;
-	var headers;
+	let filename = prefix + file.name;
+	const originalname = file.originalname;
+	const filetype = file.mimetype || file.type;
 
 	if (typeof update === "function") {
 		callback = update;
@@ -402,10 +378,10 @@ s3file.prototype.uploadFile = function(item, file, update, callback) {
 		field.options.allowedTypes &&
 		field.options.allowedTypes.indexOf(filetype) === -1
 	) {
-		return callback(new Error("Unsupported File Type: " + filetype));
+		return callback(new Error(`Unsupported File Type: ${filetype}`));
 	}
 
-	var doUpload = function() {
+	const doUpload = () => {
 		if (typeof field.options.path === "function") {
 			path = field.options.path(item, path);
 		}
@@ -414,29 +390,29 @@ s3file.prototype.uploadFile = function(item, file, update, callback) {
 			filename = field.options.filename(item, filename, originalname);
 		}
 
-		headers = field.generateHeaders(item, file, callback);
+		const headers = field.generateHeaders(item, file, callback);
 
 		knox
 			.createClient(field.s3config)
-			.putFile(file.path, path + filename, headers, function(err, res) {
+			.putFile(file.path, path + filename, headers, (err, res) => {
 				if (err) return callback(err);
 				if (res) {
 					if (res.statusCode !== 200) {
 						return callback(
-							new Error("Amazon returned Http Code: " + res.statusCode)
+							new Error(`Amazon returned Http Code: ${res.statusCode}`)
 						);
 					} else {
 						res.resume();
 					}
 				}
 
-				var protocol =
-					(field.s3config.protocol && field.s3config.protocol + ":") || "";
-				var url = res.req.url
+				const protocol =
+					(field.s3config.protocol && `${field.s3config.protocol}:`) || "";
+				const url = res.req.url
 					.replace(/^https?:/i, protocol)
 					.replace(/%25/g, "%");
 
-				var fileData = {
+				const fileData = {
 					filename: filename,
 					originalname: originalname,
 					path: path,
@@ -453,7 +429,7 @@ s3file.prototype.uploadFile = function(item, file, update, callback) {
 			});
 	};
 
-	this.callHook("pre:upload", item, file, function(err) {
+	this.callHook("pre:upload", item, file, (err) => {
 		if (err) return callback(err);
 		doUpload();
 	});
@@ -467,7 +443,7 @@ s3file.prototype.uploadFile = function(item, file, update, callback) {
  * - `field.paths.upload` in `req.files` (uploads the file to s3file)
  */
 s3file.prototype.getRequestHandler = function(item, req, paths, callback) {
-	var field = this;
+	const field = this;
 
 	if (utils.isFunction(paths)) {
 		callback = paths;
@@ -476,11 +452,11 @@ s3file.prototype.getRequestHandler = function(item, req, paths, callback) {
 		paths = field.paths;
 	}
 
-	callback = callback || function() {};
+	callback = callback || (() => {});
 
-	return function() {
+	return () => {
 		if (req.body) {
-			var action = req.body[paths.action];
+			const action = req.body[paths.action];
 
 			if (/^(delete|reset)$/.test(action)) {
 				field.apply(item, action);

@@ -2,7 +2,7 @@ import React from 'react';
 import ItemsTableCell from '../../components/ItemsTableCell';
 import ItemsTableValue from '../../components/ItemsTableValue';
 
-var SelectColumn = React.createClass({
+const SelectColumn = React.createClass({
 	displayName: 'SelectColumn',
 	propTypes: {
 		col: React.PropTypes.object,

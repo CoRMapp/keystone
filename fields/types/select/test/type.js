@@ -1,7 +1,7 @@
-var demand = require('must');
-var SelectType = require('../SelectType');
+const demand = require('must');
+const SelectType = require('../SelectType');
 
-exports.initList = function (List) {
+exports.initList = (List) => {
 	List.add({
 		select: { type: SelectType, options: 'one, two, three' },
 		nested: {
@@ -23,9 +23,9 @@ exports.initList = function (List) {
 	});
 };
 
-exports.testFieldType = function (List) {
-	describe('invalid options', function () {
-		it('should throw when no options are passed', function (done) {
+exports.testFieldType = (List) => {
+	describe('invalid options', () => {
+		it('should throw when no options are passed', (done) => {
 			try {
 				List.add({
 					noOptions: { type: SelectType },
@@ -37,249 +37,249 @@ exports.testFieldType = function (List) {
 		});
 	});
 
-	describe('validateInput', function () {
-		it('should validate top level selects', function (done) {
+	describe('validateInput', () => {
+		it('should validate top level selects', (done) => {
 			List.fields.select.validateInput({
 				select: 'one',
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should validate nested selects', function (done) {
+		it('should validate nested selects', (done) => {
 			List.fields['nested.select'].validateInput({
 				nested: {
 					select: 'one',
 				},
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should validate undefined input', function (done) {
+		it('should validate undefined input', (done) => {
 			List.fields.select.validateInput({
 				select: undefined,
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should validate null input', function (done) {
+		it('should validate null input', (done) => {
 			List.fields.select.validateInput({
 				select: null,
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should validate an empty string', function (done) {
+		it('should validate an empty string', (done) => {
 			List.fields.select.validateInput({
 				select: '',
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should validate an empty string if specified as an option', function (done) {
+		it('should validate an empty string if specified as an option', (done) => {
 			List.fields.emptyStringSelect.validateInput({
 				emptyStringSelect: '',
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should invalidate numbers', function (done) {
+		it('should invalidate numbers', (done) => {
 			List.fields.select.validateInput({
 				select: 1,
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.false();
 				done();
 			});
 		});
 
-		it('should validate numbers when numeric is set to true', function (done) {
+		it('should validate numbers when numeric is set to true', (done) => {
 			List.fields.numeric.validateInput({
 				numeric: 1,
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should validate number strings when numeric is set to true', function (done) {
+		it('should validate number strings when numeric is set to true', (done) => {
 			List.fields.numeric.validateInput({
 				numeric: '1',
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should invalidate non existing options', function (done) {
+		it('should invalidate non existing options', (done) => {
 			List.fields.select.validateInput({
 				select: 'four',
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.false();
 				done();
 			});
 		});
 
-		it('should invalidate two selected options', function (done) {
+		it('should invalidate two selected options', (done) => {
 			List.fields.select.validateInput({
 				select: 'one, two',
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.false();
 				done();
 			});
 		});
 
-		it('should invalidate true', function (done) {
+		it('should invalidate true', (done) => {
 			List.fields.select.validateInput({
 				select: true,
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.false();
 				done();
 			});
 		});
 
-		it('should invalidate false', function (done) {
+		it('should invalidate false', (done) => {
 			List.fields.select.validateInput({
 				select: false,
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.false();
 				done();
 			});
 		});
 	});
 
-	describe('validateRequiredInput', function () {
-		it('should validate a selected option', function (done) {
-			var testItem = new List.model();
+	describe('validateRequiredInput', () => {
+		it('should validate a selected option', (done) => {
+			const testItem = new List.model();
 			List.fields.select.validateRequiredInput(testItem, {
 				select: 'one',
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should validate a nested select', function (done) {
-			var testItem = new List.model();
+		it('should validate a nested select', (done) => {
+			const testItem = new List.model();
 			List.fields['nested.select'].validateRequiredInput(testItem, {
 				nested: {
 					select: 'one',
 				},
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should validate a nested select with a flat path', function (done) {
+		it('should validate a nested select with a flat path', (done) => {
 			List.fields.select.validateInput({
 				'nested.select': ['a', 'b'],
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should invalidate an empty string', function (done) {
-			var testItem = new List.model();
+		it('should invalidate an empty string', (done) => {
+			const testItem = new List.model();
 			List.fields.select.validateRequiredInput(testItem, {
 				select: '',
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.false();
 				done();
 			});
 		});
 
-		it('should invalidate undefined', function (done) {
-			var testItem = new List.model();
+		it('should invalidate undefined', (done) => {
+			const testItem = new List.model();
 			List.fields.select.validateRequiredInput(testItem, {
 				select: undefined,
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.false();
 				done();
 			});
 		});
 
-		it('should validate undefined if a value exists', function (done) {
-			var testItem = new List.model({
+		it('should validate undefined if a value exists', (done) => {
+			const testItem = new List.model({
 				select: 'one',
 			});
 			List.fields.select.validateRequiredInput(testItem, {
 				select: undefined,
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.true();
 				done();
 			});
 		});
 
-		it('should invalidate null', function (done) {
-			var testItem = new List.model();
+		it('should invalidate null', (done) => {
+			const testItem = new List.model();
 			List.fields.select.validateRequiredInput(testItem, {
 				select: null,
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.false();
 				done();
 			});
 		});
 
-		it('should invalidate an empty string even if specified as an option', function (done) {
-			var testItem = new List.model();
+		it('should invalidate an empty string even if specified as an option', (done) => {
+			const testItem = new List.model();
 			List.fields.emptyStringSelect.validateRequiredInput(testItem, {
 				emptyStringSelect: '',
-			}, function (result) {
+			}, (result) => {
 				demand(result).be.false();
 				done();
 			});
 		});
 	});
 
-	describe('updateItem', function () {
-		it('should update top level fields', function (done) {
-			var testItem = new List.model();
+	describe('updateItem', () => {
+		it('should update top level fields', (done) => {
+			const testItem = new List.model();
 			List.fields.select.updateItem(testItem, {
 				select: 'one',
-			}, function () {
+			}, () => {
 				demand(testItem.select).be('one');
 				done();
 			});
 		});
 
-		it('should update nested fields', function (done) {
-			var testItem = new List.model();
+		it('should update nested fields', (done) => {
+			const testItem = new List.model();
 			List.fields['nested.select'].updateItem(testItem, {
 				nested: {
 					select: 'one',
 				},
-			}, function () {
+			}, () => {
 				demand(testItem.nested.select).be('one');
 				done();
 			});
 		});
 
-		it('should update nested fields with flat paths', function (done) {
-			var testItem = new List.model();
+		it('should update nested fields with flat paths', (done) => {
+			const testItem = new List.model();
 			List.fields['nested.select'].updateItem(testItem, {
 				'nested.select': 'one',
-			}, function () {
+			}, () => {
 				demand(testItem.nested.select).be('one');
 				done();
 			});
 		});
 	});
 
-	describe('addFilterToQuery', function () {
-		it('should filter by an array', function () {
-			var result = List.fields.select.addFilterToQuery({
+	describe('addFilterToQuery', () => {
+		it('should filter by an array', () => {
+			const result = List.fields.select.addFilterToQuery({
 				value: ['Some', 'strings'],
 			});
 			demand(result.select).eql({
@@ -287,8 +287,8 @@ exports.testFieldType = function (List) {
 			});
 		});
 
-		it('should support inverted mode for an array', function () {
-			var result = List.fields.select.addFilterToQuery({
+		it('should support inverted mode for an array', () => {
+			const result = List.fields.select.addFilterToQuery({
 				value: ['Some', 'strings'],
 				inverted: true,
 			});
@@ -297,15 +297,15 @@ exports.testFieldType = function (List) {
 			});
 		});
 
-		it('should filter by a string', function () {
-			var result = List.fields.select.addFilterToQuery({
+		it('should filter by a string', () => {
+			const result = List.fields.select.addFilterToQuery({
 				value: 'a string',
 			});
 			demand(result.select).eql('a string');
 		});
 
-		it('should support inverted mode for a string', function () {
-			var result = List.fields.select.addFilterToQuery({
+		it('should support inverted mode for a string', () => {
+			const result = List.fields.select.addFilterToQuery({
 				value: 'a string',
 				inverted: true,
 			});
@@ -314,15 +314,15 @@ exports.testFieldType = function (List) {
 			});
 		});
 
-		it('should filter by existance if no value exists', function () {
-			var result = List.fields.select.addFilterToQuery({});
+		it('should filter by existance if no value exists', () => {
+			const result = List.fields.select.addFilterToQuery({});
 			demand(result.select).eql({
 				$in: ['', null],
 			});
 		});
 
-		it('should filter by non-existance if no value exists', function () {
-			var result = List.fields.select.addFilterToQuery({
+		it('should filter by non-existance if no value exists', () => {
+			const result = List.fields.select.addFilterToQuery({
 				inverted: true,
 			});
 			demand(result.select).eql({
@@ -331,29 +331,29 @@ exports.testFieldType = function (List) {
 		});
 	});
 
-	it('should format values with the label of the option', function () {
-		var testItem = new List.model({
+	it('should format values with the label of the option', () => {
+		const testItem = new List.model({
 			select: 'one',
 		});
 		demand(List.fields.select.format(testItem)).be('One');
 	});
 
-	it('should pluck custom properties from the selected option', function () {
-		var testItem = new List.model({
+	it('should pluck custom properties from the selected option', () => {
+		const testItem = new List.model({
 			extraProps: 'two',
 		});
 		demand(testItem._.extraProps.pluck('custom')).be('2');
 	});
 
-	it('should have the label in nameLabel', function () {
-		var testItem = new List.model({
+	it('should have the label in nameLabel', () => {
+		const testItem = new List.model({
 			extraProps: 'two',
 		});
 		demand(testItem.extraPropsLabel).be('Two');
 	});
 
-	it('should have the current data in nameData', function () {
-		var testItem = new List.model({
+	it('should have the current data in nameData', () => {
+		const testItem = new List.model({
 			extraProps: 'two',
 		});
 		demand(testItem.extraPropsData).eql({
@@ -361,8 +361,8 @@ exports.testFieldType = function (List) {
 		});
 	});
 
-	it('should have the options in nameOption', function () {
-		var testItem = new List.model({
+	it('should have the options in nameOption', () => {
+		const testItem = new List.model({
 			extraProps: 'two',
 		});
 		demand(testItem.extraPropsOptions).eql([
@@ -371,8 +371,8 @@ exports.testFieldType = function (List) {
 		]);
 	});
 
-	it('should have the options map in nameOptionsMap', function () {
-		var testItem = new List.model({
+	it('should have the options map in nameOptionsMap', () => {
+		const testItem = new List.model({
 			extraProps: 'two',
 		});
 		demand(testItem.extraPropsOptionsMap).eql({
@@ -385,13 +385,13 @@ exports.testFieldType = function (List) {
 		});
 	});
 
-	it('should return a blank string when formatting an undefined value', function () {
-		var testItem = new List.model();
+	it('should return a blank string when formatting an undefined value', () => {
+		const testItem = new List.model();
 		demand(List.fields.select.format(testItem)).be('');
 	});
 
-	it('should return a shallow clone of the options', function () {
-		var clonedOps = List.fields.select.cloneOps();
+	it('should return a shallow clone of the options', () => {
+		const clonedOps = List.fields.select.cloneOps();
 		demand(clonedOps).eql(List.fields.select.ops);
 		demand(clonedOps).not.equal(List.fields.select.ops);
 	});

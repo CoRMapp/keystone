@@ -1,7 +1,7 @@
-var demand = require('must');
-var SelectType = require('../SelectType');
+const demand = require('must');
+const SelectType = require('../SelectType');
 
-exports.initList = function (List) {
+exports.initList = (List) => {
 	List.add({
 		textSelect: { type: SelectType, options: 'one, two, three' },
 		numericSelect: { type: SelectType, numeric: true, options: [
@@ -12,84 +12,82 @@ exports.initList = function (List) {
 	});
 };
 
-exports.getTestItems = function () {
-	return [
-		{},
-		{ textSelect: '', numericSelect: 0 },
-		{ textSelect: 'one', numericSelect: 1 },
-		{ textSelect: 'two', numericSelect: 2 },
-		{ textSelect: 'three' },
-	];
-};
+exports.getTestItems = () => [
+	{},
+	{ textSelect: '', numericSelect: 0 },
+	{ textSelect: 'one', numericSelect: 1 },
+	{ textSelect: 'two', numericSelect: 2 },
+	{ textSelect: 'three' },
+];
 
-exports.testFilters = function (List, filter) {
+exports.testFilters = (List, filter) => {
 
-	describe('text values', function () {
+	describe('text values', () => {
 
-		it('should find exact text matches', function (done) {
+		it('should find exact text matches', (done) => {
 			filter({
 				textSelect: {
 					value: 'one',
 				},
-			}, 'textSelect', function (results) {
+			}, 'textSelect', (results) => {
 				demand(results).eql(['one']);
 				done();
 			});
 		});
 
-		it('should invert exact text matches', function (done) {
+		it('should invert exact text matches', (done) => {
 			filter({
 				textSelect: {
 					inverted: true,
 					value: 'one',
 				},
-			}, 'textSelect', function (results) {
+			}, 'textSelect', (results) => {
 				demand(results).eql([undefined, undefined, 'two', 'three']);
 				done();
 			});
 		});
 
-		it('should find multiple text matches', function (done) {
+		it('should find multiple text matches', (done) => {
 			filter({
 				textSelect: {
 					value: ['one', 'two'],
 				},
-			}, 'textSelect', function (results) {
+			}, 'textSelect', (results) => {
 				demand(results).eql(['one', 'two']);
 				done();
 			});
 		});
 
-		it('should invert multiple text matches', function (done) {
+		it('should invert multiple text matches', (done) => {
 			filter({
 				textSelect: {
 					inverted: true,
 					value: ['one', 'two'],
 				},
-			}, 'textSelect', function (results) {
+			}, 'textSelect', (results) => {
 				demand(results).eql([undefined, undefined, 'three']);
 				done();
 			});
 		});
 
-		it('should find empty text matches', function (done) {
+		it('should find empty text matches', (done) => {
 			filter({
 				textSelect: {
 					value: '',
 				},
-			}, 'textSelect', function (results) {
+			}, 'textSelect', (results) => {
 				demand(results).eql([undefined, undefined]);
 				done();
 			});
 		});
 
-		it('should invert empty text matches', function (done) {
+		it('should invert empty text matches', (done) => {
 			filter({
 				textSelect: {
 					inverted: true,
 					value: '',
 				},
-			}, 'textSelect', function (results) {
+			}, 'textSelect', (results) => {
 				demand(results).eql(['one', 'two', 'three']);
 				done();
 			});
@@ -97,72 +95,72 @@ exports.testFilters = function (List, filter) {
 
 	});
 
-	describe('numeric values', function () {
+	describe('numeric values', () => {
 
-		it('should find exact numeric matches', function (done) {
+		it('should find exact numeric matches', (done) => {
 			filter({
 				numericSelect: {
 					value: 1,
 				},
-			}, 'numericSelect', function (results) {
+			}, 'numericSelect', (results) => {
 				demand(results).eql([1]);
 				done();
 			});
 		});
 
-		it('should invert exact numeric matches', function (done) {
+		it('should invert exact numeric matches', (done) => {
 			filter({
 				numericSelect: {
 					inverted: true,
 					value: 1,
 				},
-			}, 'numericSelect', function (results) {
+			}, 'numericSelect', (results) => {
 				demand(results).eql([undefined, 0, 2, undefined]);
 				done();
 			});
 		});
 
-		it('should find multiple numeric matches', function (done) {
+		it('should find multiple numeric matches', (done) => {
 			filter({
 				numericSelect: {
 					value: [1, 2],
 				},
-			}, 'numericSelect', function (results) {
+			}, 'numericSelect', (results) => {
 				demand(results).eql([1, 2]);
 				done();
 			});
 		});
 
-		it('should invert multiple numeric matches', function (done) {
+		it('should invert multiple numeric matches', (done) => {
 			filter({
 				numericSelect: {
 					inverted: true,
 					value: [1, 2],
 				},
-			}, 'numericSelect', function (results) {
+			}, 'numericSelect', (results) => {
 				demand(results).eql([undefined, 0, undefined]);
 				done();
 			});
 		});
 
-		it('should find empty numeric matches', function (done) {
+		it('should find empty numeric matches', (done) => {
 			filter({
 				numericSelect: {
 					value: '',
 				},
-			}, 'numericSelect', function (results) {
+			}, 'numericSelect', (results) => {
 				demand(results).eql([undefined, undefined]);
 				done();
 			});
 		});
 
-		it('should invert empty numeric matches', function (done) {
+		it('should invert empty numeric matches', (done) => {
 			filter({
 				numericSelect: {
 					inverted: true,
 					value: '',
 				},
-			}, 'numericSelect', function (results) {
+			}, 'numericSelect', (results) => {
 				demand(results).eql([0, 1, 2]);
 				done();
 			});
@@ -170,9 +168,9 @@ exports.testFilters = function (List, filter) {
 
 	});
 
-	describe('combined values', function () {
+	describe('combined values', () => {
 
-		it('should find combined text and numeric matches', function (done) {
+		it('should find combined text and numeric matches', (done) => {
 			filter({
 				textSelect: {
 					value: 'one',
@@ -180,13 +178,13 @@ exports.testFilters = function (List, filter) {
 				numericSelect: {
 					value: 1,
 				},
-			}, 'textSelect', function (results) {
+			}, 'textSelect', (results) => {
 				demand(results).eql(['one']);
 				done();
 			});
 		});
 
-		it('should combine with inverted matches', function (done) {
+		it('should combine with inverted matches', (done) => {
 			filter({
 				textSelect: {
 					value: 'one',
@@ -195,13 +193,13 @@ exports.testFilters = function (List, filter) {
 					inverted: true,
 					value: 2,
 				},
-			}, 'textSelect', function (results) {
+			}, 'textSelect', (results) => {
 				demand(results).eql(['one']);
 				done();
 			});
 		});
 
-		it('should combine with inverted negating matches', function (done) {
+		it('should combine with inverted negating matches', (done) => {
 			filter({
 				textSelect: {
 					value: 'one',
@@ -210,7 +208,7 @@ exports.testFilters = function (List, filter) {
 					inverted: true,
 					value: 1,
 				},
-			}, 'textSelect', function (results) {
+			}, 'textSelect', (results) => {
 				demand(results).eql([]);
 				done();
 			});

@@ -7,11 +7,9 @@ const OPTIONS = [
 	{ label: 'Is NOT Set', value: false },
 ];
 
-function getDefaultValue () {
-	return {
-		exists: true,
-	};
-}
+const getDefaultValue = () => ({
+	exists: true,
+});
 
 var CloudinaryImageFilter = React.createClass({
 	propTypes: {

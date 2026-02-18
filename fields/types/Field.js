@@ -6,11 +6,11 @@ import { FormField, FormInput, FormNote } from '../../admin/client/App/elemental
 import blacklist from 'blacklist';
 import CollapsedFieldLabel from '../components/CollapsedFieldLabel';
 
-function isObject (arg) {
+const isObject = (arg) => {
 	return Object.prototype.toString.call(arg) === '[object Object]';
-}
+};
 
-function validateSpec (spec) {
+const validateSpec = (spec) => {
 	if (!spec) spec = {};
 	if (!isObject(spec.supports)) {
 		spec.supports = {};
@@ -19,9 +19,9 @@ function validateSpec (spec) {
 		spec.focusTargetRef = 'focusTarget';
 	}
 	return spec;
-}
+};
 
-var Base = module.exports.Base = {
+const Base = module.exports.Base = {
 	getInitialState () {
 		return {};
 	},
@@ -81,14 +81,14 @@ var Base = module.exports.Base = {
 		return <FormInput noedit>{this.props.value}</FormInput>;
 	},
 	renderUI () {
-		var wrapperClassName = classnames(
-			'field-type-' + this.props.type,
+		const wrapperClassName = classnames(
+			`field-type-${this.props.type}`,
 			this.props.className,
 			{ 'field-monospace': this.props.monospace }
 		);
 		return (
 			<FormField htmlFor={this.props.path} label={this.props.label} className={wrapperClassName} cropLabel>
-				<div className={'FormField__inner field-size-' + this.props.size}>
+				<div className={`FormField__inner field-size-${this.props.size}`}>
 					{this.shouldRenderField() ? this.renderField() : this.renderValue()}
 				</div>
 				{this.renderNote()}
@@ -97,7 +97,7 @@ var Base = module.exports.Base = {
 	},
 };
 
-var Mixins = module.exports.Mixins = {
+const Mixins = module.exports.Mixins = {
 	Collapse: {
 		componentWillMount () {
 			this.setState({
@@ -129,12 +129,12 @@ module.exports.create = function (spec) {
 
 	spec = validateSpec(spec);
 
-	var field = {
+	const field = {
 		spec: spec,
 		displayName: spec.displayName,
 		mixins: [Mixins.Collapse],
 		statics: {
-			getDefaultValue: function (field) {
+			getDefaultValue: (field) => {
 				return typeof field.defaultValue !== 'undefined' ? field.defaultValue : '';
 			},
 		},
@@ -153,10 +153,10 @@ module.exports.create = function (spec) {
 		Object.assign(field.statics, spec.statics);
 	}
 
-	var excludeBaseMethods = {};
+	const excludeBaseMethods = {};
 	if (spec.mixins) {
-		spec.mixins.forEach(function (mixin) {
-			Object.keys(mixin).forEach(function (name) {
+		spec.mixins.forEach((mixin) => {
+			Object.keys(mixin).forEach((name) => {
 				if (Base[name]) {
 					excludeBaseMethods[name] = true;
 				}

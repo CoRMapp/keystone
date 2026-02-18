@@ -1,17 +1,17 @@
 /*!
  * Module dependencies.
  */
-var _ = require('lodash');
-var assign = require('object-assign');
-var di = require('asyncdi');
-var marked = require('marked');
-var Path = require('../../lib/path');
-var utils = require('keystone-utils');
-var evalDependsOn = require('../utils/evalDependsOn.js');
-var definePrototypeGetters = require('../utils/definePrototypeGetters.js');
-var debug = require('debug')('keystone:fields:types:Type');
+const _ = require('lodash');
+const assign = require('object-assign');
+const di = require('asyncdi');
+const marked = require('marked');
+const Path = require('../../lib/path');
+const utils = require('keystone-utils');
+const evalDependsOn = require('../utils/evalDependsOn.js');
+const definePrototypeGetters = require('../utils/definePrototypeGetters.js');
+const debug = require('debug')('keystone:fields:types:Type');
 
-var DEFAULT_OPTION_KEYS = [
+const DEFAULT_OPTION_KEYS = [
 	'path',
 	'paths',
 	'type',
@@ -62,15 +62,15 @@ function Field (list, path, options) {
 		&& !this.list.get('nocreate')
 		&& this.path !== this.list.mappings.name
 	) {
-		console.error('\nError: Invalid Configuration\n\n'
-		+ 'Field (' + list.key + '.' + path + ') is required but not initial, and has no default or generated value.\n'
-		+ 'Please provide a default, remove the required setting, or set initial: false to override this error.\n');
+		console.error(`\nError: Invalid Configuration\n\n`
+		+ `Field (${list.key}.${path}) is required but not initial, and has no default or generated value.\n`
+		+ `Please provide a default, remove the required setting, or set initial: false to override this error.\n`);
 		process.exit(1);
 	}
 
 	// if dependsOn and required, set required to a function for validation
 	if (this.options.dependsOn && this.options.required === true) {
-		var opts = this.options;
+		const opts = this.options;
 		this.options.required = function () {
 			// `this` refers to the validating document
 			debug('validate dependsOn required', evalDependsOn(opts.dependsOn, this.toObject()));
@@ -87,7 +87,7 @@ function Field (list, path, options) {
 	}
 
 	// Convert notes from markdown to html
-	var note = null;
+	let note = null;
 	Object.defineProperty(this, 'note', {
 		get: function () {
 			return (note === null) ? (note = (this.options.note) ? marked(this.options.note) : '') : note;
@@ -102,17 +102,17 @@ function Field (list, path, options) {
 Field.prototype.getOptions = function () {
 	if (!this.__options) {
 		this.__options = {};
-		var optionKeys = DEFAULT_OPTION_KEYS;
+		let optionKeys = DEFAULT_OPTION_KEYS;
 		if (_.isArray(this._properties)) {
 			optionKeys = optionKeys.concat(this._properties);
 		}
-		optionKeys.forEach(function (key) {
+		optionKeys.forEach((key) => {
 			if (this[key]) {
 				this.__options[key] = this[key];
 			} else if (this.options[key]) {
 				this.__options[key] = this.options[key];
 			}
-		}, this);
+		});
 		if (this.getProperties) {
 			assign(this.__options, this.getProperties());
 		}
@@ -128,11 +128,12 @@ Field.prototype.getOptions = function () {
  */
 Field.prototype.getSize = function () {
 	if (!this.__size) {
-		var size = this._fixedSize || this.options.size || this.options.width;
+		const size = this._fixedSize || this.options.size || this.options.width;
 		if (size !== 'small' && size !== 'medium' && size !== 'large' && size !== 'full') {
-			size = this._defaultSize || 'full';
+			this.__size = this._defaultSize || 'full';
+		} else {
+			this.__size = size;
 		}
-		this.__size = size;
 	}
 	return this.__size;
 };
@@ -155,12 +156,12 @@ Field.prototype.getData = function (item) {
  * Field watching implementation
  */
 Field.prototype.getPreSaveWatcher = function () {
-	var field = this;
-	var applyValue;
+	const field = this;
+	let applyValue;
 
 	if (this.options.watch === true) {
 		// watch == true means always apply the value method
-		applyValue = function () { return true; };
+		applyValue = () => true;
 	} else {
 		// if watch is a string, convert it to a list of paths to watch
 		if (typeof this.options.watch === 'string') {
@@ -169,17 +170,17 @@ Field.prototype.getPreSaveWatcher = function () {
 		if (typeof this.options.watch === 'function') {
 			applyValue = this.options.watch;
 		} else if (_.isArray(this.options.watch)) {
-			applyValue = function (item) {
-				var pass = false;
-				field.options.watch.forEach(function (path) {
+			applyValue = (item) => {
+				let pass = false;
+				field.options.watch.forEach((path) => {
 					if (item.isModified(path)) pass = true;
 				});
 				return pass;
 			};
 		} else if (_.isObject(this.options.watch)) {
-			applyValue = function (item) {
-				var pass = false;
-				_.forEach(field.options.watch, function (value, path) {
+			applyValue = (item) => {
+				let pass = false;
+				_.forEach(field.options.watch, (value, path) => {
 					if (item.isModified(path) && item.get(path) === value) pass = true;
 				});
 				return pass;
@@ -188,14 +189,14 @@ Field.prototype.getPreSaveWatcher = function () {
 	}
 
 	if (!applyValue) {
-		console.error('\nError: Invalid Configuration\n\n'
-		+ 'Invalid watch value (' + this.options.watch + ') provided for ' + this.list.key + '.' + this.path + ' (' + this.type + ')');
+		console.error(`\nError: Invalid Configuration\n\n`
+		+ `Invalid watch value (${this.options.watch}) provided for ${this.list.key}.${this.path} (${this.type})`);
 		process.exit(1);
 	}
 
 	if (typeof this.options.value !== 'function') {
-		console.error('\nError: Invalid Configuration\n\n'
-		+ 'Watch set with no value method provided for ' + this.list.key + '.' + this.path + ' (' + this.type + ')');
+		console.error(`\nError: Invalid Configuration\n\n`
+		+ `Watch set with no value method provided for ${this.list.key}.${this.path} (${this.type})`);
 		process.exit(1);
 	}
 
@@ -205,8 +206,8 @@ Field.prototype.getPreSaveWatcher = function () {
 		}
 		di(field.options.value).call(this, function (err, val) {
 			if (err) {
-				console.error('\nError: '
-				+ 'Watch set with value method for ' + field.list.key + '.' + field.path + ' (' + field.type + ') throws error:' + err);
+				console.error(`\nError: `
+				+ `Watch set with value method for ${field.list.key}.${field.path} (${field.type}) throws error:${err}`);
 			} else {
 				this.set(field.path, val);
 			}
@@ -237,7 +238,7 @@ definePrototypeGetters(Field, {
  * Overridden by some fieldType Classes
  */
 Field.prototype.addToSchema = function (schema) {
-	var ops = (this._nativeType) ? _.defaults({ type: this._nativeType }, this.options) : this.options;
+	const ops = (this._nativeType) ? _.defaults({ type: this._nativeType }, this.options) : this.options;
 	schema.path(this.path, ops);
 	this.bindUnderscoreMethods();
 };
@@ -248,16 +249,16 @@ Field.prototype.addToSchema = function (schema) {
  * Always includes the `update` method
  */
 Field.prototype.bindUnderscoreMethods = function () {
-	var field = this;
-	(this._underscoreMethods || []).concat({ fn: 'updateItem', as: 'update' }).forEach(function (method) {
+	const field = this;
+	(this._underscoreMethods || []).concat({ fn: 'updateItem', as: 'update' }).forEach((method) => {
 		if (typeof method === 'string') {
 			method = { fn: method, as: method };
 		}
 		if (typeof field[method.fn] !== 'function') {
-			throw new Error('Invalid underscore method (' + method.fn + ') applied to ' + field.list.key + '.' + field.path + ' (' + field.type + ')');
+			throw new Error(`Invalid underscore method (${method.fn}) applied to ${field.list.key}.${field.path} (${field.type})`);
 		}
 		field.underscoreMethod(method.as, function () {
-			var args = [this].concat(Array.prototype.slice.call(arguments));
+			const args = [this].concat(Array.prototype.slice.call(arguments));
 			return field[method.fn].apply(field, args);
 		});
 	});
@@ -268,7 +269,7 @@ Field.prototype.bindUnderscoreMethods = function () {
  * with a path prefix to match this field's path and bound to the document
  */
 Field.prototype.underscoreMethod = function (path, fn) {
-	this.list.underscoreMethod(this.path + '.' + path, function () {
+	this.list.underscoreMethod(`${this.path}.${path}`, function () {
 		return fn.apply(this, arguments);
 	});
 };
@@ -280,7 +281,7 @@ Field.prototype.underscoreMethod = function (path, fn) {
  * @api public
  */
 Field.prototype.format = function (item) {
-	var value = item.get(this.path);
+	const value = item.get(this.path);
 	if (value === undefined) return '';
 	return value;
 };
@@ -325,7 +326,7 @@ Field.prototype.validateRequiredInput = function (item, data, callback) {
  */
 Field.prototype.inputIsValid = function (data, required, item) {
 	if (!required) return true;
-	var value = this.getValueFromData(data);
+	const value = this.getValueFromData(data);
 	if (value === undefined && item && item.get(this.path)) return true;
 	if (typeof data[this.path] === 'string') {
 		return (data[this.path].trim()) ? true : false;
@@ -341,7 +342,7 @@ Field.prototype.inputIsValid = function (data, required, item) {
  * @api public
  */
 Field.prototype.updateItem = function (item, data, callback) {
-	var value = this.getValueFromData(data);
+	const value = this.getValueFromData(data);
 	// This is a deliberate type coercion so that numbers from forms play nice
 	if (value !== undefined && value != item.get(this.path)) { // eslint-disable-line eqeqeq
 		item.set(this.path, value);

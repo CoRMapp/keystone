@@ -23,7 +23,7 @@ function getDefaultValue () {
 	};
 }
 
-var TextFilter = React.createClass({
+const TextFilter = React.createClass({
 	propTypes: {
 		filter: React.PropTypes.shape({
 			lat: React.PropTypes.number,
@@ -112,7 +112,7 @@ var TextFilter = React.createClass({
 				</FormField>
 				<FormInput
 					onChange={this.changeDistanceValue}
-					placeholder={distanceModeVerb + ' distance from point'}
+					placeholder={`${distanceModeVerb} distance from point`}
 					ref="distance"
 					type="number"
 					value={filter.distance.value}

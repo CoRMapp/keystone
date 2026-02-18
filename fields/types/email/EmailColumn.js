@@ -2,7 +2,7 @@ import React from 'react';
 import ItemsTableCell from '../../components/ItemsTableCell';
 import ItemsTableValue from '../../components/ItemsTableValue';
 
-var EmailColumn = React.createClass({
+const EmailColumn = React.createClass({
 	displayName: 'EmailColumn',
 	propTypes: {
 		col: React.PropTypes.object,
@@ -13,7 +13,7 @@ var EmailColumn = React.createClass({
 		if (!value) return;
 
 		return (
-			<ItemsTableValue to={'mailto:' + value} padded exterior field={this.props.col.type}>
+			<ItemsTableValue to={`mailto:${value}`} padded exterior field={this.props.col.type}>
 				{value}
 			</ItemsTableValue>
 		);

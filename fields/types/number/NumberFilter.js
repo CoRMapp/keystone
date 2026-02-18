@@ -22,7 +22,7 @@ function getDefaultValue () {
 	};
 }
 
-var NumberFilter = React.createClass({
+const NumberFilter = React.createClass({
 	statics: {
 		getDefaultValue: getDefaultValue,
 	},
@@ -86,7 +86,7 @@ var NumberFilter = React.createClass({
 	renderControls (mode) {
 		let controls;
 		const { field } = this.props;
-		const placeholder = field.label + ' is ' + mode.label.toLowerCase() + '...';
+		const placeholder = `${field.label} is ${mode.label.toLowerCase()}...`;
 
 		if (mode.value === 'between') {
 			controls = (

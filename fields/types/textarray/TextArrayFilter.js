@@ -19,15 +19,13 @@ const PRESENCE_OPTIONS = [
 	{ label: 'No element', value: 'none' },
 ];
 
-function getDefaultValue () {
-	return {
-		mode: MODE_OPTIONS[0].value,
-		presence: PRESENCE_OPTIONS[0].value,
-		value: '',
-	};
-}
+const getDefaultValue = () => ({
+	mode: MODE_OPTIONS[0].value,
+	presence: PRESENCE_OPTIONS[0].value,
+	value: '',
+});
 
-var TextArrayFilter = React.createClass({
+const TextArrayFilter = React.createClass({
 	propTypes: {
 		filter: React.PropTypes.shape({
 			mode: React.PropTypes.oneOf(MODE_OPTIONS.map(i => i.value)),
@@ -64,7 +62,7 @@ var TextArrayFilter = React.createClass({
 		const mode = MODE_OPTIONS.filter(i => i.value === filter.mode)[0];
 		const presence = PRESENCE_OPTIONS.filter(i => i.value === filter.presence)[0];
 		const beingVerb = mode.value === 'exactly' ? ' is ' : ' ';
-		const placeholder = presence.label + beingVerb + mode.label.toLowerCase() + '...';
+		const placeholder = `${presence.label}${beingVerb}${mode.label.toLowerCase()}...`;
 
 		return (
 			<div>

@@ -31,15 +31,13 @@ var DayPickerIndicator = React.createClass({
 	},
 });
 
-function getDefaultValue () {
-	return {
-		mode: MODE_OPTIONS[0].value,
-		presence: PRESENCE_OPTIONS[0].value,
-		value: moment(0, 'HH').format(),
-		before: moment(0, 'HH').format(),
-		after: moment(0, 'HH').format(),
-	};
-}
+const getDefaultValue = () => ({
+	mode: MODE_OPTIONS[0].value,
+	presence: PRESENCE_OPTIONS[0].value,
+	value: moment(0, 'HH').format(),
+	before: moment(0, 'HH').format(),
+	after: moment(0, 'HH').format(),
+});
 
 var DateFilter = React.createClass({
 	displayName: 'DateFilter',
@@ -131,7 +129,7 @@ var DateFilter = React.createClass({
 		let controls;
 		const { field, filter } = this.props;
 		const mode = MODE_OPTIONS.filter(i => i.value === filter.mode)[0];
-		const placeholder = field.label + ' is ' + mode.label.toLowerCase() + '...';
+		const placeholder = `${field.label} is ${mode.label.toLowerCase()}...`;
 
 		// DayPicker stuff
 		const modifiers = {

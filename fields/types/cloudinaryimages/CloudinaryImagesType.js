@@ -1,35 +1,27 @@
-var _ = require('lodash');
-var assign = require('object-assign');
-var async = require('async');
-var FieldType = require('../Type');
-var keystone = require('../../../');
-var util = require('util');
+const _ = require('lodash');
+const assign = require('object-assign');
+const async = require('async');
+const FieldType = require('../Type');
+const keystone = require('../../../');
+const util = require('util');
 
-function getEmptyValue () {
-	return undefined;
-}
+const getEmptyValue = () => undefined;
 
-function truthy (value) {
-	return value;
-}
+const truthy = (value) => value;
 
 /*
 * Uses a before and after snapshot of the images array to find out what images are no longer included
 */
-function cleanUp (oldValues, newValues) {
-	var cloudinary = require('cloudinary');
-	var oldvalIds = oldValues.map(function (val) {
-		return val.public_id;
-	});
-	var newValIds = newValues.map(function (val) {
-		return val.public_id;
-	});
+const cleanUp = (oldValues, newValues) => {
+	const cloudinary = require('cloudinary');
+	const oldvalIds = oldValues.map((val) => val.public_id);
+	const newValIds = newValues.map((val) => val.public_id);
 
-	var removedItemsCloudinaryIds = _.difference(oldvalIds, newValIds);
+	const removedItemsCloudinaryIds = _.difference(oldvalIds, newValIds);
 
 	// We never wait to return on the images being removed
-	async.map(removedItemsCloudinaryIds, function (id, next) {
-		cloudinary.uploader.destroy(id, function (result) {
+	async.map(removedItemsCloudinaryIds, (id, next) => {
+		cloudinary.uploader.destroy(id, (result) => {
 			next();
 		});
 	});
@@ -48,7 +40,7 @@ function cloudinaryimages (list, path, options) {
 	// validate cloudinary config
 	if (!keystone.get('cloudinary config')) {
 		throw new Error('Invalid Configuration\n\n'
-			+ 'CloudinaryImages fields (' + list.key + '.' + this.path + ') require the "cloudinary config" option to be set.\n\n'
+			+ `CloudinaryImages fields (${list.key}.${this.path}) require the "cloudinary config" option to be set.\n\n`
 			+ 'See http://v4.keystonejs.com/docs/configuration/#services-cloudinary for more information.\n');
 	}
 }
@@ -59,7 +51,7 @@ util.inherits(cloudinaryimages, FieldType);
  * Gets the folder for images in this field
  */
 cloudinaryimages.prototype.getFolder = function (item) {
-	var folder = null;
+	let folder = null;
 
 	if (keystone.get('cloudinary folders') || this.options.folder) {
 		if (typeof this.options.folder === 'string') {
@@ -67,7 +59,7 @@ cloudinaryimages.prototype.getFolder = function (item) {
 		} else if (typeof this.options.folder === 'function') {
 			folder = this.options.folder(item)
 		} else {
-			folder = this.list.path + '/' + this.path;
+			folder = `${this.list.path}/${this.path}`;
 		}
 	}
 
@@ -79,20 +71,20 @@ cloudinaryimages.prototype.getFolder = function (item) {
  */
 cloudinaryimages.prototype.addToSchema = function (schema) {
 
-	var cloudinary = require('cloudinary');
-	var mongoose = keystone.mongoose;
-	var field = this;
+	const cloudinary = require('cloudinary');
+	const mongoose = keystone.mongoose;
+	const field = this;
 
 	this.paths = {
 		// virtuals
-		folder: this.path + '.folder',
+		folder: `${this.path}.folder`,
 		// form paths
-		upload: this.path + '_upload',
-		uploads: this.path + '_uploads',
-		action: this.path + '_action',
+		upload: `${this.path}_upload`,
+		uploads: `${this.path}_uploads`,
+		action: `${this.path}_action`,
 	};
 
-	var ImageSchema = new mongoose.Schema({
+	const ImageSchema = new mongoose.Schema({
 		public_id: String,
 		version: Number,
 		signature: String,
@@ -105,8 +97,8 @@ cloudinaryimages.prototype.addToSchema = function (schema) {
 	});
 
 	// Generate cloudinary folder used to upload/select images
-	var folder = function (item) { // eslint-disable-line no-unused-vars
-		var folderValue = '';
+	const folder = (item) => { // eslint-disable-line no-unused-vars
+		let folderValue = '';
 
 		if (keystone.get('cloudinary folders')) {
 			if (field.options.folder === 'string') {
@@ -114,7 +106,7 @@ cloudinaryimages.prototype.addToSchema = function (schema) {
 			} else if (typeof this.options.folder === 'function') {
 				folderValue = this.options.folder(item);
 			} else {
-				var folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
+				const folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
 				folderList.push(field.list.path);
 				folderList.push(field.path);
 				folderValue = folderList.join('/');
@@ -129,7 +121,7 @@ cloudinaryimages.prototype.addToSchema = function (schema) {
 		return folder(this);
 	});
 
-	var src = function (img, options) {
+	const src = (img, options) => {
 		if (keystone.get('cloudinary secure')) {
 			options = options || {};
 			options.secure = true;
@@ -138,7 +130,7 @@ cloudinaryimages.prototype.addToSchema = function (schema) {
 		return img.public_id ? cloudinary.url(img.public_id, options) : '';
 	};
 
-	var addSize = function (options, width, height, other) {
+	const addSize = (options, width, height, other) => {
 		if (width) options.width = width;
 		if (height) options.height = height;
 		if (typeof other === 'object') {
@@ -180,28 +172,28 @@ cloudinaryimages.prototype.addToSchema = function (schema) {
 	schema.add(this._path.addTo({}, [ImageSchema]));
 
 	this.removeImage = function (item, id, method, callback) {
-		var images = item.get(field.path);
+		const images = item.get(field.path);
 		if (typeof id !== 'number') {
-			for (var i = 0; i < images.length; i++) {
+			for (let i = 0; i < images.length; i++) {
 				if (images[i].public_id === id) {
 					id = i;
 					break;
 				}
 			}
 		}
-		var img = images[id];
+		const img = images[id];
 		if (!img) return;
 		if (method === 'delete') {
 			cloudinary.uploader.destroy(img.public_id, function () {});
 		}
 		images.splice(id, 1);
 		if (callback) {
-			var saveOptions = (typeof callback !== 'function') ? callback : undefined;
-			var savePromise = item.save(saveOptions);
+			const saveOptions = (typeof callback !== 'function') ? callback : undefined;
+			const savePromise = item.save(saveOptions);
 			if (typeof callback === 'function') {
-				savePromise.then(function () {
+				savePromise.then(() => {
 					callback();
-				}).catch(function (err) {
+				}).catch((err) => {
 					callback(err);
 				});
 			}
@@ -220,16 +212,14 @@ cloudinaryimages.prototype.addToSchema = function (schema) {
  * Formats the field value
  */
 cloudinaryimages.prototype.format = function (item) {
-	return _.map(item.get(this.path), function (img) {
-		return img.src();
-	}).join(', ');
+	return _.map(item.get(this.path), (img) => img.src()).join(', ');
 };
 
 /**
  * Gets the field's data from an Item, as used by the React components
  */
 cloudinaryimages.prototype.getData = function (item) {
-	var value = item.get(this.path);
+	const value = item.get(this.path);
 	return Array.isArray(value) ? value : [];
 };
 
@@ -270,10 +260,10 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 		files = {};
 	}
 
-	var cloudinary = require('cloudinary');
-	var field = this;
-	var values = this.getValueFromData(data);
-	var oldValues = item.get(this.path);
+	const cloudinary = require('cloudinary');
+	const field = this;
+	let values = this.getValueFromData(data);
+	const oldValues = item.get(this.path);
 
 	// TODO: This logic needs to block uploading of files from the data argument,
 	// see CloudinaryImage for a reference on how it should be implemented
@@ -296,34 +286,34 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 	}
 
 	// We cache options to avoid recalculating them on each iteration in the map below
-	var cachedUploadOptions;
-	function getUploadOptions () {
+	let cachedUploadOptions;
+	const getUploadOptions = () => {
 		if (cachedUploadOptions) {
 			return cachedUploadOptions;
 		}
-		var tagPrefix = keystone.get('cloudinary prefix') || '';
-		var uploadOptions = {
+		let tagPrefix = keystone.get('cloudinary prefix') || '';
+		const uploadOptions = {
 			tags: [],
 		};
 		if (tagPrefix.length) {
 			uploadOptions.tags.push(tagPrefix);
 			tagPrefix += '_';
 		}
-		uploadOptions.tags.push(tagPrefix + field.list.path + '_' + field.path);
+		uploadOptions.tags.push(`${tagPrefix}${field.list.path}_${field.path}`);
 		if (keystone.get('env') !== 'production') {
-			uploadOptions.tags.push(tagPrefix + 'dev');
+			uploadOptions.tags.push(`${tagPrefix}dev`);
 		}
-		var folder = field.getFolder(item);
+		const folder = field.getFolder(item);
 		if (folder) {
 			uploadOptions.folder = folder;
 		}
 		cachedUploadOptions = uploadOptions;
 		return uploadOptions;
-	}
+	};
 
 	// Preprocess values to deserialise JSON, detect mappings to uploaded files
 	// and flatten out arrays
-	values = values.map(function (value) {
+	values = values.map((value) => {
 		// When the value is a string, it may be JSON serialised data.
 		if (typeof value === 'string'
 			&& value.charAt(0) === '{'
@@ -337,7 +327,7 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 			// detect file upload (field value must be a reference to a field in the
 			// uploaded files object provided by multer)
 			if (value.substr(0, 7) === 'upload:') {
-				var uploadFieldPath = value.substr(7);
+				const uploadFieldPath = value.substr(7);
 				return files[uploadFieldPath];
 			}
 			// detect a URL or Base64 Data
@@ -349,12 +339,12 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 	});
 	values = _.flatten(values);
 
-	async.map(values, function (value, next) {
+	async.map(values, (value, next) => {
 		if (typeof value === 'object' && 'public_id' in value) {
 			// Cloudinary Image data provided
 			if (value.public_id) {
 				// Default the object with empty values
-				var v = assign(getEmptyValue(), value);
+				const v = assign(getEmptyValue(), value);
 				return next(null, v);
 			} else {
 				// public_id is falsy, remove the value
@@ -362,14 +352,14 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 			}
 		} else if (typeof value === 'object' && value.path) {
 			// File provided - upload it
-			var uploadOptions = getUploadOptions();
+			let uploadOptions = getUploadOptions();
 			// NOTE: field.options.publicID has been deprecated (tbc)
 			if (field.options.filenameAsPublicID && value.originalname && typeof value.originalname === 'string') {
 				uploadOptions = assign({}, uploadOptions, {
 					public_id: value.originalname.substring(0, value.originalname.lastIndexOf('.')),
 				});
 			}
-			cloudinary.uploader.upload(value.path, function (result) {
+			cloudinary.uploader.upload(value.path, (result) => {
 				if (result.error) {
 					next(result.error);
 				} else {
@@ -382,7 +372,7 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 			// see the CloudinaryImageType field for reference
 			return next();
 		}
-	}, function (err, result) {
+	}, (err, result) => {
 		cleanUp(oldValues, values);
 		if (err) return callback(err);
 		result = result.filter(truthy);

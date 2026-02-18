@@ -1,23 +1,23 @@
-var React = require('react');
+const React = require('react');
 
 import _ from 'lodash';
 import { findDOMNode } from 'react-dom';
 
-var Button = require('elemental').Button;
-var FormField = require('elemental').FormField;
-var FormInput = require('elemental').FormInput;
+const Button = require('elemental').Button;
+const FormField = require('elemental').FormField;
+const FormInput = require('elemental').FormInput;
 
-var lastId = 0;
-var ENTER_KEYCODE = 13;
+let lastId = 0;
+const ENTER_KEYCODE = 13;
 
-function newItem (value) {
+const newItem = (value) => {
 	lastId = lastId + 1;
-	return { key: 'i' + lastId, value: value };
-}
+	return { key: `i${lastId}`, value: value };
+};
 
-function reduceValues (values) {
+const reduceValues = (values) => {
 	return values.map(i => i.value);
-}
+};
 
 module.exports = {
 	getInitialState: function () {
@@ -35,30 +35,30 @@ module.exports = {
 	},
 
 	addItem: function () {
-		var newValues = this.state.values.concat(newItem(''));
+		const newValues = this.state.values.concat(newItem(''));
 		this.setState({
 			values: newValues,
 		}, () => {
 			if (!this.state.values.length) return;
-			findDOMNode(this.refs['item_' + this.state.values.length]).focus();
+			findDOMNode(this.refs[`item_${this.state.values.length}`]).focus();
 		});
 		this.valueChanged(reduceValues(newValues));
 	},
 
 	removeItem: function (i) {
-		var newValues = _.without(this.state.values, i);
+		const newValues = _.without(this.state.values, i);
 		this.setState({
 			values: newValues,
-		}, function () {
+		}, () => {
 			findDOMNode(this.refs.button).focus();
 		});
 		this.valueChanged(reduceValues(newValues));
 	},
 
 	updateItem: function (i, event) {
-		var updatedValues = this.state.values;
-		var updateIndex = updatedValues.indexOf(i);
-		var newValue = event.value || event.target.value;
+		const updatedValues = this.state.values;
+		const updateIndex = updatedValues.indexOf(i);
+		const newValue = event.value || event.target.value;
 		if (this.isValid === undefined || this.isValid(newValue)) {
 			updatedValues[updateIndex].value = this.cleanInput ? this.cleanInput(newValue) : newValue;
 		}
@@ -89,7 +89,7 @@ module.exports = {
 		const value = this.processInputValue ? this.processInputValue(item.value) : item.value;
 		return (
 			<FormField key={item.key}>
-				<Input ref={'item_' + (index + 1)} name={this.getInputName(this.props.path)} value={value} onChange={this.updateItem.bind(this, item)} onKeyDown={this.addItemOnEnter} autoComplete="off" />
+				<Input ref={`item_${index + 1}`} name={this.getInputName(this.props.path)} value={value} onChange={this.updateItem.bind(this, item)} onKeyDown={this.addItemOnEnter} autoComplete="off" />
 				<Button type="link-cancel" onClick={this.removeItem.bind(this, item)} className="keystone-relational-button">
 					<span className="octicon octicon-x" />
 				</Button>

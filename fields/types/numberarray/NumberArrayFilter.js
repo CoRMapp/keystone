@@ -28,7 +28,7 @@ function getDefaultValue () {
 	};
 }
 
-var NumberArrayFilter = React.createClass({
+const NumberArrayFilter = React.createClass({
 	propTypes: {
 		filter: React.PropTypes.shape({
 			mode: React.PropTypes.oneOf(MODE_OPTIONS.map(i => i.value)),
@@ -54,7 +54,7 @@ var NumberArrayFilter = React.createClass({
 	// Returns a function that handles a specific type of onChange events for
 	// either 'minValue', 'maxValue' or simply 'value'
 	handleValueChangeBuilder (type) {
-		var self = this;
+		const self = this;
 		return function (e) {
 			switch (type) {
 				case 'minValue':
@@ -100,7 +100,7 @@ var NumberArrayFilter = React.createClass({
 	// Render the controls, showing two inputs when the mode is "between"
 	renderControls (presence, mode) {
 		let controls;
-		const placeholder = presence.label + ' is ' + mode.label.toLowerCase() + '...';
+		const placeholder = `${presence.label} is ${mode.label.toLowerCase()}...`;
 
 		if (mode.value === 'between') {
 			// Render "min" and "max" input

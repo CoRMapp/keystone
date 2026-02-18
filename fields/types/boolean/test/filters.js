@@ -1,4 +1,4 @@
-var demand = require('must');
+const demand = require('must');
 
 exports.initList = function (List) {
 	List.add({

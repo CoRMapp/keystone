@@ -17,14 +17,12 @@ const INVERTED_OPTIONS = [
 	{ label: 'NOT Linked To', value: true },
 ];
 
-function getDefaultValue () {
-	return {
-		inverted: INVERTED_OPTIONS[0].value,
-		value: [],
-	};
-}
+const getDefaultValue = () => ({
+	inverted: INVERTED_OPTIONS[0].value,
+	value: [],
+});
 
-var RelationshipFilter = React.createClass({
+const RelationshipFilter = React.createClass({
 	propTypes: {
 		field: React.PropTypes.object,
 		filter: React.PropTypes.shape({
@@ -66,7 +64,7 @@ var RelationshipFilter = React.createClass({
 		async.map(value, (id, next) => {
 			if (this._itemsCache[id]) return next(null, this._itemsCache[id]);
 			xhr({
-				url: Keystone.adminPath + '/api/' + this.props.field.refList.path + '/' + id + '?basic',
+				url: `${Keystone.adminPath}/api/${this.props.field.refList.path}/${id}?basic`,
 				responseType: 'json',
 			}, (err, resp, data) => {
 				if (err || !data) return next(err);
@@ -90,15 +88,15 @@ var RelationshipFilter = React.createClass({
 		this._itemsCache[item.id] = item;
 	},
 	buildFilters () {
-		var filters = {};
-		_.forEach(this.props.field.filters, function (value, key) {
+		const filters = {};
+		_.forEach(this.props.field.filters, (value, key) => {
 			if (value[0] === ':') return;
 			filters[key] = value;
-		}, this);
+		});
 
-		var parts = [];
-		_.forEach(filters, function (val, key) {
-			parts.push('filters[' + key + '][value]=' + encodeURIComponent(val));
+		const parts = [];
+		_.forEach(filters, (val, key) => {
+			parts.push(`filters[${key}][value]=${encodeURIComponent(val)}`);
 		});
 
 		return parts.join('&');
@@ -107,7 +105,7 @@ var RelationshipFilter = React.createClass({
 		const searchString = this.state.searchString;
 		const filters = this.buildFilters();
 		xhr({
-			url: Keystone.adminPath + '/api/' + this.props.field.refList.path + '?basic&search=' + searchString + '&' + filters,
+			url: `${Keystone.adminPath}/api/${this.props.field.refList.path}?basic&search=${searchString}&${filters}`,
 			responseType: 'json',
 		}, (err, resp, data) => {
 			if (err) {
@@ -174,7 +172,7 @@ var RelationshipFilter = React.createClass({
 		const searchResults = this.state.searchResults.filter(i => {
 			return this.props.filter.value.indexOf(i.id) === -1;
 		});
-		const placeholder = this.isLoading() ? 'Loading...' : 'Find a ' + this.props.field.label + '...';
+		const placeholder = this.isLoading() ? 'Loading...' : `Find a ${this.props.field.label}...`;
 		return (
 			<div ref="container">
 				<FormField>

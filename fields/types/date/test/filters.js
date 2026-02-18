@@ -1,23 +1,21 @@
-var demand = require('must');
-var moment = require('moment');
+const demand = require('must');
+const moment = require('moment');
 
-exports.initList = function (List) {
+exports.initList = (List) => {
 	List.add({
 		date: Date,
 	});
 };
 
-exports.getTestItems = function () {
-	return [
-		{},
-		{ date: '2015-01-01' },
-		{ date: moment('2015-01-01') },
-		{ date: moment('2014-01-01').toDate() },
-		{ date: new Date() },
-	];
-};
+exports.getTestItems = () => [
+	{},
+	{ date: '2015-01-01' },
+	{ date: moment('2015-01-01') },
+	{ date: moment('2014-01-01').toDate() },
+	{ date: new Date() },
+];
 
-exports.testFilters = function (List, filter) {
+exports.testFilters = (List, filter) => {
 	it('should find a specific date', function (done) {
 		filter({
 			date: {

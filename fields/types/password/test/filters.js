@@ -1,30 +1,28 @@
-var demand = require('must');
-var PasswordType = require('../PasswordType');
+const demand = require('must');
+const PasswordType = require('../PasswordType');
 
-exports.initList = function (List) {
+exports.initList = (List) => {
 	List.add({
 		password: PasswordType,
 	});
 };
 
-exports.getTestItems = function () {
-	return [
-		{},
-		{ password: '' },
-		{ password: ' ' },
-		{ password: null },
-		{ password: 'abc123' },
-		{ password: 'ABC123' },
-	];
-};
+exports.getTestItems = () => [
+	{},
+	{ password: '' },
+	{ password: ' ' },
+	{ password: null },
+	{ password: 'abc123' },
+	{ password: 'ABC123' },
+];
 
-exports.testFilters = function (List, filter) {
-	it('should filter for existance', function (done) {
+exports.testFilters = (List, filter) => {
+	it('should filter for existance', (done) => {
 		filter({
 			password: {
 				exists: true,
 			},
-		}, 'password', function (results) {
+		}, 'password', (results) => {
 			demand(results.length).eql(3);
 			// Make sure the passwords are hashed by checking that the length
 			// of the returned strings is above the longest password specified
@@ -36,12 +34,12 @@ exports.testFilters = function (List, filter) {
 		});
 	});
 
-	it('should filter for non-existance', function (done) {
+	it('should filter for non-existance', (done) => {
 		filter({
 			password: {
 				exists: false,
 			},
-		}, 'password', function (results) {
+		}, 'password', (results) => {
 			demand(results.length).eql(3);
 			demand(results[0]).be.undefined();
 			demand(results[1]).be.undefined();

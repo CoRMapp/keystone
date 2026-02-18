@@ -20,15 +20,13 @@ const MODE_OPTIONS = [
 	{ label: 'Ends with', value: 'endsWith' },
 ];
 
-function getDefaultValue () {
-	return {
-		mode: MODE_OPTIONS[0].value,
-		inverted: INVERTED_OPTIONS[0].value,
-		value: '',
-	};
-}
+const getDefaultValue = () => ({
+	mode: MODE_OPTIONS[0].value,
+	inverted: INVERTED_OPTIONS[0].value,
+	value: '',
+});
 
-var TextFilter = React.createClass({
+const TextFilter = React.createClass({
 	propTypes: {
 		filter: React.PropTypes.shape({
 			mode: React.PropTypes.oneOf(MODE_OPTIONS.map(i => i.value)),
@@ -62,7 +60,7 @@ var TextFilter = React.createClass({
 	render () {
 		const { field, filter } = this.props;
 		const mode = MODE_OPTIONS.filter(i => i.value === filter.mode)[0];
-		const placeholder = field.label + ' ' + mode.label.toLowerCase() + '...';
+		const placeholder = `${field.label} ${mode.label.toLowerCase()}...`;
 
 		return (
 			<div>

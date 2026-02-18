@@ -2,7 +2,7 @@ import React from 'react';
 import ItemsTableCell from '../../components/ItemsTableCell';
 import ItemsTableValue from '../../components/ItemsTableValue';
 
-var IdColumn = React.createClass({
+const IdColumn = React.createClass({
 	displayName: 'IdColumn',
 	propTypes: {
 		col: React.PropTypes.object,
@@ -14,7 +14,7 @@ var IdColumn = React.createClass({
 		if (!value) return null;
 
 		return (
-			<ItemsTableValue padded interior title={value} to={Keystone.adminPath + '/' + this.props.list.path + '/' + value} field={this.props.col.type}>
+			<ItemsTableValue padded interior title={value} to={`${Keystone.adminPath}/${this.props.list.path}/${value}`} field={this.props.col.type}>
 				{value}
 			</ItemsTableValue>
 		);

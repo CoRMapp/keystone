@@ -7,13 +7,11 @@ const EXISTS_OPTIONS = [
 	{ label: 'Is NOT Set', value: false },
 ];
 
-function getDefaultValue () {
-	return {
-		exists: true,
-	};
-}
+const getDefaultValue = () => ({
+	exists: true,
+});
 
-var PasswordFilter = React.createClass({
+const PasswordFilter = React.createClass({
 	propTypes: {
 		filter: React.PropTypes.shape({
 			exists: React.PropTypes.oneOf(EXISTS_OPTIONS.map(i => i.value)),

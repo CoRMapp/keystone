@@ -16,7 +16,7 @@ const ICON_EXTS = [
 	'wav', 'xls', 'xlsx', 'xml', 'yml', 'zip',
 ];
 
-var LocalFilesFieldItem = React.createClass({
+const LocalFilesFieldItem = React.createClass({
 	propTypes: {
 		deleted: React.PropTypes.bool,
 		filename: React.PropTypes.string,
@@ -28,8 +28,8 @@ var LocalFilesFieldItem = React.createClass({
 	renderActionButton () {
 		if (!this.props.shouldRenderActionButton || this.props.isQueued) return null;
 
-		var buttonLabel = this.props.deleted ? 'Undo' : 'Remove';
-		var buttonType = this.props.deleted ? 'link' : 'link-cancel';
+		const buttonLabel = this.props.deleted ? 'Undo' : 'Remove';
+		const buttonType = this.props.deleted ? 'link' : 'link-cancel';
 
 		return <Button key="action-button" type={buttonType} onClick={this.props.toggleDelete}>{buttonLabel}</Button>;
 	},
@@ -50,10 +50,10 @@ var LocalFilesFieldItem = React.createClass({
 
 		return (
 			<FormField>
-				<img key="file-type-icon" className="file-icon" src={Keystone.adminPath + '/images/icons/32/' + iconName + '.png'} />
+				<img key="file-type-icon" className="file-icon" src={`${Keystone.adminPath}/images/icons/32/${iconName}.png`} />
 				<FormInput key="file-name" noedit className="field-type-localfiles__filename">
 					{filename}
-					{this.props.size ? ' (' + bytes(this.props.size) + ')' : null}
+					{this.props.size ? ` (${bytes(this.props.size)})` : null}
 				</FormInput>
 				{note}
 				{this.renderActionButton()}
@@ -63,13 +63,13 @@ var LocalFilesFieldItem = React.createClass({
 
 });
 
-var tempId = 0;
+let tempId = 0;
 
 module.exports = Field.create({
 
 	getInitialState () {
-		var items = [];
-		var self = this;
+		const items = [];
+		const self = this;
 
 		_.forEach(this.props.value, function (item) {
 			self.pushItem(item, items);
@@ -79,10 +79,10 @@ module.exports = Field.create({
 	},
 
 	removeItem (id) {
-		var thumbs = [];
-		var self = this;
+		const thumbs = [];
+		const self = this;
 		_.forEach(this.state.items, function (thumb) {
-			var newProps = Object.assign({}, thumb.props);
+			const newProps = Object.assign({}, thumb.props);
 			if (thumb.props._id === id) {
 				newProps.deleted = !thumb.props.deleted;
 			}
@@ -119,9 +119,9 @@ module.exports = Field.create({
 	},
 
 	uploadFile (event) {
-		var self = this;
+		const self = this;
 
-		var files = event.target.files;
+		const files = event.target.files;
 		_.forEach(files, function (f) {
 			self.pushItem({ isQueued: true, filename: f.name });
 			self.forceUpdate();
@@ -139,7 +139,7 @@ module.exports = Field.create({
 	renderToolbar () {
 		if (!this.shouldRenderField()) return null;
 
-		var clearFilesButton;
+		let clearFilesButton;
 		if (this.hasFiles()) {
 			clearFilesButton = <Button type="link-cancel" className="ml-5" onClick={this.clearFiles}>Clear Uploads</Button>;
 		}
@@ -178,12 +178,12 @@ module.exports = Field.create({
 	},
 
 	renderFieldAction () {
-		var value = '';
-		var remove = [];
+		let value = '';
+		const remove = [];
 		_.forEach(this.state.items, function (thumb) {
 			if (thumb && thumb.props.deleted) remove.push(thumb.props._id);
 		});
-		if (remove.length) value = 'delete:' + remove.join(',');
+		if (remove.length) value = `delete:${remove.join(',')}`;
 
 		return <input ref="action" className="field-action" type="hidden" value={value} name={this.props.paths.action} />;
 	},

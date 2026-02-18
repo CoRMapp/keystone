@@ -1,19 +1,19 @@
-var _ = require('lodash');
-var assign = require('object-assign');
-var ensureCallback = require('keystone-storage-namefunctions/ensureCallback');
-var FieldType = require('../Type');
-var keystone = require('../../../');
-var nameFunctions = require('keystone-storage-namefunctions');
-var prototypeMethods = require('keystone-storage-namefunctions/prototypeMethods');
-var sanitize = require('sanitize-filename');
-var util = require('util');
-var utils = require('keystone-utils');
+const _ = require('lodash');
+const assign = require('object-assign');
+const ensureCallback = require('keystone-storage-namefunctions/ensureCallback');
+const FieldType = require('../Type');
+const keystone = require('../../../');
+const nameFunctions = require('keystone-storage-namefunctions');
+const prototypeMethods = require('keystone-storage-namefunctions/prototypeMethods');
+const sanitize = require('sanitize-filename');
+const util = require('util');
+const utils = require('keystone-utils');
 
 /*
 var CLOUDINARY_FIELDS = ['public_id', 'version', 'signature', 'format', 'resource_type', 'url', 'width', 'height', 'secure_url'];
 */
 
-var DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS = {
 	// This makes Cloudinary assign a unique public_id and is the same as
 	//   the legacy implementation
 	generateFilename: () => undefined,
@@ -21,9 +21,7 @@ var DEFAULT_OPTIONS = {
 	retryAttempts: 3, // For whenExists: 'retry'.
 };
 
-function getEmptyValue () {
-	return undefined;
-}
+const getEmptyValue = () => undefined;
 
 /**
  * CloudinaryImage FieldType Constructor
@@ -48,7 +46,7 @@ function cloudinaryimage (list, path, options) {
 	if (!keystone.get('cloudinary config')) {
 		throw new Error(
 			'Invalid Configuration\n\n'
-			+ 'CloudinaryImage fields (' + list.key + '.' + this.path + ') require the "cloudinary config" option to be set.\n\n'
+			+ `CloudinaryImage fields (${list.key}.${this.path}) require the "cloudinary config" option to be set.\n\n`
 			+ 'See http://v4.keystonejs.com/docs/configuration/#services-cloudinary for more information.\n'
 		);
 	}
@@ -60,14 +58,14 @@ util.inherits(cloudinaryimage, FieldType);
  * Gets the folder for images in this field
  */
 cloudinaryimage.prototype.getFolder = function (item) {
-	var folder = null;
+	let folder = null;
 	if (keystone.get('cloudinary folders') || this.options.folder) {
 		if (typeof this.options.folder === 'string') {
 			folder = this.options.folder;
 		} else if (typeof this.options.folder === 'function') {
 			folder = this.options.folder(item);
 		} else {
-			var folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
+			const folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
 			folderList.push(this.list.path);
 			folderList.push(this.path);
 			folder = folderList.join('/');
@@ -81,29 +79,29 @@ cloudinaryimage.prototype.getFolder = function (item) {
  */
 cloudinaryimage.prototype.addToSchema = function (schema) {
 
-	var cloudinary = require('cloudinary');
+	const cloudinary = require('cloudinary');
 
-	var field = this;
+	const field = this;
 
-	var paths = this.paths = {
+	const paths = this.paths = {
 		// cloudinary fields
-		public_id: this.path + '.public_id',
-		version: this.path + '.version',
-		signature: this.path + '.signature',
-		format: this.path + '.format',
-		resource_type: this.path + '.resource_type',
-		url: this.path + '.url',
-		width: this.path + '.width',
-		height: this.path + '.height',
-		secure_url: this.path + '.secure_url',
+		public_id: `${this.path}.public_id`,
+		version: `${this.path}.version`,
+		signature: `${this.path}.signature`,
+		format: `${this.path}.format`,
+		resource_type: `${this.path}.resource_type`,
+		url: `${this.path}.url`,
+		width: `${this.path}.width`,
+		height: `${this.path}.height`,
+		secure_url: `${this.path}.secure_url`,
 		// virtuals
-		exists: this.path + '.exists',
-		folder: this.path + '.folder',
+		exists: `${this.path}.exists`,
+		folder: `${this.path}.folder`,
 		// form paths
-		select: this.path + '_select',
+		select: `${this.path}_select`,
 	};
 
-	var schemaPaths = this._path.addTo({}, {
+	const schemaPaths = this._path.addTo({}, {
 		public_id: String,
 		version: Number,
 		signature: String,
@@ -117,12 +115,10 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 
 	schema.add(schemaPaths);
 
-	var exists = function (item) {
-		return (item.get(paths.public_id) ? true : false);
-	};
+	const exists = (item) => (item.get(paths.public_id) ? true : false);
 
-	var folder = function (item) { // eslint-disable-line no-unused-vars
-		var folderValue = '';
+	const folder = (item) => { // eslint-disable-line no-unused-vars
+		let folderValue = '';
 
 		if (keystone.get('cloudinary folders')) {
 			if (field.options.folder === 'string') {
@@ -130,7 +126,7 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 			} else if (typeof this.options.folder === 'function') {
 				folderValue = this.options.folder(item);
 			} else {
-				var folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
+				const folderList = keystone.get('cloudinary prefix') ? [keystone.get('cloudinary prefix')] : [];
 				folderList.push(field.list.path);
 				folderList.push(field.path);
 				folderValue = folderList.join('/');
@@ -150,7 +146,7 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 		return folder(this);
 	});
 
-	var src = function (item, options) {
+	const src = (item, options) => {
 		if (!exists(item)) {
 			return '';
 		}
@@ -170,11 +166,11 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 		return cloudinary.url(item.get(paths.public_id), options);
 	};
 
-	var reset = function (item) {
+	const reset = (item) => {
 		item.set(field.path, getEmptyValue());
 	};
 
-	var addSize = function (options, width, height, other) {
+	const addSize = (options, width, height, other) => {
 		if (width) options.width = width;
 		if (height) options.height = height;
 		if (typeof other === 'object') {
@@ -183,7 +179,7 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 		return options;
 	};
 
-	var schemaMethods = {
+	const schemaMethods = {
 		exists: function () {
 			return exists(this);
 		},
@@ -234,9 +230,9 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 		 * @api public
 		 */
 		delete: function () {
-			var _this = this;
-			var promise = new Promise(function (resolve) {
-				cloudinary.uploader.destroy(_this.get(paths.public_id), function (result) {
+			const _this = this;
+			const promise = new Promise((resolve) => {
+				cloudinary.uploader.destroy(_this.get(paths.public_id), (result) => {
 					resolve(result);
 				});
 			});
@@ -249,8 +245,8 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 		 * @api public
 		 */
 		upload: function (file, options) {
-			var promise = new Promise(function (resolve) {
-				cloudinary.uploader.upload(file, function (result) {
+			const promise = new Promise((resolve) => {
+				cloudinary.uploader.upload(file, (result) => {
 					resolve(result);
 				}, options);
 			});
@@ -258,7 +254,7 @@ cloudinaryimage.prototype.addToSchema = function (schema) {
 		},
 	};
 
-	_.forEach(schemaMethods, function (fn, key) {
+	_.forEach(schemaMethods, (fn, key) => {
 		field.underscoreMethod(key, fn);
 	});
 
@@ -281,7 +277,7 @@ cloudinaryimage.prototype.format = function (item) {
  * Gets the field's data from an Item, as used by the React components
  */
 cloudinaryimage.prototype.getData = function (item) {
-	var value = item.get(this.path);
+	const value = item.get(this.path);
 	return typeof value === 'object' ? value : {};
 };
 
@@ -308,7 +304,7 @@ cloudinaryimage.prototype.isModified = function (item) {
 };
 
 
-function validateInput (value) {
+const validateInput = (value) => {
 	// undefined values are always valid
 	if (value === undefined || value === null || value === '') return true;
 	// If a string is provided, check it is an upload or delete instruction
@@ -318,14 +314,14 @@ function validateInput (value) {
 	if (typeof value === 'object' && value.public_id) return true;
 	// None of the above? we can't recognise it.
 	return false;
-}
+};
 
 /**
  * Validates that a value for this field has been provided in a data object
  */
 cloudinaryimage.prototype.validateInput = function (data, callback) {
-	var value = this.getValueFromData(data);
-	var result = validateInput(value);
+	const value = this.getValueFromData(data);
+	const result = validateInput(value);
 	utils.defer(callback, result);
 };
 
@@ -336,7 +332,7 @@ cloudinaryimage.prototype.validateRequiredInput = function (item, data, callback
 	// TODO: We need to also get the `files` argument, so we can check for
 	// uploaded files. without it, this will return false negatives so we
 	// can't actually validate required input at the moment.
-	var result = true;
+	const result = true;
 	// var value = this.getValueFromData(data);
 	// var result = (value || item.get(this.path).public_id) ? true : false;
 	utils.defer(callback, result);
@@ -355,21 +351,21 @@ cloudinaryimage.prototype.inputIsValid = function () {
  * Trim supported file extensions from the public id because cloudinary uses these at
  * the end of the a url to dynamically convert the image filetype
  */
-function trimSupportedFileExtensions (publicId) {
-	var supportedExtensions = [
+const trimSupportedFileExtensions = (publicId) => {
+	const supportedExtensions = [
 		'.jpg', '.jpe', '.jpeg', '.jpc', '.jp2', '.j2k', '.wdp', '.jxr',
 		'.hdp', '.png', '.gif', '.webp', '.bmp', '.tif', '.tiff', '.ico',
 		'.pdf', '.ps', '.ept', '.eps', '.eps3', '.psd', '.svg', '.ai',
 		'.djvu', '.flif', '.tga',
 	];
-	for (var i = 0; i < supportedExtensions.length; i++) {
-		var extension = supportedExtensions[i];
+	for (let i = 0; i < supportedExtensions.length; i++) {
+		const extension = supportedExtensions[i];
 		if (_.endsWith(publicId, extension)) {
 			return publicId.slice(0, -extension.length);
 		}
 	}
 	return publicId;
-}
+};
 
 /**
  * Updates the value for this field in the item from a data object
@@ -386,16 +382,16 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 		files = {};
 	}
 
-	var cloudinary = require('cloudinary');
-	var field = this;
+	const cloudinary = require('cloudinary');
+	const field = this;
 
 	// Prepare values
-	var value = this.getValueFromData(data);
-	var uploadedFile;
+	const value = this.getValueFromData(data);
+	let uploadedFile;
 
 	// Providing the string "remove" or "delete" removes the file and resets the field
 	if (value === 'remove' || value === 'delete') {
-		cloudinary.uploader.destroy(item.get(field.paths.public_id), function (result) {
+		cloudinary.uploader.destroy(item.get(field.paths.public_id), (result) => {
 			if (result.error) {
 				callback(result.error);
 			} else {
@@ -424,23 +420,23 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 
 	// If we have a file to upload, we do that and stop here
 	if (uploadedFile) {
-		var tagPrefix = keystone.get('cloudinary prefix') || '';
-		var uploadOptions = {
+		let tagPrefix = keystone.get('cloudinary prefix') || '';
+		const uploadOptions = {
 			tags: [],
 		};
 		if (tagPrefix.length) {
 			uploadOptions.tags.push(tagPrefix);
 			tagPrefix += '_';
 		}
-		uploadOptions.tags.push(tagPrefix + field.list.path + '_' + field.path);
+		uploadOptions.tags.push(`${tagPrefix}${field.list.path}_${field.path}`);
 		if (keystone.get('env') !== 'production') {
-			uploadOptions.tags.push(tagPrefix + 'dev');
+			uploadOptions.tags.push(`${tagPrefix}dev`);
 		}
-		var folder = this.getFolder(item);
+		const folder = this.getFolder(item);
 		if (folder) {
 			uploadOptions.folder = folder;
 		}
-		this.getFilename(uploadedFile, function (err, filename) {
+		this.getFilename(uploadedFile, (err, filename) => {
 			if (err) return callback(err);
 			// If an undefined filename is returned, Cloudinary will automatically generate a unique
 			//   filename. Therefore undefined is a valid filename value.
@@ -448,7 +444,7 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 				filename = sanitize(filename);
 				uploadOptions.public_id = trimSupportedFileExtensions(filename);
 			}
-			cloudinary.uploader.upload(uploadedFile.path, function (result) {
+			cloudinary.uploader.upload(uploadedFile.path, (result) => {
 				if (result.error) {
 					return callback(result.error);
 				} else {
@@ -485,8 +481,8 @@ cloudinaryimage.prototype.retryFilename = prototypeMethods.retryFilename;
 cloudinaryimage.prototype.getFilename = prototypeMethods.getFilename;
 
 cloudinaryimage.prototype.fileExists = function (filename, callback) {
-	var cloudinary = require('cloudinary');
-	cloudinary.api.resource(filename, function (result) {
+	const cloudinary = require('cloudinary');
+	cloudinary.api.resource(filename, (result) => {
 		if (result.error && result.error.http_code === 404) {
 			// File doesn't exist
 			callback(null, false);
@@ -511,8 +507,8 @@ cloudinaryimage.prototype.fileExists = function (filename, callback) {
  */
 cloudinaryimage.prototype.getRequestHandler = function (item, req, paths, callback) {
 
-	var cloudinary = require('cloudinary');
-	var field = this;
+	const cloudinary = require('cloudinary');
+	const field = this;
 	if (utils.isFunction(paths)) {
 		callback = paths;
 		paths = field.paths;
@@ -523,13 +519,13 @@ cloudinaryimage.prototype.getRequestHandler = function (item, req, paths, callba
 
 	return function () {
 		if (req.body) {
-			var action = req.body[paths.action];
+			const action = req.body[paths.action];
 			if (/^(delete|reset)$/.test(action)) {
 				field.apply(item, action);
 			}
 		}
 		if (req.body && req.body[paths.select]) {
-			cloudinary.api.resource(req.body[paths.select], function (result) {
+			cloudinary.api.resource(req.body[paths.select], (result) => {
 				if (result.error) {
 					callback(result.error);
 				} else {
@@ -538,13 +534,13 @@ cloudinaryimage.prototype.getRequestHandler = function (item, req, paths, callba
 				}
 			});
 		} else if (req.files && req.files[paths.upload] && req.files[paths.upload].size) {
-			var tp = keystone.get('cloudinary prefix') || '';
-			var imageDelete;
+			let tp = keystone.get('cloudinary prefix') || '';
+			let imageDelete;
 			if (tp.length) {
 				tp += '_';
 			}
-			var uploadOptions = {
-				tags: [tp + field.list.path + '_' + field.path, tp + field.list.path + '_' + field.path + '_' + item.id],
+			const uploadOptions = {
+				tags: [`${tp}${field.list.path}_${field.path}`, `${tp}${field.list.path}_${field.path}_${item.id}`],
 			};
 			if (keystone.get('cloudinary folders')) {
 				uploadOptions.folder = item.get(paths.folder);
@@ -553,10 +549,10 @@ cloudinaryimage.prototype.getRequestHandler = function (item, req, paths, callba
 				uploadOptions.tags.push(keystone.get('cloudinary prefix'));
 			}
 			if (keystone.get('env') !== 'production') {
-				uploadOptions.tags.push(tp + 'dev');
+				uploadOptions.tags.push(`${tp}dev`);
 			}
 			if (field.options.publicID) {
-				var publicIdValue = item.get(field.options.publicID);
+				const publicIdValue = item.get(field.options.publicID);
 				if (publicIdValue) {
 					uploadOptions.public_id = publicIdValue;
 				}
@@ -570,7 +566,7 @@ cloudinaryimage.prototype.getRequestHandler = function (item, req, paths, callba
 			}
 
 			// callback to be called upon completion of the 'upload' method
-			var uploadComplete = function (result) {
+			const uploadComplete = (result) => {
 				if (result.error) {
 					callback(result.error);
 				} else {
@@ -585,7 +581,7 @@ cloudinaryimage.prototype.getRequestHandler = function (item, req, paths, callba
 			} else {
 				// otherwise wait until image is deleted before uploading
 				// this avoids problems when deleting/uploading images with the same public_id (issue #598)
-				imageDelete.then(function (result) {
+				imageDelete.then((result) => {
 					if (result.error) {
 						callback(result.error);
 					} else {

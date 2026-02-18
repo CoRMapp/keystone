@@ -1,8 +1,8 @@
-var React = require('react');
+const React = require('react');
 
-var EmbedlyColumn = React.createClass({
+const EmbedlyColumn = React.createClass({
 	renderValue: function () {
-		var value = this.props.data.fields[this.props.col.path];
+		const value = this.props.data.fields[this.props.col.path];
 		if (!value || !_.size(value)) return;
 		return <a href={value.url} target="_blank">{value.url}</a>;
 	},

@@ -1,10 +1,10 @@
-var FieldType = require('../Type');
-var keystone = require('../../../');
-var marked = require('marked');
-var sanitizeHtml = require('sanitize-html');
-var TextType = require('../text/TextType');
-var util = require('util');
-var utils = require('keystone-utils');
+const FieldType = require('../Type');
+const keystone = require('../../../');
+const marked = require('marked');
+const sanitizeHtml = require('sanitize-html');
+const TextType = require('../text/TextType');
+const util = require('util');
+const utils = require('keystone-utils');
 
 /**
  * Markdown FieldType Constructor
@@ -43,15 +43,15 @@ markdown.prototype.validateRequiredInput = TextType.prototype.validateRequiredIn
  */
 markdown.prototype.addToSchema = function (schema) {
 
-	var paths = this.paths = {
-		md: this.path + '.md',
-		html: this.path + '.html',
+	const paths = this.paths = {
+		md: `${this.path}.md`,
+		html: `${this.path}.html`,
 	};
 
-	var markedOptions = this.markedOptions;
-	var sanitizeOptions = this.sanitizeOptions;
+	const markedOptions = this.markedOptions;
+	const sanitizeOptions = this.sanitizeOptions;
 
-	var setMarkdown = function (value) {
+	const setMarkdown = function (value) {
 
 		// Need to check if `this` is a document, because in mongoose 5 setters will also run on queries,
 		// in which case `this` will be amongoose query object.
@@ -68,8 +68,8 @@ markdown.prototype.addToSchema = function (schema) {
 			return undefined;
 		}
 
-		var newMd = sanitizeHtml(value, sanitizeOptions);
-		var newHtml = marked(newMd, markedOptions);
+		const newMd = sanitizeHtml(value, sanitizeOptions);
+		const newHtml = marked(newMd, markedOptions);
 
 		// Return early if no changes to save
 		if (newMd === this.get(paths.md) && newHtml === this.get(paths.html)) {
@@ -86,7 +86,7 @@ markdown.prototype.addToSchema = function (schema) {
 	schema.add({
 		html: { type: String },
 		md: { type: String, set: setMarkdown },
-	}, this.path + '.');
+	}, `${this.path}.`);
 
 	this.bindUnderscoreMethods();
 };
@@ -96,18 +96,18 @@ markdown.prototype.addToSchema = function (schema) {
  * the only difference being that the path isn't this.path but this.paths.md)
  */
 markdown.prototype.addFilterToQuery = function (filter) {
-	var query = {};
+	const query = {};
 	if (filter.mode === 'exactly' && !filter.value) {
 		query[this.paths.md] = filter.inverted ? { $nin: ['', null] } : { $in: ['', null] };
 		return query;
 	}
-	var value = utils.escapeRegExp(filter.value);
+	let value = utils.escapeRegExp(filter.value);
 	if (filter.mode === 'beginsWith') {
-		value = '^' + value;
+		value = `^${value}`;
 	} else if (filter.mode === 'endsWith') {
-		value = value + '$';
+		value = `${value}$`;
 	} else if (filter.mode === 'exactly') {
-		value = '^' + value + '$';
+		value = `^${value}$`;
 	}
 	value = new RegExp(value, filter.caseSensitive ? '' : 'i');
 	query[this.paths.md] = filter.inverted ? { $not: value } : value;
@@ -125,7 +125,7 @@ markdown.prototype.format = function (item) {
  * Gets the field's data from an Item, as used by the React components
  */
 markdown.prototype.getData = function (item) {
-	var value = item.get(this.path);
+	const value = item.get(this.path);
 	return typeof value === 'object' ? value : {};
 };
 
@@ -154,7 +154,7 @@ markdown.prototype.isModified = function (item) {
  * Will accept either the field path, or paths.md
  */
 markdown.prototype.updateItem = function (item, data, callback) {
-	var value = this.getValueFromData(data);
+	const value = this.getValueFromData(data);
 	if (value !== undefined) {
 		item.set(this.paths.md, value);
 	}	else if (this.paths.md in data) {
