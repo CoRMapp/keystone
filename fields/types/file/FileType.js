@@ -163,8 +163,8 @@ file.prototype.updateItem = function (item, data, files, callback) {
 
 	// Find an uploaded file in the files argument, either referenced in the
 	// data argument or named with the field path / field_upload path + suffix
-	if (typeof value === 'string' && value.substr(0, 7) === 'upload:') {
-		uploadedFile = files[value.substr(7)];
+	if (typeof value === 'string' && value.slice(0, 7) === 'upload:') {
+		uploadedFile = files[value.slice(7)];
 	} else {
 		uploadedFile = this.getValueFromData(files) || this.getValueFromData(files, '_upload');
 	}

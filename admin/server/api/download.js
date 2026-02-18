@@ -83,24 +83,24 @@ module.exports = function (req, res) {
 
 			var sendCSV = function (data) {
 
-			res.attachment(req.list.path + '-' + moment().format('YYYYMMDD-HHMMSS') + '.csv');
-			res.setHeader('Content-Type', 'application/octet-stream');
+				res.attachment(req.list.path + '-' + moment().format('YYYYMMDD-HHMMSS') + '.csv');
+				res.setHeader('Content-Type', 'application/octet-stream');
 
-			var content = baby.unparse(data, {
-				delimiter: keystone.get('csv field delimiter') || ',',
-			});
-			res.end(content, 'utf-8');
-		};
+				var content = baby.unparse(data, {
+					delimiter: keystone.get('csv field delimiter') || ',',
+				});
+				res.end(content, 'utf-8');
+			};
 
-		if (!results.length) {
+			if (!results.length) {
 			// fast bail on no results
-			return sendCSV([]);
-		}
-		var data;
+				return sendCSV([]);
+			}
+			var data;
 
-		if (results[0].toCSV) {
+			if (results[0].toCSV) {
 
-			/**
+				/**
 			 * Custom toCSV Method present
 			 *
 			 * Detect dependencies and call it. If the last dependency is `callback`, call it asynchronously.
@@ -112,76 +112,76 @@ module.exports = function (req, res) {
 			 *   - callback (invokes async mode, must be provided last)
 			 */
 
-			var deps = _.map(results[0].toCSV.toString().match(FN_ARGS)[1].split(','), function (i) { return i.trim(); });
+				var deps = _.map(results[0].toCSV.toString().match(FN_ARGS)[1].split(','), function (i) { return i.trim(); });
 
-			var includeRowData = (deps.indexOf('row') > -1);
+				var includeRowData = (deps.indexOf('row') > -1);
 
-			var map = {
-				req: req,
-				user: req.user,
-			};
+				var map = {
+					req: req,
+					user: req.user,
+				};
 
-			var applyDeps = function (fn, _this, _map) {
-				var args = _.map(deps, function (key) {
-					return _map[key];
-				});
-				return fn.apply(_this, args);
-			};
+				var applyDeps = function (fn, _this, _map) {
+					var args = _.map(deps, function (key) {
+						return _map[key];
+					});
+					return fn.apply(_this, args);
+				};
 
-			if (_.last(deps) === 'callback') {
+				if (_.last(deps) === 'callback') {
 				// Allow async toCSV by detecting the last argument is callback
-				return async.map(results, function (i, callback) {
-					var _map = _.clone(map);
-					_map.callback = callback;
-					if (includeRowData) {
-						_map.row = getRowData(i);
-					}
-					applyDeps(i.toCSV, i, _map);
-				}, function (err, results) {
-					if (err) {
-						console.log('Error generating CSV for list ' + req.list.key);
-						console.log(err);
-						return res.send(keystone.wrapHTMLError('Error generating CSV', 'Please check the log for more details, or contact support.'));
-					}
-					sendCSV(results);
-				});
-			} else {
-				// Without a callback, toCSV must return the value
-				data = [];
-				if (includeRowData) {
-					// if row data is required, add it to the map for each iteration
-					_.forEach(results, function (i) {
+					return async.map(results, function (i, callback) {
 						var _map = _.clone(map);
-						_map.row = getRowData(i);
-						data.push(applyDeps(i.toCSV, i, _map));
+						_map.callback = callback;
+						if (includeRowData) {
+							_map.row = getRowData(i);
+						}
+						applyDeps(i.toCSV, i, _map);
+					}, function (err, results) {
+						if (err) {
+							console.log('Error generating CSV for list ' + req.list.key);
+							console.log(err);
+							return res.send(keystone.wrapHTMLError('Error generating CSV', 'Please check the log for more details, or contact support.'));
+						}
+						sendCSV(results);
 					});
 				} else {
+				// Without a callback, toCSV must return the value
+					data = [];
+					if (includeRowData) {
+					// if row data is required, add it to the map for each iteration
+						_.forEach(results, function (i) {
+							var _map = _.clone(map);
+							_map.row = getRowData(i);
+							data.push(applyDeps(i.toCSV, i, _map));
+						});
+					} else {
 					// fast path: use the same map for each iteration
-					_.forEach(results, function (i) {
-						data.push(applyDeps(i.toCSV, i, map));
-					});
+						_.forEach(results, function (i) {
+							data.push(applyDeps(i.toCSV, i, map));
+						});
+					}
+					return sendCSV(data);
 				}
-				return sendCSV(data);
-			}
 
-		} else {
+			} else {
 
-			/**
+				/**
 			 * Generic conversion to CSV
 			 *
 			 * Loops through each of the fields in the List and uses each field's `format` method
 			 * to generate the data
 			 */
 
-			data = [];
-			_.forEach(results, function (i) {
-				data.push(getRowData(i));
-			});
-			return sendCSV(data);
-		}
+				data = [];
+				_.forEach(results, function (i) {
+					data.push(getRowData(i));
+				});
+				return sendCSV(data);
+			}
 
-})
-.catch(function (err) {
-	return res.status(500).json(err);
-});
+		})
+		.catch(function (err) {
+			return res.status(500).json(err);
+		});
 };

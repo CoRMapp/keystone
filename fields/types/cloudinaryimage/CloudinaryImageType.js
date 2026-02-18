@@ -404,8 +404,8 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 	// Find an uploaded file in the files argument, either referenced in the
 	// data argument or named with the field path / field_upload path + suffix
 	// Base64 data and remote URLs are also accepted as images to upload
-	if (typeof value === 'string' && value.substr(0, 7) === 'upload:') {
-		uploadedFile = files[value.substr(7)];
+	if (typeof value === 'string' && value.slice(0, 7) === 'upload:') {
+		uploadedFile = files[value.slice(7)];
 	} else if (typeof value === 'string' && /^(data:[a-z\/]+;base64)|(https?\:\/\/)/.test(value)) {
 		uploadedFile = { path: value };
 	} else {

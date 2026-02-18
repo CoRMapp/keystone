@@ -325,8 +325,8 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 		if (typeof value === 'string') {
 			// detect file upload (field value must be a reference to a field in the
 			// uploaded files object provided by multer)
-			if (value.substr(0, 7) === 'upload:') {
-				const uploadFieldPath = value.substr(7);
+			if (value.slice(0, 7) === 'upload:') {
+				const uploadFieldPath = value.slice(7);
 				return files[uploadFieldPath];
 			}
 			// detect a URL or Base64 Data

@@ -10,7 +10,7 @@ const MarkdownColumn = React.createClass({
 	},
 	renderValue () {
 		const value = this.props.data.fields[this.props.col.path];
-		return (value && Object.keys(value).length) ? value.md.substr(0, 100) : null;
+		return (value && Object.keys(value).length) ? value.md.slice(0, 100) : null;
 	},
 	render () {
 		return (
