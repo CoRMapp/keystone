@@ -79,9 +79,6 @@ module.exports = function createDynamicRouter (keystone) {
 		router.get('/api/cloudinary/autocomplete', require('../api/cloudinary').autocomplete);
 		router.post('/api/cloudinary/upload', require('../api/cloudinary').upload);
 	}
-	if (keystone.get('s3 config')) {
-		router.post('/api/s3/upload', require('../api/s3').upload);
-	}
 
 	// #5: Core Lists API
 	var initList = require('../middleware/initList');
