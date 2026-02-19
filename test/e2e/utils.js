@@ -43,7 +43,7 @@ exports.plural = function (count, sn, pl) {
 exports.upcase = function (str) {
 	if (str && str.toString) str = str.toString();
 	if (typeof str !== 'string' || !str.length) return '';
-	return (str.substr(0, 1).toUpperCase() + str.substr(1));
+	return (str.slice(0, 1).toUpperCase() + str.slice(1));
 };
 
 
@@ -58,7 +58,7 @@ exports.upcase = function (str) {
 exports.downcase = function (str) {
 	if (str && str.toString) str = str.toString();
 	if (typeof str !== 'string' || !str.length) return '';
-	return (str.substr(0, 1).toLowerCase() + str.substr(1));
+	return (str.slice(0, 1).toLowerCase() + str.slice(1));
 };
 
 

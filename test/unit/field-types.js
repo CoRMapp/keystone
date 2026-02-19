@@ -17,7 +17,7 @@ types.forEach(function (name) {
 
 	test.initList(List);
 	List.register();
-	describe('FieldType: ' + name.substr(0, 1).toUpperCase() + name.substr(1), function () {
+	describe('FieldType: ' + name.slice(0, 1).toUpperCase() + name.slice(1), function () {
 		before(async function () {
 			await List.model.deleteMany({});
 		});

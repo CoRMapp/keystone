@@ -58,23 +58,23 @@ localfile.properName = 'LocalFile';
  */
 localfile.prototype.addToSchema = function (schema) {
 
-	var field = this;
+	const field = this;
 
-	var paths = this.paths = {
+	const paths = this.paths = {
 		// fields
-		filename: this.path + '.filename',
-		originalname: this.path + '.originalname',
-		path: this.path + '.path',
-		size: this.path + '.size',
-		filetype: this.path + '.filetype',
+		filename: `${this.path}.filename`,
+		originalname: `${this.path}.originalname`,
+		path: `${this.path}.path`,
+		size: `${this.path}.size`,
+		filetype: `${this.path}.filetype`,
 		// virtuals
-		exists: this.path + '.exists',
-		href: this.path + '.href',
-		upload: this.path + '_upload',
-		action: this.path + '_action',
+		exists: `${this.path}.exists`,
+		href: `${this.path}.href`,
+		upload: `${this.path}_upload`,
+		action: `${this.path}_action`,
 	};
 
-	var schemaPaths = this._path.addTo({}, {
+	const schemaPaths = this._path.addTo({}, {
 		filename: String,
 		originalname: String,
 		path: String,
@@ -85,9 +85,9 @@ localfile.prototype.addToSchema = function (schema) {
 	schema.add(schemaPaths);
 
 	// exists checks for a matching file at run-time
-	var exists = function (item) {
-		var filepath = item.get(paths.path);
-		var filename = item.get(paths.filename);
+	const exists = (item) => {
+		const filepath = item.get(paths.path);
+		const filename = item.get(paths.filename);
 
 		if (!filepath || !filename) {
 			return false;
@@ -107,7 +107,7 @@ localfile.prototype.addToSchema = function (schema) {
 	});
 
 	// reset clears the value of the field
-	var reset = function (item) {
+	const reset = (item) => {
 		item.set(field.path, {
 			filename: '',
 			path: '',
@@ -116,7 +116,7 @@ localfile.prototype.addToSchema = function (schema) {
 		});
 	};
 
-	var schemaMethods = {
+	const schemaMethods = {
 		exists: function () {
 			return exists(this);
 		},
@@ -141,7 +141,7 @@ localfile.prototype.addToSchema = function (schema) {
 		},
 	};
 
-	_.forEach(schemaMethods, function (fn, key) {
+	_.forEach(schemaMethods, (fn, key) => {
 		field.underscoreMethod(key, fn);
 	});
 
@@ -162,7 +162,7 @@ localfile.prototype.addToSchema = function (schema) {
 localfile.prototype.format = function (item) {
 	if (!item.get(this.paths.filename)) return '';
 	if (this.hasFormatter()) {
-		var file = item.get(this.path);
+		const file = item.get(this.path);
 		file.href = this.href(item);
 		return this.options.format.call(this, item, file);
 	}
@@ -185,8 +185,8 @@ localfile.prototype.hasFormatter = function () {
  */
 localfile.prototype.href = function (item) {
 	if (!item.get(this.paths.filename)) return '';
-	var prefix = this.options.prefix ? this.options.prefix : item.get(this.paths.path);
-	return prefix + '/' + item.get(this.paths.filename);
+	const prefix = this.options.prefix ? this.options.prefix : item.get(this.paths.path);
+	return `${prefix}/${item.get(this.paths.filename)}`;
 };
 
 /**
@@ -215,7 +215,7 @@ function validateInput (value) {
  * Validates that a value for this field has been provided in a data object
  */
 localfile.prototype.validateInput = function (data, callback) {
-	var value = this.getValueFromData(data);
+	const value = this.getValueFromData(data);
 	utils.defer(callback, validateInput(value));
 };
 
@@ -223,8 +223,8 @@ localfile.prototype.validateInput = function (data, callback) {
  * Validates that input has been provided
  */
 localfile.prototype.validateRequiredInput = function (item, data, callback) {
-	var value = this.getValueFromData(data);
-	var result = (value || item.get(this.path).path) ? true : false;
+	const value = this.getValueFromData(data);
+	const result = (value || item.get(this.path).path) ? true : false;
 	utils.defer(callback, result);
 };
 
@@ -254,13 +254,13 @@ localfile.prototype.updateItem = function (item, data, callback) { // eslint-dis
  * @api public
  */
 localfile.prototype.uploadFile = function (item, file, update, callback) {
-	var field = this;
-	var prefix = field.options.datePrefix ? moment().format(field.options.datePrefix) + '-' : '';
-	var filename = prefix + file.name;
-	var filetype = file.mimetype || file.type;
+	const field = this;
+	const prefix = field.options.datePrefix ? `${moment().format(field.options.datePrefix)}-` : '';
+	let filename = prefix + file.name;
+	const filetype = file.mimetype || file.type;
 
 	if (field.options.allowedTypes && !_.includes(field.options.allowedTypes, filetype)) {
-		return callback(new Error('Unsupported File Type: ' + filetype));
+		return callback(new Error(`Unsupported File Type: ${filetype}`));
 	}
 
 	if (typeof update === 'function') {
@@ -268,17 +268,17 @@ localfile.prototype.uploadFile = function (item, file, update, callback) {
 		update = false;
 	}
 
-	var doMove = function (callback) {
+	const doMove = (callback) => {
 
 		if (typeof field.options.filename === 'function') {
 			filename = field.options.filename(item, file);
 		}
 
-		fs.move(file.path, path.join(field.options.dest, filename), { clobber: field.options.overwrite }, function (err) {
+		fs.move(file.path, path.join(field.options.dest, filename), { clobber: field.options.overwrite }, (err) => {
 
 			if (err) return callback(err);
 
-			var fileData = {
+			const fileData = {
 				filename: filename,
 				originalname: file.originalname,
 				path: field.options.dest,
@@ -295,11 +295,11 @@ localfile.prototype.uploadFile = function (item, file, update, callback) {
 		});
 	};
 
-	field.callHook('pre:move', item, file, function (err) {
+	field.callHook('pre:move', item, file, (err) => {
 		if (err) return callback(err);
-		doMove(function (err, fileData) {
+		doMove((err, fileData) => {
 			if (err) return callback(err);
-			field.callHook('post:move', [item, file, fileData], function (err) {
+			field.callHook('post:move', [item, file, fileData], (err) => {
 				if (err) return callback(err);
 				callback(null, fileData);
 			});
@@ -318,7 +318,7 @@ localfile.prototype.uploadFile = function (item, file, update, callback) {
  */
 localfile.prototype.getRequestHandler = function (item, req, paths, callback) {
 
-	var field = this;
+	const field = this;
 
 	if (utils.isFunction(paths)) {
 		callback = paths;
@@ -332,7 +332,7 @@ localfile.prototype.getRequestHandler = function (item, req, paths, callback) {
 	return function () {
 
 		if (req.body) {
-			var action = req.body[paths.action];
+			const action = req.body[paths.action];
 
 			if (/^(delete|reset)$/.test(action)) {
 				field.apply(item, action);

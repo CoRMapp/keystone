@@ -49,7 +49,7 @@ types.forEach(function (name) {
 		});
 	};
 
-	describe('FieldType: ' + name.substr(0, 1).toUpperCase() + name.substr(1) + ': Filter', function () {
+	describe('FieldType: ' + name.slice(0, 1).toUpperCase() + name.slice(1) + ': Filter', function () {
 		before(async function () {
 			await List.model.deleteMany({});
 			const testItems = {};

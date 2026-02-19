@@ -62,24 +62,24 @@ localfiles.properName = 'LocalFiles';
  */
 localfiles.prototype.addToSchema = function (schema) {
 
-	var field = this;
-	var mongoose = keystone.mongoose;
+	const field = this;
+	const mongoose = keystone.mongoose;
 
-	var paths = this.paths = {
+	const paths = this.paths = {
 		// fields
-		filename: this.path + '.filename',
-		path: this.path + '.path',
-		originalname: this.path + '.originalname',
-		size: this.path + '.size',
-		filetype: this.path + '.filetype',
+		filename: `${this.path}.filename`,
+		path: `${this.path}.path`,
+		originalname: `${this.path}.originalname`,
+		size: `${this.path}.size`,
+		filetype: `${this.path}.filetype`,
 		// virtuals
-		exists: this.path + '.exists',
-		upload: this.path + '_upload',
-		action: this.path + '_action',
-		order: this.path + '_order',
+		exists: `${this.path}.exists`,
+		upload: `${this.path}_upload`,
+		action: `${this.path}_action`,
+		order: `${this.path}_order`,
 	};
 
-	var schemaPaths = new mongoose.Schema({
+	const schemaPaths = new mongoose.Schema({
 		filename: String,
 		originalname: String,
 		path: String,
@@ -94,9 +94,9 @@ localfiles.prototype.addToSchema = function (schema) {
 
 	schema.add(this._path.addTo({}, [schemaPaths]));
 
-	var exists = function (item, element_id) {
-		var values = item.get(field.path);
-		var value;
+	const exists = (item, element_id) => {
+		const values = item.get(field.path);
+		let value;
 
 		if (typeof values === 'undefined' || values.length === 0) {
 			return false;
@@ -107,15 +107,15 @@ localfiles.prototype.addToSchema = function (schema) {
 			value = values[0];
 		} else {
 			// allow implicit type coercion to compare string IDs with MongoID objects
-			value = values.find(function (val) { return val._id == element_id; }); // eslint-disable-line eqeqeq
+			value = values.find((val) => val._id == element_id); // eslint-disable-line eqeqeq
 		}
 
 		if (typeof value === 'undefined') {
 			return false;
 		}
 
-		var filepaths = value.path;
-		var filename = value.filename;
+		const filepaths = value.path;
+		const filename = value.filename;
 
 		if (!filepaths || !filename) {
 			return false;
@@ -129,13 +129,13 @@ localfiles.prototype.addToSchema = function (schema) {
 		return schemaMethods.exists.apply(this);
 	});
 
-	var reset = function (item, element_id) {
+	const reset = (item, element_id) => {
 		if (typeof element_id === 'undefined') {
 			item.set(field.path, []);
 		} else {
-			var values = item.get(field.path);
+			const values = item.get(field.path);
 			// allow implicit type coercion to compare string IDs with MongoID objects
-			var value = values.find(function (val) { return val._id == element_id; }); // eslint-disable-line eqeqeq
+			const value = values.find((val) => val._id == element_id); // eslint-disable-line eqeqeq
 			if (typeof value !== 'undefined') {
 				values.splice(values.indexOf(value), 1);
 				item.set(field.path, values);
@@ -143,7 +143,7 @@ localfiles.prototype.addToSchema = function (schema) {
 		}
 	};
 
-	var schemaMethods = {
+	const schemaMethods = {
 		exists: function () {
 			return exists(this);
 		},
@@ -158,9 +158,9 @@ localfiles.prototype.addToSchema = function (schema) {
 		 */
 		delete: function (element_id) {
 			if (exists(this, element_id)) {
-				var values = this.get(field.path);
+				const values = this.get(field.path);
 				// allow implicit type coercion to compare string IDs with MongoID objects
-				var value = values.find(function (val) { return val._id == element_id; }); // eslint-disable-line eqeqeq
+				const value = values.find((val) => val._id == element_id); // eslint-disable-line eqeqeq
 				if (typeof value !== 'undefined') {
 					fs.unlinkSync(path.join(value.path, value.filename));
 				}
@@ -169,7 +169,7 @@ localfiles.prototype.addToSchema = function (schema) {
 		},
 	};
 
-	_.forEach(schemaMethods, function (fn, key) {
+	_.forEach(schemaMethods, (fn, key) => {
 		field.underscoreMethod(key, fn);
 	});
 
@@ -185,11 +185,11 @@ localfiles.prototype.addToSchema = function (schema) {
  * Formats the field value
  */
 localfiles.prototype.format = function (item, i) {
-	var files = item.get(this.path);
+	const files = item.get(this.path);
 	if (typeof i === 'undefined') {
 		return utils.plural(files.length, '* File');
 	}
-	var file = files[i];
+	const file = files[i];
 	if (!file) return '';
 	if (this.hasFormatter()) {
 		file.href = this.href(file);
@@ -210,8 +210,8 @@ localfiles.prototype.hasFormatter = function () {
  */
 localfiles.prototype.href = function (file) {
 	if (!file.filename) return '';
-	var prefix = this.options.prefix ? this.options.prefix : file.path;
-	return prefix + '/' + file.filename;
+	const prefix = this.options.prefix ? this.options.prefix : file.path;
+	return `${prefix}/${file.filename}`;
 };
 
 /**
@@ -244,32 +244,32 @@ localfiles.prototype.updateItem = function (item, data, callback) { // eslint-di
  */
 localfiles.prototype.uploadFiles = function (item, files, update, callback) {
 
-	var field = this;
+	const field = this;
 
 	if (typeof update === 'function') {
 		callback = update;
 		update = false;
 	}
 
-	async.map(files, function (file, processedFile) {
+	async.map(files, (file, processedFile) => {
 
-		var prefix = field.options.datePrefix ? moment().format(field.options.datePrefix) + '-' : '';
-		var filename = prefix + file.name;
-		var filetype = file.mimetype || file.type;
+		const prefix = field.options.datePrefix ? `${moment().format(field.options.datePrefix)}-` : '';
+		let filename = prefix + file.name;
+		const filetype = file.mimetype || file.type;
 
 		if (field.options.allowedTypes && !_.includes(field.options.allowedTypes, filetype)) {
-			return processedFile(new Error('Unsupported File Type: ' + filetype));
+			return processedFile(new Error(`Unsupported File Type: ${filetype}`));
 		}
 
-		var doMove = function (doneMove) {
+		const doMove = (doneMove) => {
 
 			if (typeof field.options.filename === 'function') {
 				filename = field.options.filename(item, file);
 			}
 
-			fs.move(file.path, path.join(field.options.dest, filename), { clobber: field.options.overwrite }, function (err) {
+			fs.move(file.path, path.join(field.options.dest, filename), { clobber: field.options.overwrite }, (err) => {
 				if (err) return doneMove(err);
-				var fileData = {
+				const fileData = {
 					filename: filename,
 					originalname: file.originalname,
 					path: field.options.dest,
@@ -284,11 +284,11 @@ localfiles.prototype.uploadFiles = function (item, files, update, callback) {
 
 		};
 
-		field.callHook('pre:move', item, file, function (err) {
+		field.callHook('pre:move', item, file, (err) => {
 			if (err) return processedFile(err);
-			doMove(function (err, fileData) {
+			doMove((err, fileData) => {
 				if (err) return processedFile(err);
-				field.callHook('post:move', item, file, fileData, function (err) {
+				field.callHook('post:move', item, file, fileData, (err) => {
 					return processedFile(err, fileData);
 				});
 			});
@@ -307,7 +307,7 @@ localfiles.prototype.uploadFiles = function (item, files, update, callback) {
  */
 localfiles.prototype.getRequestHandler = function (item, req, paths, callback) {
 
-	var field = this;
+	const field = this;
 
 	if (utils.isFunction(paths)) {
 		callback = paths;
@@ -322,22 +322,22 @@ localfiles.prototype.getRequestHandler = function (item, req, paths, callback) {
 
 		// Order
 		if (req.body[paths.order]) {
-			var files = item.get(field.path);
-			var newOrder = req.body[paths.order].split(',');
-			files.sort(function (a, b) {
+			const files = item.get(field.path);
+			const newOrder = req.body[paths.order].split(',');
+			files.sort((a, b) => {
 				return (newOrder.indexOf(a._id.toString()) > newOrder.indexOf(b._id.toString())) ? 1 : -1;
 			});
 		}
 
 		// Removals
 		if (req.body && req.body[paths.action]) {
-			var actions = req.body[paths.action].split('|');
-			actions.forEach(function (action) {
+			const actions = req.body[paths.action].split('|');
+			actions.forEach((action) => {
 				action = action.split(':');
-				var method = action[0];
-				var ids = action[1];
+				const method = action[0];
+				const ids = action[1];
 				if (!(/^(delete|reset)$/.test(method)) || !ids) return;
-				ids.split(',').forEach(function (id) {
+				ids.split(',').forEach((id) => {
 					field.apply(item, method, id);
 				});
 			});
@@ -345,13 +345,13 @@ localfiles.prototype.getRequestHandler = function (item, req, paths, callback) {
 
 		// Upload new files
 		if (req.files) {
-			var upFiles = req.files[paths.upload];
+			let upFiles = req.files[paths.upload];
 			if (upFiles) {
 				if (!Array.isArray(upFiles)) {
 					upFiles = [upFiles];
 				}
 				if (upFiles.length > 0) {
-					upFiles = _.filter(upFiles, function (f) { return typeof f.name !== 'undefined' && f.name.length > 0; });
+					upFiles = _.filter(upFiles, (f) => typeof f.name !== 'undefined' && f.name.length > 0);
 					if (upFiles.length > 0) {
 						return field.uploadFiles(item, upFiles, true, callback);
 					}

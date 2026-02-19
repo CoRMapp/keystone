@@ -11,7 +11,7 @@ module.exports = {
 			const options = {};
 
 			if (keystone.get('wysiwyg cloudinary images filenameAsPublicID')) {
-				options.public_id = req.files.file.originalname.substring(0, req.files.file.originalname.lastIndexOf('.'));
+				options.public_id = req.files.file.originalname.slice(0, req.files.file.originalname.lastIndexOf('.'));
 			}
 
 			cloudinary.uploader.upload(req.files.file.path, function (result) {

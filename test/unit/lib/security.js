@@ -30,13 +30,13 @@ describe('CSRF', function () {
 	describe('createSecret()', function () {
 		it('must create a new secret', function () {
 			const secret = csrf.createSecret();
-			secret.substr(secret.length - 2, 2).must.equal('==');
+			secret.slice(-2).must.equal('==');
 		});
 	});
 	describe('getSecret(req)', function () {
 		it('must return a new secret', function () {
 			const secret = memory.firstSecret = csrf.getSecret(memory.req);
-			secret.substr(secret.length - 2, 2).must.equal('==');
+			secret.slice(-2).must.equal('==');
 		});
 		it('must return the same secret', function () {
 			const secret = csrf.getSecret(memory.req);
