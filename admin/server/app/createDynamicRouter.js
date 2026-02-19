@@ -1,7 +1,7 @@
-var bodyParser = require('body-parser');
-var express = require('express');
+const bodyParser = require('body-parser');
+const express = require('express');
 
-var uploads = require('../../../lib/uploads');
+const uploads = require('../../../lib/uploads');
 
 module.exports = function createDynamicRouter (keystone) {
 	// ensure keystone nav has been initialised
@@ -10,10 +10,10 @@ module.exports = function createDynamicRouter (keystone) {
 		keystone.nav = keystone.initNav();
 	}
 
-	var router = express.Router();
-	var IndexRoute = require('../routes/index');
-	var SigninRoute = require('../routes/signin');
-	var SignoutRoute = require('../routes/signout');
+	const router = express.Router();
+	const IndexRoute = require('../routes/index');
+	const SigninRoute = require('../routes/signin');
+	const SignoutRoute = require('../routes/signout');
 
 	// Use bodyParser and multer to parse request bodies and file uploads
 	router.use(bodyParser.json({}));
@@ -81,7 +81,7 @@ module.exports = function createDynamicRouter (keystone) {
 	}
 
 	// #5: Core Lists API
-	var initList = require('../middleware/initList');
+	const initList = require('../middleware/initList');
 
 	// lists
 	router.all('/api/counts', require('../api/counts'));

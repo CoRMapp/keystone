@@ -6,15 +6,15 @@
  * logging, etc) for reduced overhead.
  */
 
-var browserify = require('../middleware/browserify');
-var express = require('express');
-var less = require('less-middleware');
-var path = require('path');
-var str = require('string-to-stream');
+const browserify = require('../middleware/browserify');
+const express = require('express');
+const less = require('less-middleware');
+const path = require('path');
+const str = require('string-to-stream');
 
 function buildFieldTypesStream (fieldTypes) {
-	var src = '';
-	var types = Object.keys(fieldTypes);
+	let src = '';
+	const types = Object.keys(fieldTypes);
 	['Column', 'Field', 'Filter'].forEach(function (i) {
 		src += 'exports.' + i + 's = {\n';
 		types.forEach(function (type) {
@@ -33,12 +33,12 @@ function buildFieldTypesStream (fieldTypes) {
 }
 
 module.exports = function createStaticRouter (keystone) {
-	var keystoneHash = keystone.createKeystoneHash();
-	var writeToDisk = keystone.get('cache admin bundles');
-	var router = express.Router();
+	const keystoneHash = keystone.createKeystoneHash();
+	const writeToDisk = keystone.get('cache admin bundles');
+	const router = express.Router();
 
 	/* Prepare browserify bundles */
-	var bundles = {
+	const bundles = {
 		fields: browserify({
 			stream: buildFieldTypesStream(keystone.fieldTypes),
 			expose: 'FieldTypes',
@@ -67,12 +67,12 @@ module.exports = function createStaticRouter (keystone) {
 	}
 
 	/* Prepare LESS options */
-	var elementalPath = path.join(path.dirname(require.resolve('elemental')), '..');
-	var reactSelectPath = path.join(path.dirname(require.resolve('react-select')), '..');
-	var keystoneTinymcePath = path.dirname(require.resolve('keystone-tinymce'));
-	var customStylesPath = keystone.getPath('adminui custom styles') || '';
+	const elementalPath = path.join(path.dirname(require.resolve('elemental')), '..');
+	const reactSelectPath = path.join(path.dirname(require.resolve('react-select')), '..');
+	const keystoneTinymcePath = path.dirname(require.resolve('keystone-tinymce'));
+	const customStylesPath = keystone.getPath('adminui custom styles') || '';
 
-	var lessOptions = {
+	const lessOptions = {
 		render: {
 			javascriptEnabled: true,
 			modifyVars: {

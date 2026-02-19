@@ -2,14 +2,14 @@
 TODO: Needs Review and Spec
 */
 
-var moment = require('moment');
+const moment = require('moment');
 module.exports = function (req, res, next) {
-	var baby = require('papaparse');
-	var keystone = req.keystone;
+	const baby = require('papaparse');
+	const keystone = req.keystone;
 
-	var format = req.params.format.split('.')[1]; // json or csv
-	var where = {};
-	var filters = req.query.filters;
+	const format = req.params.format.split('.')[1]; // json or csv
+	const where = {};
+	let filters = req.query.filters;
 	if (filters && typeof filters === 'string') {
 		try { filters = JSON.parse(req.query.filters); }
 		catch (e) { /* */ }
@@ -20,7 +20,7 @@ module.exports = function (req, res, next) {
 	if (req.query.search) {
 		Object.assign(where, req.list.addSearchToQuery(req.query.search));
 	}
-	var query = req.list.model.find(where);
+	const query = req.list.model.find(where);
 	if (req.query.populate) {
 		query.populate(req.query.populate);
 	}
@@ -29,15 +29,15 @@ module.exports = function (req, res, next) {
 			query.populate(i.path);
 		});
 	}
-	var sort = req.list.expandSort(req.query.sort);
+	const sort = req.list.expandSort(req.query.sort);
 	query.sort(sort.string);
 	query.exec()
 		.then(function (results) {
-			var data;
-			var fields = [];
+			let data;
+			const fields = [];
 			if (format === 'csv') {
 				data = results.map(function (item) {
-					var row = req.list.getCSVData(item, {
+					const row = req.list.getCSVData(item, {
 						expandRelationshipFields: req.query.expandRelationshipFields,
 						fields: req.query.select,
 						user: req.user,
@@ -53,7 +53,7 @@ module.exports = function (req, res, next) {
 				});
 				res.attachment(req.list.path + '-' + moment().format('YYYYMMDD-HHMMSS') + '.csv');
 				res.setHeader('Content-Type', 'application/octet-stream');
-				var content = baby.unparse({
+				const content = baby.unparse({
 					data: data,
 					fields: fields,
 				}, {

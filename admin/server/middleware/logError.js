@@ -4,7 +4,7 @@ module.exports = function (req, res, next) {
 			err = description;
 			description = null;
 		}
-		var msg = '[' + endpoint + ']';
+		let msg = '[' + endpoint + ']';
 		msg += description ? ' ' + description + ':' : ' error:';
 		if (err) {
 			console.log(msg, err.message, '\n' + err.stack);

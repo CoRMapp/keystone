@@ -38,7 +38,7 @@ module.exports = function (req, res, next) {
 			detail = detail.name !== 'Error' ? detail.name + ': ' + detail.message : detail.message;
 		}
 		// send error as json
-		var data = typeof error === 'string' || (error && detail)
+		const data = typeof error === 'string' || (error && detail)
 			? { error: error, detail: detail }
 			: error;
 		res.json(data);

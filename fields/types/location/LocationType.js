@@ -2,7 +2,7 @@ const _ = require('lodash');
 const FieldType = require('../Type');
 const https = require('https');
 const keystone = require('../../../');
-const querystring = require('querystring');
+
 const util = require('util');
 const utils = require('keystone-utils');
 
@@ -359,7 +359,7 @@ function doGoogleGeocodeRequest (address, region, callback) {
 		options.key = keystone.get('google server api key');
 	}
 
-	const endpoint = `https://maps.googleapis.com/maps/api/geocode/json?${querystring.stringify(options)}`;
+	const endpoint = `https://maps.googleapis.com/maps/api/geocode/json?${new URLSearchParams(options).toString()}`;
 
 	https.get(endpoint, function (res) {
 		const data = [];

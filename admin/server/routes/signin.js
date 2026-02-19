@@ -1,12 +1,12 @@
-var ejs = require('ejs');
-var path = require('path');
+const ejs = require('ejs');
+const path = require('path');
 
-var templatePath = path.resolve(__dirname, '../templates/signin.html');
+const templatePath = path.resolve(__dirname, '../templates/signin.html');
 
 module.exports = function SigninRoute (req, res) {
-	var keystone = req.keystone;
-	var UserList = keystone.list(keystone.get('user model'));
-	var locals = {
+	const keystone = req.keystone;
+	const UserList = keystone.list(keystone.get('user model'));
+	const locals = {
 		adminPath: '/' + keystone.get('admin path'),
 		brand: keystone.get('brand'),
 		csrf: { header: {} },
