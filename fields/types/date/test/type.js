@@ -120,7 +120,6 @@ exports.testFieldType = (List) => {
 				done();
 			});
 		});
-
 	});
 
 	describe('validateInput', function () {

@@ -7,7 +7,6 @@ const TextType = require('../text/TextType');
  * @api public
  */
 class html extends FieldType {
-
 	get _nativeType () { return String; }
 
 	constructor (list, path, options) {
@@ -17,7 +16,6 @@ class html extends FieldType {
 		this.height = options.height || 180;
 		this._properties = ['wysiwyg', 'height'];
 	}
-
 }
 
 html.properName = 'Html';

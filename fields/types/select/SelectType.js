@@ -8,7 +8,6 @@ const utils = require('keystone-utils');
  * @api public
  */
 class select extends FieldType {
-
 	get _nativeType () { return this.options && this.options.numeric ? Number : String; }
 	get _underscoreMethods () { return ['format', 'pluck']; }
 
@@ -175,7 +174,6 @@ class select extends FieldType {
 	format (item) {
 		return this.labels[item.get(this.path)] || '';
 	}
-
 }
 
 select.properName = 'Select';

@@ -45,6 +45,5 @@ module.exports = {
 		browser.adminUIInitialFormScreen.assertFlashError("Please enter a valid date and time in the Field A field");
 
 		browser.adminUIInitialFormScreen.cancel();
-
 	}
 };

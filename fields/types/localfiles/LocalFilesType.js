@@ -14,7 +14,6 @@ See https://github.com/keystonejs/keystone/wiki/File-Fields-Upgrade-Guide
  * @api public
  */
 function localfiles (list, path, options) {
-
 	throw new Error('The LocalFiles field type has been removed. Please use File instead.'
 		+ '\n\nSee https://github.com/keystonejs/keystone/wiki/File-Fields-Upgrade-Guide\n');
 
@@ -58,7 +57,6 @@ localfiles.properName = 'LocalFiles';
 // util.inherits(localfiles, FieldType);
 
 localfiles.prototype.addToSchema = function (schema) {
-
 	const field = this;
 	const mongoose = keystone.mongoose;
 
@@ -209,7 +207,6 @@ localfiles.prototype.updateItem = function (item, data, callback) { // eslint-di
 };
 
 localfiles.prototype.uploadFiles = function (item, files, update, callback) {
-
 	const field = this;
 
 	if (typeof update === 'function') {
@@ -218,7 +215,6 @@ localfiles.prototype.uploadFiles = function (item, files, update, callback) {
 	}
 
 	async.map(files, (file, processedFile) => {
-
 		const prefix = field.options.datePrefix ? `${moment().format(field.options.datePrefix)}-` : '';
 		let filename = prefix + file.name;
 		const filetype = file.mimetype || file.type;
@@ -228,7 +224,6 @@ localfiles.prototype.uploadFiles = function (item, files, update, callback) {
 		}
 
 		const doMove = (doneMove) => {
-
 			if (typeof field.options.filename === 'function') {
 				filename = field.options.filename(item, file);
 			}
@@ -247,7 +242,6 @@ localfiles.prototype.uploadFiles = function (item, files, update, callback) {
 				}
 				doneMove(null, fileData);
 			});
-
 		};
 
 		field.callHook('pre:move', item, file, (err) => {
@@ -259,13 +253,10 @@ localfiles.prototype.uploadFiles = function (item, files, update, callback) {
 				});
 			});
 		});
-
 	}, callback);
-
 };
 
 localfiles.prototype.getRequestHandler = function (item, req, paths, callback) {
-
 	const field = this;
 
 	if (utils.isFunction(paths)) {
@@ -278,7 +269,6 @@ localfiles.prototype.getRequestHandler = function (item, req, paths, callback) {
 	callback = callback || function () {};
 
 	return function () {
-
 		// Order
 		if (req.body[paths.order]) {
 			const files = item.get(field.path);
@@ -320,7 +310,6 @@ localfiles.prototype.getRequestHandler = function (item, req, paths, callback) {
 
 		return callback();
 	};
-
 };
 
 

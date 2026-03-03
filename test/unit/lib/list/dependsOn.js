@@ -8,7 +8,6 @@ keystone.import('../models');
 const DependsOn = keystone.list('DependsOn');
 
 describe('Test dependsOn and required', function () {
-
 	it('Ignore required if evalDependsOn is not `true` by setting `state` to `draft`', async function () {
 		await DependsOn.model.deleteMany({});
 

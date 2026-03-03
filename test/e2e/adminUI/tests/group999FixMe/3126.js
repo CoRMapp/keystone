@@ -18,7 +18,6 @@ module.exports = {
 		browser.end();
 	},
 	'Demonstrate issue 3126': function(browser) {
-
 		// Add new text item
 
 		browser.adminUIApp.openList({section: 'Miscs', list: 'DateFieldMap'});
@@ -40,6 +39,5 @@ module.exports = {
 		// The following command fails, because there is no link to follow. This is a bug.
 		// If you remove the map from test/e2e/models/misc/DateFieldMap.js then the command works.
 		browser.adminUIListScreen.navigateToFirstItem();
-
 	}
 };

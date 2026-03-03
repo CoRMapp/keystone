@@ -8,7 +8,6 @@ const utils = require('keystone-utils');
  * @api public
  */
 class key extends FieldType {
-
 	get _nativeType () { return String; }
 
 	constructor (list, path, options) {
@@ -52,7 +51,6 @@ class key extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 key.properName = 'Key';

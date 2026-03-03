@@ -44,7 +44,6 @@ module.exports = {
 
 		browser.adminUIInitialFormScreen.save();
 		browser.adminUIApp.waitForItemScreen();
-
 	},
 	'CloudinaryImage field should show correctly in the edit form': function (browser) {
 		browser.adminUIItemScreen.assertFieldUIVisible({

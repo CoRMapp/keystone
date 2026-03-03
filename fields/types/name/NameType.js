@@ -9,7 +9,6 @@ const displayName = require('display-name');
  * @api public
  */
 class name extends FieldType {
-
 	constructor (list, path, options) {
 		options.default = { first: '', last: '' };
 		super(list, path, options);
@@ -197,7 +196,6 @@ class name extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 name.properName = 'Name';

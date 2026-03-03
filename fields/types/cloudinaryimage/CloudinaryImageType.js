@@ -27,7 +27,6 @@ const getEmptyValue = () => undefined;
  * @api public
  */
 class cloudinaryimage extends FieldType {
-
 	get _underscoreMethods () { return ['format']; }
 
 	constructor (list, path, options) {
@@ -543,7 +542,6 @@ class cloudinaryimage extends FieldType {
 			}
 		};
 	}
-
 }
 
 cloudinaryimage.properName = 'CloudinaryImage';

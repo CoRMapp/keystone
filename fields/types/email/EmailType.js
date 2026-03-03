@@ -9,7 +9,6 @@ const utils = require('keystone-utils');
  * @api public
  */
 class email extends FieldType {
-
 	get _nativeType () { return String; }
 	get _underscoreMethods () { return ['gravatarUrl']; }
 
@@ -80,7 +79,6 @@ class email extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 email.properName = 'Email';

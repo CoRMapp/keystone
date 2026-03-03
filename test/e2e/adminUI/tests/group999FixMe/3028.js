@@ -30,6 +30,5 @@ module.exports = {
 		});
 
 		// TODO: test button and create form
-
 	}
 };

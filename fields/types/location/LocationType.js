@@ -13,7 +13,6 @@ const RADIUS_MILES = 3959;
  * @api public
  */
 class location extends FieldType {
-
 	get _underscoreMethods () { return ['format', 'googleLookup', 'kmFrom', 'milesFrom']; }
 
 	constructor (list, path, options) {
@@ -427,7 +426,6 @@ class location extends FieldType {
 	milesFrom (item, point) {
 		return calculateDistance(item.get(this.paths.geo), point) * RADIUS_MILES;
 	}
-
 }
 
 location.properName = 'Location';

@@ -4,13 +4,11 @@ const path = require('path');
 const getExpressApp = require('../helpers/getExpressApp');
 
 describe('Keystone "module root" setting', function () {
-
 	before(function () {
 		getExpressApp();
 	});
 
 	describe('default', function () {
-
 		it('should be set to the path where keystone was required', function () {
 			demand(keystone.get('module root')).to.be(__dirname);
 		});
@@ -20,7 +18,6 @@ describe('Keystone "module root" setting', function () {
 			keystone.set('views', viewsPath);
 			demand(keystone.getPath('views')).to.be(path.resolve(__dirname, viewsPath));
 		});
-
 	});
 
 	describe('custom with relative path', function () {

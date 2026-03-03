@@ -9,7 +9,6 @@ const debug = require('debug')('keystone:fields:file');
  * @api public
  */
 class file extends FieldType {
-
 	get _underscoreMethods () { return ['format', 'upload', 'remove', 'reset']; }
 
 	constructor (list, path, options) {
@@ -172,7 +171,6 @@ class file extends FieldType {
 		}
 		utils.defer(callback);
 	}
-
 }
 
 file.properName = 'File';

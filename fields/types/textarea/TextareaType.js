@@ -8,7 +8,6 @@ const utils = require('keystone-utils');
  * @api public
  */
 class textarea extends FieldType {
-
 	get _nativeType () { return String; }
 	get _underscoreMethods () { return ['format', 'crop']; }
 
@@ -26,7 +25,6 @@ class textarea extends FieldType {
 	format (item) {
 		return utils.textToHTML(item.get(this.path));
 	}
-
 }
 
 textarea.properName = 'Textarea';

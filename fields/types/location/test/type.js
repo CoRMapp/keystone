@@ -234,7 +234,6 @@ exports.testFieldType = function (List) {
 	});
 
 	describe('validateInput', function () {
-
 	});
 
 	describe('kmFrom()', function () {

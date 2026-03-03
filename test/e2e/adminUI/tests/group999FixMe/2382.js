@@ -18,7 +18,6 @@ module.exports = {
 		browser.end();
 	},
 	'Demonstrate issue 2382': function(browser) {
-
 		// Add new text item
 
 		browser.adminUIApp.openList({section: 'fields', list: 'Text'});
@@ -81,6 +80,5 @@ module.exports = {
 		// TODO since we've not established the intended behaviour yet, just pause.
 		// Currently, a blank box appears.
 		browser.pause(100000);
-
 	}
 };

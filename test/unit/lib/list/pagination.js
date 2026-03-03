@@ -33,7 +33,6 @@ const testData = {
 };
 
 describe('When paginating results', function () {
-
 	beforeEach(async function () {
 		await Post.model.deleteMany({});
 		for (const post of testData.posts) {
@@ -49,7 +48,6 @@ describe('When paginating results', function () {
 	// regression test for pagination after adding `options.optionalExpression`
 	describe('without an optional expression', function () {
 		it('should return results plus pagination metadata', function (done) {
-
 			const regressionTestData = _.extend(testData, {
 				expectedPages: [1, 2, 3, 4],
 				perPage: 2,
@@ -94,7 +92,6 @@ describe('When paginating results', function () {
 
 	describe('with an optional expression', function () {
 		it('should return results plus query metadata and pagination metadata', function (done) {
-
 			const searchTestData = _.extend(testData, {
 				expectedPages: [1, 2],
 				perPage: 5,

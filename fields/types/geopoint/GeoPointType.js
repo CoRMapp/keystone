@@ -11,7 +11,6 @@ const REGEXP_LNGLAT = /^\s*(\-?\d+(?:\.\d+)?)\s*\,\s*(\-?\d+(?:\.\d+)?)\s*$/;
  * @api public
  */
 class geopoint extends FieldType {
-
 	constructor (list, path, options) {
 		super(list, path, options);
 		this._fixedSize = 'medium';
@@ -138,7 +137,6 @@ class geopoint extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 geopoint.properName = 'GeoPoint';

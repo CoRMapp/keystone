@@ -8,7 +8,6 @@ const utils = require('keystone-utils');
  * @api public
  */
 class number extends FieldType {
-
 	get _nativeType () { return Number; }
 	get _underscoreMethods () { return ['format']; }
 
@@ -131,7 +130,6 @@ class number extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 number.properName = 'Number';

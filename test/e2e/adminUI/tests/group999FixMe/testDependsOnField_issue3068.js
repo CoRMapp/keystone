@@ -74,7 +74,6 @@ module.exports = {
 	},
 
 	'Depends On field should work in the edit form': function(browser) {
-
 		// The dependency condition is met, so the dependent field should show.
 		browser.adminUIItemScreen.assertFieldUIVisible({
 			listName: 'DependsOn',

@@ -8,7 +8,6 @@ const addPresenceToQuery = require('../../utils/addPresenceToQuery');
  * @api public
  */
 class textarray extends FieldType {
-
 	get _nativeType () { return [String]; }
 	get _underscoreMethods () { return ['format']; }
 
@@ -154,7 +153,6 @@ class textarray extends FieldType {
 		item.set(this.path, value);
 		process.nextTick(callback);
 	}
-
 }
 
 textarray.properName = 'TextArray';

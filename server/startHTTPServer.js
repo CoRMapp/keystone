@@ -26,5 +26,4 @@ module.exports = function (keystone, app, callback) {
 				+ (forceSsl ? ' (SSL redirect)' : '');
 			callback(null, message);
 		});
-
 };

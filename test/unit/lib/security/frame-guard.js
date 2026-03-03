@@ -14,15 +14,12 @@ describe('Keystone "frame guard" setting', function () {
 	});
 
 	describe('default setting', function () {
-
 		it('should be "sameorigin"', function () {
 			demand(keystone.get('frame guard')).to.be('sameorigin');
 		});
-
 	});
 
 	describe('keystone.set("frame guard")', function () {
-
 		it('should allow setting to "sameorigin"', function () {
 			keystone.set('frame guard', 'sameorigin');
 			demand(keystone.get('frame guard')).to.be('sameorigin');
@@ -53,11 +50,9 @@ describe('Keystone "frame guard" setting', function () {
 			keystone.set('frame guard', {});
 			demand(keystone.get('frame guard')).to.be(false);
 		});
-
 	});
 
 	describe('X-Frame-Options header', function () {
-
 		it('should be set to "deny" when "frame guard" is "deny"', function (done) {
 			keystone.set('frame guard', 'deny');
 			request(app)
@@ -93,7 +88,5 @@ describe('Keystone "frame guard" setting', function () {
 				})
 				.expect(200, done);
 		});
-
 	});
-
 });

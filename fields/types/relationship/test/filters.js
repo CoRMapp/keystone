@@ -31,9 +31,7 @@ exports.getTestItems = function (List, callback) {
 };
 
 exports.testFilters = function (List, filter) {
-
 	describe('match', function () {
-
 		it('should find exact matches', function (done) {
 			filter({
 				single: {
@@ -78,7 +76,5 @@ exports.testFilters = function (List, filter) {
 				done();
 			});
 		});
-
 	});
-
 };

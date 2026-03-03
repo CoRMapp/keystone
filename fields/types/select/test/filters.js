@@ -21,9 +21,7 @@ exports.getTestItems = () => [
 ];
 
 exports.testFilters = (List, filter) => {
-
 	describe('text values', () => {
-
 		it('should find exact text matches', (done) => {
 			filter({
 				textSelect: {
@@ -92,11 +90,9 @@ exports.testFilters = (List, filter) => {
 				done();
 			});
 		});
-
 	});
 
 	describe('numeric values', () => {
-
 		it('should find exact numeric matches', (done) => {
 			filter({
 				numericSelect: {
@@ -165,11 +161,9 @@ exports.testFilters = (List, filter) => {
 				done();
 			});
 		});
-
 	});
 
 	describe('combined values', () => {
-
 		it('should find combined text and numeric matches', (done) => {
 			filter({
 				textSelect: {
@@ -213,6 +207,5 @@ exports.testFilters = (List, filter) => {
 				done();
 			});
 		});
-
 	});
 };

@@ -19,9 +19,7 @@ exports.getTestItems = () => [
 ];
 
 exports.testFilters = (List, filter) => {
-
 	describe('match', () => {
-
 		it('should find exact string matches', (done) => {
 			filter({
 				text1: {
@@ -154,7 +152,6 @@ exports.testFilters = (List, filter) => {
 	});
 
 	describe('beginsWith', () => {
-
 		it('should match the start of strings', (done) => {
 			filter({
 				text1: {
@@ -192,7 +189,6 @@ exports.testFilters = (List, filter) => {
 	});
 
 	describe('endsWith', () => {
-
 		it('should match the end of strings', (done) => {
 			filter({
 				text1: {

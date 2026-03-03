@@ -39,6 +39,5 @@ module.exports = {
 		browser.adminUIApp.navigate('http://localhost:3000/keystone/no-default-columns?columns=id%2CfieldA');
 		browser.adminUIListScreen.expect.element('@firstColumnHeader').text.to.equal('ID');
 		browser.adminUIListScreen.expect.element('@secondColumnHeader').text.to.equal('Field A');
-
 	}
 };

@@ -15,7 +15,6 @@ const getApp = () => {
 };
 
 describe('Keystone.View', function () {
-
 	describe('new', function () {
 		it('must be an instance of View', function (done) {
 			const app = getApp();
@@ -64,7 +63,6 @@ describe('Keystone.View', function () {
 	});
 
 	describe('.on(event, [match,] fn)', function () {
-
 		it('must call init methods first', function (done) {
 			const app = getApp();
 			app.get('/', (req, res) => {
@@ -224,7 +222,5 @@ describe('Keystone.View', function () {
 				.get('/')
 				.expect('OK', done);
 		});
-
 	});
-
 });

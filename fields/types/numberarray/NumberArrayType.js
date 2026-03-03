@@ -16,7 +16,6 @@ function isValidNumber (value) {
  * @api public
  */
 class numberarray extends FieldType {
-
 	get _nativeType () { return [Number]; }
 	get _underscoreMethods () { return ['format']; }
 
@@ -205,7 +204,6 @@ class numberarray extends FieldType {
 		item.set(this.path, value);
 		process.nextTick(callback);
 	}
-
 }
 
 numberarray.properName = 'NumberArray';

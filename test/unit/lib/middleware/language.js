@@ -73,9 +73,7 @@ describe('language', function () {
 
 	describe('must set language', function () {
 		describe('with default options', function () {
-
 			it('must create a language cookie', function (done) {
-
 				const keystone = keystoneOptions();
 				const res = mockResponse();
 				const expected = 'en-US';
@@ -86,12 +84,10 @@ describe('language', function () {
 					done();
 				});
 			});
-
 		});
 
 		describe('with custom cookie name', function () {
 			it('must create a custom language cookie', function (done) {
-
 				const keystone = keystoneOptions({
 					'language options': {
 						'language cookie': 'locale'
@@ -106,7 +102,6 @@ describe('language', function () {
 					done();
 				});
 			});
-
 		});
 
 		describe('with custom cookie options', function () {
@@ -130,14 +125,12 @@ describe('language', function () {
 					done();
 				});
 			});
-
 		});
 	});
 
 	describe('must create language route', function () {
 		describe('with default options', function () {
 			it('must create /language route to change language', function () {
-
 				const keystone = keystoneOptions();
 				const req = mockRequest({
 					acceptLanguage: 'zh-CN;q=0.8,en-US;q=1',
@@ -158,7 +151,6 @@ describe('language', function () {
 
 		describe('with default options', function () {
 			it('must create custom route to change language', function () {
-
 				const keystone = keystoneOptions({
 					'language options': {
 						'language select url': '/locale/{language}'

@@ -7,7 +7,6 @@ const utils = require('keystone-utils');
  * @api public
  */
 class boolean extends FieldType {
-
 	get _nativeType () { return Boolean; }
 	get defaults () { return { default: false }; }
 
@@ -85,7 +84,6 @@ class boolean extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 boolean.properName = 'Boolean';

@@ -7,7 +7,6 @@ const TextType = require('../text/TextType');
  * @api public
  */
 class code extends FieldType {
-
 	get _nativeType () { return String; }
 
 	constructor (list, path, options) {
@@ -19,7 +18,6 @@ class code extends FieldType {
 		this.codemirror = options.codemirror || {};
 		this.editor = Object.assign({ mode: this.lang }, this.codemirror);
 	}
-
 }
 
 code.properName = 'Code';

@@ -31,7 +31,6 @@ const cleanUp = (oldValues, newValues) => {
  * @api public
  */
 class cloudinaryimages extends FieldType {
-
 	get _underscoreMethods () { return ['format']; }
 
 	constructor (list, path, options) {
@@ -376,7 +375,6 @@ class cloudinaryimages extends FieldType {
 			return callback();
 		});
 	}
-
 }
 
 cloudinaryimages.properName = 'CloudinaryImages';

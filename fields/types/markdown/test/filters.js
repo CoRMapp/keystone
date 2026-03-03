@@ -22,9 +22,7 @@ exports.getTestItems = function () {
 };
 
 exports.testFilters = function (List, filter) {
-
 	describe('match', function () {
-
 		it('should find exact string matches', function (done) {
 			filter({
 				markdown: {
@@ -166,7 +164,6 @@ exports.testFilters = function (List, filter) {
 	});
 
 	describe('beginsWith', function () {
-
 		it('should match the start of strings', function (done) {
 			filter({
 				markdown: {
@@ -206,7 +203,6 @@ exports.testFilters = function (List, filter) {
 	});
 
 	describe('endsWith', function () {
-
 		it('should match the end of strings', function (done) {
 			filter({
 				markdown: {

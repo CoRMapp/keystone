@@ -75,7 +75,6 @@ describe('List "track" option', function () {
 	});
 
 	describe('when "track" option is not valid', function () {
-
 		afterEach(function () {
 			removeModel(testModelName);
 		});
@@ -119,13 +118,10 @@ describe('List "track" option', function () {
 			demand(Test.field('updatedAt')).be.undefined();
 			demand(Test.field('updatedBy')).be.undefined();
 		});
-
 	});
 
 	describe('when "track" option is set to true', function () {
-
 		describe('using updateHandler()', function () {
-
 			before(function () {
 				Test = keystone.List(testModelName, { track: true });
 				Test.add({ name: { type: String } });
@@ -175,7 +171,6 @@ describe('List "track" option', function () {
 			});
 
 			it('should updated "updatedAt/updatedBy" when modifying a document', function (done) {
-
 				setTimeout(function () {
 					request(app)
 						.post('/using-update-handler/' + post.get('id'))
@@ -197,11 +192,9 @@ describe('List "track" option', function () {
 						});
 				}, 250);
 			});
-
 		});
 
 		describe('using .save()', function () {
-
 			before(function () {
 				Test = keystone.List(testModelName, { track: true });
 				Test.add({ name: { type: String } });
@@ -231,7 +224,6 @@ describe('List "track" option', function () {
 			});
 
 			it('should updated all fields when adding a document', function (done) {
-
 				request(app)
 					.post('/using-save')
 					.send({ name: 'test1' })
@@ -250,11 +242,9 @@ describe('List "track" option', function () {
 						demand(post.get('createdAt')).equal(post.get('updatedAt'));
 						done();
 					});
-
 			});
 
 			it('should updated "updatedAt/updatedBy" when modifying a document', function (done) {
-
 				setTimeout(function () {
 					request(app)
 						.post('/using-save/' + post._id)
@@ -275,18 +265,14 @@ describe('List "track" option', function () {
 							done();
 						});
 				}, 250);
-
 			});
-
 		});
-
 	});
 
 	describe('when "track" option fields are selectively enabled', function () {
 		let previousUpdatedAt;
 
 		describe('using updateHandler()', function () {
-
 			before(function () {
 				Test = keystone.List(testModelName, {
 					track: { updatedAt: true, updatedBy: true },
@@ -333,7 +319,6 @@ describe('List "track" option', function () {
 			});
 
 			it('should updated "updatedAt/updatedBy" when modifying a document', function (done) {
-
 				setTimeout(function () {
 					request(app)
 						.post('/using-update-handler/' + post._id)
@@ -351,13 +336,10 @@ describe('List "track" option', function () {
 							done();
 						});
 				}, 250);
-
 			});
-
 		});
 
 		describe('using .save()', function () {
-
 			before(function () {
 				Test = keystone.List(testModelName, {
 					track: { updatedAt: true, updatedBy: true },
@@ -404,7 +386,6 @@ describe('List "track" option', function () {
 			});
 
 			it('should updated "updatedAt/updatedBy" when modifying a document', function (done) {
-
 				setTimeout(function () {
 					request(app)
 						.post('/using-save/' + post._id)
@@ -422,18 +403,14 @@ describe('List "track" option', function () {
 							done();
 						});
 				}, 250);
-
 			});
-
 		});
-
 	});
 
 	describe('when "track" option has custom field names', function () {
 		let previousUpdatedAt;
 
 		describe('using updateHandler()', function () {
-
 			before(function () {
 				Test = keystone.List(testModelName, {
 					track: {
@@ -498,7 +475,6 @@ describe('List "track" option', function () {
 			});
 
 			it('should updated "UpdatedAt/UpdatedBy" custom when modifying a document', function (done) {
-
 				setTimeout(function () {
 					request(app)
 						.post('/using-update-handler/' + post._id)
@@ -516,13 +492,10 @@ describe('List "track" option', function () {
 							done();
 						});
 				}, 250);
-
 			});
-
 		});
 
 		describe('using save()', function () {
-
 			before(function () {
 				Test = keystone.List(testModelName, {
 					track: {
@@ -587,7 +560,6 @@ describe('List "track" option', function () {
 			});
 
 			it('should updated "UpdatedAt/UpdatedBy" custom when modifying a document', function (done) {
-
 				setTimeout(function () {
 					request(app)
 						.post('/using-save/' + post._id)
@@ -605,11 +577,7 @@ describe('List "track" option', function () {
 							done();
 						});
 				}, 250);
-
 			});
-
 		});
-
 	});
-
 });

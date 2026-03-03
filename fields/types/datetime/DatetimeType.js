@@ -12,7 +12,6 @@ const parseFormats = ['YYYY-MM-DD', 'YYYY-MM-DD hh:mm:ss a', 'YYYY-MM-DD h:mm:ss
  * @api public
  */
 class datetime extends FieldType {
-
 	get _nativeType () { return Date; }
 	get _underscoreMethods () { return ['format', 'moment', 'parse']; }
 
@@ -109,7 +108,6 @@ class datetime extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 datetime.properName = 'Datetime';

@@ -10,7 +10,6 @@ const DateType = require('../date/DateType');
  * @api public
  */
 class datearray extends FieldType {
-
 	get _nativeType () { return [Date]; }
 	get _underscoreMethods () { return ['format']; }
 
@@ -124,7 +123,6 @@ class datearray extends FieldType {
 	 * Deprecated
 	 */
 	inputIsValid (data, required, item) {
-
 		let value = this.getValueFromData(data);
 		const parseFormatString = this.parseFormatString;
 
@@ -161,14 +159,12 @@ class datearray extends FieldType {
 		}
 
 		return (value === undefined || Array.isArray(value));
-
 	}
 
 	/**
 	 * Updates the value for this field in the item from a data object
 	 */
 	updateItem (item, data, callback) {
-
 		let value = this.getValueFromData(data);
 
 		if (Array.isArray(value)) {
@@ -189,7 +185,6 @@ class datearray extends FieldType {
 
 		process.nextTick(callback);
 	}
-
 }
 
 datearray.properName = 'DateArray';

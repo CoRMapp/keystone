@@ -9,7 +9,6 @@ const TextType = require('../text/TextType');
  * @api public
  */
 class date extends FieldType {
-
 	get _nativeType () { return Date; }
 	get _underscoreMethods () { return ['format', 'moment', 'parse']; }
 
@@ -171,7 +170,6 @@ class date extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 date.properName = 'Date';

@@ -7,9 +7,7 @@ const TextType = require('../text/TextType');
  * @api public
  */
 class color extends FieldType {
-
 	get _nativeType () { return String; }
-
 }
 
 color.properName = 'Color';

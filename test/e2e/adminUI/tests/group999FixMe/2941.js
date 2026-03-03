@@ -29,6 +29,5 @@ module.exports = {
 			.expect.element('@label').to.not.be.visible;
 
 		browser.adminUIInitialFormScreen.cancel();
-
 	}
 };

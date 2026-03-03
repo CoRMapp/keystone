@@ -390,7 +390,6 @@ exports.testFieldType = (List) => {
 				done();
 			});
 		});
-
 	});
 
 	describe('validateRequiredInput', () => {

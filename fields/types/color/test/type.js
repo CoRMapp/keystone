@@ -12,11 +12,9 @@ exports.initList = (List) => {
 };
 
 exports.createData = (List) => { // eslint-disable-line no-unused-vars
-
 };
 
 exports.testFilters = (List) => { // eslint-disable-line no-unused-vars
-
 };
 
 exports.testFieldType = (List) => {

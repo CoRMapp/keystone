@@ -9,7 +9,6 @@ const engine = ReactEngine.server.create({});
 const init = require('../../../server/initViewEngine.js');
 
 const options = {
-
 	'name': 'foo',
 	'brand': 'foo',
 
@@ -26,7 +25,6 @@ const options = {
 	'auth': true,
 	'user model': 'User',
 	'cookie secret': 'Secret',
-
 };
 
 describe("initViewEngine", function () {

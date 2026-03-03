@@ -9,7 +9,6 @@ keystone.import('../models');
 const Post = keystone.list('Post');
 
 describe('Test autokey', function () {
-
 	it('generate an autokey value from another field', async function () {
 		const post = new Post.model({
 			title: 'Foo Bar',

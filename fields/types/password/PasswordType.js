@@ -27,7 +27,6 @@ const defaultOptions = { min: 8, max: 72, workFactor: 10, rejectCommon: true };
  * @api public
  */
 class password extends FieldType {
-
 	get _nativeType () { return String; }
 	get _underscoreMethods () { return ['format', 'compare']; }
 
@@ -192,7 +191,6 @@ class password extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 password.properName = 'Password';

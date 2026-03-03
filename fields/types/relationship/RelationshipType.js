@@ -10,7 +10,6 @@ const definePrototypeGetters = require('../../utils/definePrototypeGetters');
  * @api public
  */
 class relationship extends FieldType {
-
 	get _nativeType () { return keystone.mongoose.Schema.Types.ObjectId; }
 	get _underscoreMethods () { return ['format', 'getExpandedData']; }
 
@@ -62,7 +61,11 @@ class relationship extends FieldType {
 			required: (this.options.required ? true : false),
 			unique: (this.options.unique ? true : false),
 		};
-		schema.path(this.path, this.many ? [def] : def);
+		if (this.options.many) {
+			schema.add({ [this.path]: [def] });
+		} else {
+			schema.path(this.path, def);
+		}
 	}
 
 	/**
@@ -216,7 +219,6 @@ class relationship extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 relationship.properName = 'Relationship';

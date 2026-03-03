@@ -10,10 +10,13 @@ exports.initList = function (List) {
 };
 
 exports.testFieldType = function (List) {
-
-	let relatedItem = new List.model();
+	let relatedItem;
+	let relatedItem2;
+	let relatedItem3;
 	before(async function () {
-		relatedItem = await relatedItem.save();
+		relatedItem = await new List.model().save();
+		relatedItem2 = await new List.model().save();
+		relatedItem3 = await new List.model().save();
 	});
 
 	describe('single', function () {
@@ -247,7 +250,7 @@ exports.testFieldType = function (List) {
 
 		it('should not clear the current values when data object does not contain the field', async function () {
 			const testItem = new List.model({
-				many: [relatedItem.id, relatedItem.id],
+				many: [relatedItem.id, relatedItem2.id],
 			});
 			await testItem.save();
 			await new Promise(function (resolve, reject) {
@@ -260,23 +263,23 @@ exports.testFieldType = function (List) {
 			const persistedData = await List.model.findById(updatedItem.id);
 			demand(persistedData.many.length).equal(2);
 			demand(String(persistedData.many[0])).equal(String(relatedItem.id));
-			demand(String(persistedData.many[1])).equal(String(relatedItem.id));
+			demand(String(persistedData.many[1])).equal(String(relatedItem2.id));
 		});
 
 		it('should update the current values with the new values from the data object', async function () {
 			const testItem = new List.model({
-				many: [relatedItem.id, relatedItem.id, relatedItem.id],
+				many: [relatedItem.id, relatedItem2.id, relatedItem3.id],
 			});
 			await testItem.save();
 			await new Promise(function (resolve, reject) {
-				List.fields.many.updateItem(testItem, { many: [relatedItem.id, relatedItem.id] }, function (err) {
+				List.fields.many.updateItem(testItem, { many: [relatedItem.id, relatedItem2.id] }, function (err) {
 					if (err) return reject(err);
 					resolve();
 				});
 			});
 			const updatedItem = await testItem.save();
 			const persistedData = await List.model.findById(updatedItem.id);
-			demand(String(persistedData.many)).to.eql(String([relatedItem.id, relatedItem.id]));
+			demand(String(persistedData.many)).to.eql(String([relatedItem.id, relatedItem2.id]));
 		});
 	});
 

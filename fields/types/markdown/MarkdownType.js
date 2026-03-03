@@ -11,7 +11,6 @@ const utils = require('keystone-utils');
  * @api public
  */
 class markdown extends FieldType {
-
 	constructor (list, path, options) {
 		super(list, path, options);
 		this._defaultSize = 'full';
@@ -152,7 +151,6 @@ class markdown extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 markdown.properName = 'Markdown';

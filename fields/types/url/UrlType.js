@@ -12,7 +12,6 @@ const removeProtocolPrefix = (url) => url.replace(/^[a-zA-Z]+\:\/\//, '');
  * @api public
  */
 class url extends FieldType {
-
 	get _nativeType () { return String; }
 	get _underscoreMethods () { return ['format']; }
 
@@ -30,7 +29,6 @@ class url extends FieldType {
 			return removeProtocolPrefix(value);
 		}
 	}
-
 }
 
 url.properName = 'Url';

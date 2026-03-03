@@ -7,7 +7,6 @@ const utils = require('keystone-utils');
  * @api public
  */
 class text extends FieldType {
-
 	get _nativeType () { return String; }
 	get _underscoreMethods () { return ['crop']; }
 
@@ -67,7 +66,6 @@ class text extends FieldType {
 	crop (item, length, append, preserveWords) {
 		return utils.cropString(item.get(this.path), length, append, preserveWords);
 	}
-
 }
 
 text.properName = 'Text';

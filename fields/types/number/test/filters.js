@@ -18,9 +18,7 @@ exports.getTestItems = function () {
 };
 
 exports.testFilters = function (List, filter) {
-
 	describe('equals', function () {
-
 		it('should find exact matches', function (done) {
 			filter({
 				num1: {
@@ -85,7 +83,6 @@ exports.testFilters = function (List, filter) {
 	});
 
 	describe('between', function () {
-
 		it('should match items inside the range', function (done) {
 			filter({
 				num1: {
@@ -126,7 +123,6 @@ exports.testFilters = function (List, filter) {
 	});
 
 	describe('gt', function () {
-
 		it('should match items greater than the value', function (done) {
 			filter({
 				num1: {
@@ -160,7 +156,6 @@ exports.testFilters = function (List, filter) {
 	});
 
 	describe('lt', function () {
-
 		it('should match items greater than the value', function (done) {
 			filter({
 				num1: {

@@ -13,7 +13,6 @@ const FieldType = require('../Type');
  * @api public
  */
 class embedly extends FieldType {
-
 	get _underscoreMethods () { return ['reset']; }
 
 	constructor (list, path, options) {
@@ -253,7 +252,6 @@ class embedly extends FieldType {
 		}
 		process.nextTick(callback);
 	}
-
 }
 
 embedly.properName = 'Embedly';

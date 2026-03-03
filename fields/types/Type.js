@@ -40,9 +40,7 @@ const DEFAULT_OPTION_KEYS = [
  * @api public
  */
 class Field {
-
 	constructor (list, path, options) {
-
 		// Set field properties and options
 		this.list = list;
 		this._path = new Path(path);
@@ -94,7 +92,6 @@ class Field {
 				return (note === null) ? (note = (this.options.note) ? marked.parse(this.options.note) : '') : note;
 			},
 		});
-
 	}
 
 	/**
@@ -215,7 +212,6 @@ class Field {
 				next();
 			}.bind(this));
 		};
-
 	}
 
 	/**
@@ -343,7 +339,6 @@ class Field {
 	getValueFromData (data, subpath) {
 		return this._path.get(data, subpath);
 	}
-
 }
 
 module.exports = Field;

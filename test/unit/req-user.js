@@ -36,7 +36,6 @@ describe('List schema pre/post save hooks', function () {
 	});
 
 	describe('when using UpdateHandler()', function () {
-
 		it('should receive ._req_user', function (done) {
 			pre = undefined;
 			post = undefined;
@@ -68,7 +67,6 @@ describe('List schema pre/post save hooks', function () {
 	});
 
 	describe('when using .save()', function () {
-
 		it('should not receive ._req_user', function (done) {
 			pre = undefined;
 			post = undefined;
@@ -95,5 +93,4 @@ describe('List schema pre/post save hooks', function () {
 				});
 		});
 	});
-
 });

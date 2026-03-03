@@ -14,7 +14,6 @@ See https://github.com/keystonejs/keystone/wiki/File-Fields-Upgrade-Guide
  * @api public
  */
 function localfile (list, path, options) {
-
 	throw new Error('The LocalFile field type has been removed. Please use File instead.'
 		+ '\n\nSee https://github.com/keystonejs/keystone/wiki/File-Fields-Upgrade-Guide\n');
 
@@ -46,13 +45,11 @@ function localfile (list, path, options) {
 	}
 
 	*/
-
 }
 localfile.properName = 'LocalFile';
 // util.inherits(localfile, FieldType);
 
 localfile.prototype.addToSchema = function (schema) {
-
 	const field = this;
 
 	const paths = this.paths = {
@@ -205,13 +202,11 @@ localfile.prototype.uploadFile = function (item, file, update, callback) {
 	}
 
 	const doMove = (callback) => {
-
 		if (typeof field.options.filename === 'function') {
 			filename = field.options.filename(item, file);
 		}
 
 		fs.move(file.path, path.join(field.options.dest, filename), { clobber: field.options.overwrite }, (err) => {
-
 			if (err) return callback(err);
 
 			const fileData = {
@@ -227,7 +222,6 @@ localfile.prototype.uploadFile = function (item, file, update, callback) {
 			}
 
 			callback(null, fileData);
-
 		});
 	};
 
@@ -244,7 +238,6 @@ localfile.prototype.uploadFile = function (item, file, update, callback) {
 };
 
 localfile.prototype.getRequestHandler = function (item, req, paths, callback) {
-
 	const field = this;
 
 	if (utils.isFunction(paths)) {
@@ -257,7 +250,6 @@ localfile.prototype.getRequestHandler = function (item, req, paths, callback) {
 	callback = callback || function () {};
 
 	return function () {
-
 		if (req.body) {
 			const action = req.body[paths.action];
 
@@ -271,9 +263,7 @@ localfile.prototype.getRequestHandler = function (item, req, paths, callback) {
 		}
 
 		return callback();
-
 	};
-
 };
 
 /* Export Field Type */

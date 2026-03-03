@@ -3,7 +3,6 @@ const sinon = require('sinon');
 const demand = require('must');
 
 describe('Keystone.session', function () {
-
 	describe('keystone.session.signinWithUser()', function () {
 		// mock args for signinWithUser(user, req, res, onSuccess)
 		const res = { cookie: sinon.stub() };
@@ -44,7 +43,6 @@ describe('Keystone.session', function () {
 		});
 
 		describe('with valid args, "cookie signin" on', function () {
-
 			it('should regenerate session, set user, session.userId, and res.cookie', function () {
 				keystone.set('cookie signin', true);
 				keystone.session.signinWithUser(user, req, res, onSuccess);
@@ -60,11 +58,9 @@ describe('Keystone.session', function () {
 				sinon.assert.calledOnce(onSuccess);
 				sinon.assert.calledWithExactly(onSuccess, user);
 			});
-
 		});
 
 		describe('with valid args, "cookie signin" off', function () {
-
 			it('should regenerate session, set user, session.userId', function () {
 				keystone.set('cookie signin', false);
 				keystone.session.signinWithUser(user, req, res, onSuccess);
@@ -79,7 +75,6 @@ describe('Keystone.session', function () {
 				sinon.assert.calledOnce(onSuccess);
 				sinon.assert.calledWithExactly(onSuccess, user);
 			});
-
 		});
 
 		describe('with invalid args', function () {
@@ -132,16 +127,12 @@ describe('Keystone.session', function () {
 				}
 				callWithInvalidCallback.must.throw('keystone.session.signinWithUser requires onSuccess to be a function.');
 			});
-
 		});
-
 	});
 
 	// TODO: need more test for keystone.session.signin()
 	describe('keystone.session.signin()', function () {
-
 		describe('case-insensitive email lookup', function () {
-
 			before(function () {
 				const self = this;
 				this.onSuccess = sinon.stub();
@@ -204,7 +195,6 @@ describe('Keystone.session', function () {
 					sinon.assert.calledOnce(keystone.session.signinWithUser);
 					done();
 				}.bind(this), this.onFailure);
-
 			});
 
 			it('should not match email when invalid', function (done) {
@@ -230,13 +220,10 @@ describe('Keystone.session', function () {
 					done();
 				}.bind(this));
 			});
-
 		});
-
 	});
 
 	describe('keystone.session.signout()', function () {
-
 		const res = { cookie: sinon.stub(), clearCookie: sinon.stub() };
 		let user;
 		let req;
@@ -298,7 +285,6 @@ describe('Keystone.session', function () {
 				});
 			});
 		});
-
 	});
 
 	// TODO: test keystone.session.persist()
@@ -306,5 +292,4 @@ describe('Keystone.session', function () {
 
 	// TODO: test keystone.session.keystoneAuth()
 	// describe('keystone.session.keystoneAuth()');
-
 });
