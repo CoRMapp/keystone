@@ -1,50 +1,43 @@
 const FieldType = require('../Type');
 const TextType = require('../text/TextType');
-const util = require('util');
 
+/**
+ * Remove the protocol prefix from url
+ */
+const removeProtocolPrefix = (url) => url.replace(/^[a-zA-Z]+\:\/\//, '');
 
 /**
  * URL FieldType Constructor
  * @extends Field
  * @api public
  */
-function url (list, path, options) {
-	this._nativeType = String;
-	this._underscoreMethods = ['format'];
-	url.super_.call(this, list, path, options);
+class url extends FieldType {
+
+	get _nativeType () { return String; }
+	get _underscoreMethods () { return ['format']; }
+
+	/**
+	 * Formats the field value using either a supplied format function or default
+	 * which strips the leading protocol from the value for simpler display
+	 */
+	format (item) {
+		const value = item.get(this.path) || '';
+		if (this.options.format === false) {
+			return value;
+		} else if (typeof this.options.format === 'function') {
+			return this.options.format(value);
+		} else {
+			return removeProtocolPrefix(value);
+		}
+	}
+
 }
+
 url.properName = 'Url';
-util.inherits(url, FieldType);
 
-
-// TODO: is it worth adding URL specific validation logic? it would have to be
-// robust so as to not trigger invalid cases on valid input, might be so
-// flexible that it's not worth adding.
 url.prototype.validateInput = TextType.prototype.validateInput;
 url.prototype.validateRequiredInput = TextType.prototype.validateRequiredInput;
-
-/* Inherit from TextType prototype */
 url.prototype.addFilterToQuery = TextType.prototype.addFilterToQuery;
-
-/**
- * Formats the field value using either a supplied format function or default
- * which strips the leading protocol from the value for simpler display
- */
-url.prototype.format = function (item) {
-	const url = item.get(this.path) || '';
-	if (this.options.format === false) {
-		return url;
-	} else if (typeof this.options.format === 'function') {
-		return this.options.format(url);
-	} else {
-		return removeProtocolPrefix(url);
-	}
-};
-
-/**
- * Remove the protocol prefix from url
- */
-const removeProtocolPrefix = (url) => url.replace(/^[a-zA-Z]+\:\/\//, '');
 
 /* Export Field Type */
 module.exports = url;

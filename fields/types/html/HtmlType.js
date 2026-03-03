@@ -1,29 +1,29 @@
 const FieldType = require('../Type');
 const TextType = require('../text/TextType');
-const util = require('util');
-
 
 /**
  * HTML FieldType Constructor
  * @extends Field
  * @api public
  */
-function html (list, path, options) {
-	this._nativeType = String;
-	this._defaultSize = 'full';
-	this.wysiwyg = options.wysiwyg || false;
-	this.height = options.height || 180;
-	this._properties = ['wysiwyg', 'height'];
-	html.super_.call(this, list, path, options);
-}
-html.properName = 'Html';
-util.inherits(html, FieldType);
+class html extends FieldType {
 
+	get _nativeType () { return String; }
+
+	constructor (list, path, options) {
+		super(list, path, options);
+		this._defaultSize = 'full';
+		this.wysiwyg = options.wysiwyg || false;
+		this.height = options.height || 180;
+		this._properties = ['wysiwyg', 'height'];
+	}
+
+}
+
+html.properName = 'Html';
 
 html.prototype.validateInput = TextType.prototype.validateInput;
 html.prototype.validateRequiredInput = TextType.prototype.validateRequiredInput;
-
-/* Inherit from TextType prototype */
 html.prototype.addFilterToQuery = TextType.prototype.addFilterToQuery;
 
 /* Export Field Type */

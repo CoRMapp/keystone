@@ -1,202 +1,198 @@
 const FieldType = require('../Type');
 const moment = require('moment');
-const util = require('util');
 const utils = require('keystone-utils');
 const addPresenceToQuery = require('../../utils/addPresenceToQuery');
 const DateType = require('../date/DateType');
 
 /**
- * Date FieldType Constructor
+ * DateArray FieldType Constructor
  * @extends Field
  * @api public
  */
-function datearray (list, path, options) {
-	this._nativeType = [Date];
-	this._defaultSize = 'medium';
-	this._underscoreMethods = ['format'];
-	this._properties = ['formatString'];
-	this.parseFormatString = options.parseFormat || 'YYYY-MM-DD';
-	this.formatString = (options.format === false) ? false : (options.format || 'Do MMM YYYY');
-	if (this.formatString && typeof this.formatString !== 'string') {
-		throw new Error('FieldType.DateArray: options.format must be a string.');
+class datearray extends FieldType {
+
+	get _nativeType () { return [Date]; }
+	get _underscoreMethods () { return ['format']; }
+
+	constructor (list, path, options) {
+		super(list, path, options);
+		this._defaultSize = 'medium';
+		this._properties = ['formatString'];
+		this.parseFormatString = options.parseFormat || 'YYYY-MM-DD';
+		this.formatString = (options.format === false) ? false : (options.format || 'Do MMM YYYY');
+		if (this.formatString && typeof this.formatString !== 'string') {
+			throw new Error('FieldType.DateArray: options.format must be a string.');
+		}
+		this.separator = options.separator || ' | ';
 	}
-	this.separator = options.separator || ' | ';
-	datearray.super_.call(this, list, path, options);
+
+	/**
+	 * Formats the field value
+	 */
+	format (item, format, separator) {
+		const value = item.get(this.path);
+		if (format || this.formatString) {
+			return value.map((d) => moment(d).format(format || this._formatString)).join(separator || this.separator);
+		}
+		return value.join(separator || this.separator);
+	}
+
+	/**
+	 * Asynchronously confirms that the provided value is valid
+	 */
+	validateInput (data, callback) {
+		let value = this.getValueFromData(data);
+		let result = true;
+		if (value !== undefined && value !== null && value !== '') {
+			if (!Array.isArray(value)) {
+				value = [value];
+			}
+			for (let i = 0; i < value.length; i++) {
+				let currentValue;
+				// If we pass it an epoch, parse it without the format string
+				if (typeof value[i] === 'number') {
+					currentValue = moment(value[i]);
+				} else {
+					currentValue = moment(value[i], this.parseFormatString);
+				}
+				// If moment does not think it's a valid date, invalidate
+				if (!currentValue.isValid()) {
+					result = false;
+					break;
+				}
+			}
+		}
+		utils.defer(callback, result);
+	}
+
+	/**
+	 * Asynchronously confirms that the a value is present
+	 */
+	validateRequiredInput (item, data, callback) {
+		const value = this.getValueFromData(data);
+		let result = false;
+		// If the field is undefined but has a value saved already, validate
+		if (value === undefined) {
+			if (item.get(this.path) && item.get(this.path).length) {
+				result = true;
+			}
+		}
+		if (typeof value === 'string' || typeof value === 'number') {
+			if (moment(value).isValid()) {
+				result = true;
+			}
+		// If it's an array of only dates and/or dateify-able data, validate
+		} else if (Array.isArray(value)) {
+			let invalidContent = false;
+			for (let i = 0; i < value.length; i++) {
+				let currentValue;
+				// If we pass it an epoch, parse it without the format string
+				if (typeof value[i] === 'number') {
+					currentValue = moment(value[i]);
+				} else {
+					currentValue = moment(value[i], this.parseFormatString);
+				}
+				// If even a single item is not a valid date, invalidate
+				if (!currentValue.isValid()) {
+					invalidContent = true;
+					break;
+				}
+			}
+			if (invalidContent === false) {
+				result = true;
+			}
+		}
+		utils.defer(callback, result);
+	}
+
+	/**
+	 * Add filters to a query
+	 */
+	addFilterToQuery (filter) {
+		const dateTypeAddFilterToQuery = DateType.prototype.addFilterToQuery.bind(this);
+		const query = dateTypeAddFilterToQuery(filter);
+		if (query[this.path]) {
+			query[this.path] = addPresenceToQuery(filter.presence || 'some', query[this.path]);
+		}
+		return query;
+	}
+
+	/**
+	 * Checks that a valid array of dates has been provided in a data object
+	 * An empty value clears the stored value and is considered valid
+	 *
+	 * Deprecated
+	 */
+	inputIsValid (data, required, item) {
+
+		let value = this.getValueFromData(data);
+		const parseFormatString = this.parseFormatString;
+
+		if (typeof value === 'string') {
+			if (!moment(value, parseFormatString).isValid()) {
+				return false;
+			}
+			value = [value];
+		}
+
+		if (required) {
+			if (value === undefined && item && item.get(this.path) && item.get(this.path).length) {
+				return true;
+			}
+			if (value === undefined || !Array.isArray(value)) {
+				return false;
+			}
+			if (Array.isArray(value) && !value.length) {
+				return false;
+			}
+		}
+
+		if (Array.isArray(value)) {
+			// filter out empty fields
+			value = value.filter((date) => date.trim() !== '');
+			// if there are no values left, and requried is true, return false
+			if (required && !value.length) {
+				return false;
+			}
+			// if any date in the array is invalid, return false
+			if (value.some((dateValue) => !moment(dateValue, parseFormatString).isValid())) {
+				return false;
+			}
+		}
+
+		return (value === undefined || Array.isArray(value));
+
+	}
+
+	/**
+	 * Updates the value for this field in the item from a data object
+	 */
+	updateItem (item, data, callback) {
+
+		let value = this.getValueFromData(data);
+
+		if (Array.isArray(value)) {
+			// Only save valid dates
+			value = value.filter((date) => moment(date).isValid());
+		}
+		if (value === null || value === undefined) {
+			value = [];
+		}
+		if (typeof value === 'string') {
+			if (moment(value).isValid()) {
+				value = [value];
+			}
+		}
+		if (Array.isArray(value)) {
+			item.set(this.path, value);
+		}
+
+		process.nextTick(callback);
+	}
+
 }
+
 datearray.properName = 'DateArray';
-util.inherits(datearray, FieldType);
-
-/**
- * Formats the field value
- */
-datearray.prototype.format = function (item, format, separator) {
-	const value = item.get(this.path);
-	if (format || this.formatString) {
-		return value.map((d) => moment(d).format(format || this._formatString)).join(separator || this.separator);
-	}
-	return value.join(separator || this.separator);
-};
-
-/**
- * Asynchronously confirms that the provided value is valid
- */
-datearray.prototype.validateInput = function (data, callback) {
-	let value = this.getValueFromData(data);
-	let result = true;
-	if (value !== undefined && value !== null && value !== '') {
-		if (!Array.isArray(value)) {
-			value = [value];
-		}
-		for (let i = 0; i < value.length; i++) {
-			let currentValue;
-			// If we pass it an epoch, parse it without the format string
-			if (typeof value[i] === 'number') {
-				currentValue = moment(value[i]);
-			} else {
-				currentValue = moment(value[i], this.parseFormatString);
-			}
-			// If moment does not think it's a valid date, invalidate
-			if (!currentValue.isValid()) {
-				result = false;
-				break;
-			}
-		}
-	}
-	utils.defer(callback, result);
-};
-
-/**
- * Asynchronously confirms that the a value is present
- */
-datearray.prototype.validateRequiredInput = function (item, data, callback) {
-	const value = this.getValueFromData(data);
-	let result = false;
-	// If the field is undefined but has a value saved already, validate
-	if (value === undefined) {
-		if (item.get(this.path) && item.get(this.path).length) {
-			result = true;
-		}
-	}
-	if (typeof value === 'string' || typeof value === 'number') {
-		if (moment(value).isValid()) {
-			result = true;
-		}
-	// If it's an array of only dates and/or dateify-able data, validate
-	} else if (Array.isArray(value)) {
-		let invalidContent = false;
-		for (let i = 0; i < value.length; i++) {
-			let currentValue;
-			// If we pass it an epoch, parse it without the format string
-			if (typeof value[i] === 'number') {
-				currentValue = moment(value[i]);
-			} else {
-				currentValue = moment(value[i], this.parseFormatString);
-			}
-			// If even a single item is not a valid date, invalidate
-			if (!currentValue.isValid()) {
-				invalidContent = true;
-				break;
-			}
-		}
-		if (invalidContent === false) {
-			result = true;
-		}
-	}
-	utils.defer(callback, result);
-};
-
-/**
- * Add filters to a query
- *
- * @param {Object} filter 			   		The data from the frontend
- * @param {String} filter.mode  	   		The filter mode, either one of "on",
- *                                     		"after", "before" or "between"
- * @param {String} [filter.presence='some'] The presence mode, either on of
- *                                          "none" and "some". Default: 'some'
- * @param {String|Object} filter.value 		The value that is filtered for
- */
-datearray.prototype.addFilterToQuery = function (filter) {
-	const dateTypeAddFilterToQuery = DateType.prototype.addFilterToQuery.bind(this);
-	const query = dateTypeAddFilterToQuery(filter);
-	if (query[this.path]) {
-		query[this.path] = addPresenceToQuery(filter.presence || 'some', query[this.path]);
-	}
-	return query;
-};
-
-/**
- * Checks that a valid array of dates has been provided in a data object
- * An empty value clears the stored value and is considered valid
- *
- * Deprecated
- */
-datearray.prototype.inputIsValid = function (data, required, item) {
-
-	let value = this.getValueFromData(data);
-	const parseFormatString = this.parseFormatString;
-
-	if (typeof value === 'string') {
-		if (!moment(value, parseFormatString).isValid()) {
-			return false;
-		}
-		value = [value];
-	}
-
-	if (required) {
-		if (value === undefined && item && item.get(this.path) && item.get(this.path).length) {
-			return true;
-		}
-		if (value === undefined || !Array.isArray(value)) {
-			return false;
-		}
-		if (Array.isArray(value) && !value.length) {
-			return false;
-		}
-	}
-
-	if (Array.isArray(value)) {
-		// filter out empty fields
-		value = value.filter((date) => date.trim() !== '');
-		// if there are no values left, and requried is true, return false
-		if (required && !value.length) {
-			return false;
-		}
-		// if any date in the array is invalid, return false
-		if (value.some((dateValue) => !moment(dateValue, parseFormatString).isValid())) {
-			return false;
-		}
-	}
-
-	return (value === undefined || Array.isArray(value));
-
-};
-
-
-/**
- * Updates the value for this field in the item from a data object
- */
-datearray.prototype.updateItem = function (item, data, callback) {
-
-	let value = this.getValueFromData(data);
-
-	if (Array.isArray(value)) {
-		// Only save valid dates
-		value = value.filter((date) => moment(date).isValid());
-	}
-	if (value === null || value === undefined) {
-		value = [];
-	}
-	if (typeof value === 'string') {
-		if (moment(value).isValid()) {
-			value = [value];
-		}
-	}
-	if (Array.isArray(value)) {
-		item.set(this.path, value);
-	}
-
-	process.nextTick(callback);
-};
 
 /* Export Field Type */
 module.exports = datearray;
