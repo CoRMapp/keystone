@@ -16,10 +16,10 @@ function definePrototypeGetter (Constructor, key, getter) {
  * @param  {object} getterObj The getters with a getter at the key
  */
 function definePrototypeGetters (Constructor, getterObj) {
-	Object.keys(getterObj).map(function (key) {
+	Object.keys(getterObj).forEach((key) => {
 		definePrototypeGetter(Constructor, key, getterObj[key]);
 	});
 }
 
 module.exports = definePrototypeGetters;
-module.definePrototypeGetter = definePrototypeGetter;
+module.exports.definePrototypeGetter = definePrototypeGetter;
