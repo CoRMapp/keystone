@@ -51,11 +51,6 @@ function localfile (list, path, options) {
 localfile.properName = 'LocalFile';
 // util.inherits(localfile, FieldType);
 
-/**
- * Registers the field on the List's Mongoose Schema.
- *
- * @api public
- */
 localfile.prototype.addToSchema = function (schema) {
 
 	const field = this;
@@ -120,19 +115,9 @@ localfile.prototype.addToSchema = function (schema) {
 		exists: function () {
 			return exists(this);
 		},
-		/**
-		 * Resets the value of the field
-		 *
-		 * @api public
-		 */
 		reset: function () {
 			reset(this);
 		},
-		/**
-		 * Deletes the file from localfile and resets the field
-		 *
-		 * @api public
-		 */
 		delete: function () {
 			if (exists(this)) {
 				fs.unlinkSync(path.join(this.get(paths.path), this.get(paths.filename)));
@@ -153,12 +138,6 @@ localfile.prototype.addToSchema = function (schema) {
 	this.bindUnderscoreMethods();
 };
 
-/**
- * Formats the field value
- *
- * Delegates to the options.format function if it exists.
- * @api public
- */
 localfile.prototype.format = function (item) {
 	if (!item.get(this.paths.filename)) return '';
 	if (this.hasFormatter()) {
@@ -169,90 +148,47 @@ localfile.prototype.format = function (item) {
 	return this.href(item);
 };
 
-/**
- * Detects whether the field has formatter function
- *
- * @api public
- */
 localfile.prototype.hasFormatter = function () {
 	return typeof this.options.format === 'function';
 };
 
-/**
- * Return the public href for the stored file
- *
- * @api public
- */
 localfile.prototype.href = function (item) {
 	if (!item.get(this.paths.filename)) return '';
 	const prefix = this.options.prefix ? this.options.prefix : item.get(this.paths.path);
 	return `${prefix}/${item.get(this.paths.filename)}`;
 };
 
-/**
- * Detects whether the field has been modified
- *
- * @api public
- */
 localfile.prototype.isModified = function (item) {
 	return item.isModified(this.paths.path);
 };
 
 
 function validateInput (value) {
-	// undefined values are always valid
 	if (value === undefined) return true;
-	// TODO: strings may not actually be valid but this will be OK for now
-	// If a string is provided, assume it's a file path and move the file into
-	// place. Come back and check the file actually exists if a string is provided
 	if (typeof value === 'string') return true;
-	// If the value is an object with a path, it is valid
 	if (typeof value === 'object' && value.path) return true;
 	return false;
 }
 
-/**
- * Validates that a value for this field has been provided in a data object
- */
 localfile.prototype.validateInput = function (data, callback) {
 	const value = this.getValueFromData(data);
 	utils.defer(callback, validateInput(value));
 };
 
-/**
- * Validates that input has been provided
- */
 localfile.prototype.validateRequiredInput = function (item, data, callback) {
 	const value = this.getValueFromData(data);
 	const result = (value || item.get(this.path).path) ? true : false;
 	utils.defer(callback, result);
 };
 
-/**
- * Validates that a value for this field has been provided in a data object
- *
- * Deprecated
- */
 localfile.prototype.inputIsValid = function (data) { // eslint-disable-line no-unused-vars
-	// TODO - how should file field input be validated?
 	return true;
 };
 
-/**
- * Updates the value for this field in the item from a data object
- *
- * @api public
- */
 localfile.prototype.updateItem = function (item, data, callback) { // eslint-disable-line no-unused-vars
-	// TODO - direct updating of data (not via upload)
 	process.nextTick(callback);
 };
 
-/**
- * Uploads the file for this field
- *
- * @api public
- */
 localfile.prototype.uploadFile = function (item, file, update, callback) {
 	const field = this;
 	const prefix = field.options.datePrefix ? `${moment().format(field.options.datePrefix)}-` : '';
@@ -307,15 +243,6 @@ localfile.prototype.uploadFile = function (item, file, update, callback) {
 	});
 };
 
-/**
- * Returns a callback that handles a standard form submission for the field
- *
- * Expected form parts are
- * - `field.paths.action` in `req.body` (`clear` or `delete`)
- * - `field.paths.upload` in `req.files` (uploads the file to localfile)
- *
- * @api public
- */
 localfile.prototype.getRequestHandler = function (item, req, paths, callback) {
 
 	const field = this;
