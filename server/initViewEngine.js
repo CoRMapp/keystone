@@ -8,7 +8,7 @@ module.exports = function initViewEngine (keystone, app) {
 	app.set('views', keystone.getPath('views') || 'views');
 	app.set('view engine', keystone.get('view engine'));
 
-	var customView = keystone.get('view');
+	const customView = keystone.get('view');
 	if (customView) {
 		app.set('view', customView);
 	}

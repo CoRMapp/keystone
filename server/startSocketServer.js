@@ -9,16 +9,16 @@
  * @api private
  */
 
-var fs = require('fs');
+const fs = require('fs');
 
 module.exports = function (keystone, app, callback) {
 
-	var unixSocket = keystone.get('unix socket');
-	var message = keystone.get('name') + ' is ready on ' + unixSocket;
+	const unixSocket = keystone.get('unix socket');
+	const message = `${keystone.get('name')} is ready on ${unixSocket}`;
 
-	fs.unlink(unixSocket, function () {
+	fs.unlink(unixSocket, () => {
 		// we expect err if the file is new so don't capture the argument
-		keystone.httpServer = app.listen(unixSocket, function (err) {
+		keystone.httpServer = app.listen(unixSocket, (err) => {
 			callback(err, message);
 		});
 		fs.chmod(unixSocket, 0x777);

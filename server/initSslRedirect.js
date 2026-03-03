@@ -1,5 +1,5 @@
 module.exports = function (keystone, app) {
-	var portString;
+	let portString;
 	function sslRedirect (req, res, next) {
 		if (req.secure) {
 			next();
@@ -8,17 +8,17 @@ module.exports = function (keystone, app) {
 			if (req.ip === '127.0.0.1') {
 				return next();
 			} else {
-				res.redirect(302, 'https://' + req.hostname + portString + req.originalUrl);
+				res.redirect(302, `https://${req.hostname}${portString}${req.originalUrl}`);
 			}
 		}
-	};
+	}
 
 	if (keystone.get('ssl') === 'force') {
-		var port = keystone.get('ssl public port') || keystone.get('ssl port');
+		const port = keystone.get('ssl public port') || keystone.get('ssl port');
 		if (Number(port) === 443) {
 			portString = '';
 		} else {
-			portString = ':' + port;
+			portString = `:${port}`;
 		}
 		app.use(sslRedirect);
 	}

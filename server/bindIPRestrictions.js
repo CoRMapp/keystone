@@ -1,4 +1,4 @@
-var debug = require('debug')('keystone:server:bindIpRestrictions');
+const debug = require('debug')('keystone:server:bindIpRestrictions');
 
 module.exports = function bindIPRestrictions (keystone, app) {
 	// Check for IP range restrictions

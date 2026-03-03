@@ -1,10 +1,10 @@
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 
-var uploads = require('../lib/uploads');
+const uploads = require('../lib/uploads');
 
 module.exports = function bindBodyParser (keystone, app) {
 	// Set up body options and cookie parser
-	var bodyParserParams = {};
+	const bodyParserParams = {};
 	if (keystone.get('file limit')) {
 		bodyParserParams.limit = keystone.get('file limit');
 	}

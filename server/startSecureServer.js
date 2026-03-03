@@ -9,25 +9,24 @@
  * @api private
  */
 
-var https;
+let https;
 try {
 	// Use spdy if available
 	https = require('spdy');
 } catch (e) {
 	https = require('https');
 }
-var tls = require('tls');
-var fs = require('fs');
+const tls = require('tls');
+const fs = require('fs');
 
 module.exports = function (keystone, app, created, callback) {
 
-	var ssl = keystone.get('ssl');
-	var host = keystone.get('ssl host') || keystone.get('host');
-	var port = keystone.get('ssl port');
-	var message = (ssl === 'only') ? keystone.get('name') + ' (SSL) is ready on ' : 'SSL Server is ready on ';
-	var sniFunc;
+	const ssl = keystone.get('ssl');
+	const host = keystone.get('ssl host') || keystone.get('host');
+	const port = keystone.get('ssl port');
+	let message = (ssl === 'only') ? `${keystone.get('name')} (SSL) is ready on ` : 'SSL Server is ready on ';
 
-	var options = keystone.get('https server options') || {};
+	const options = keystone.get('https server options') || {};
 	if (options.NPNProtocols && options.NPNProtocols.length === 1 && options.NPNProtocols[0] === 'http/1.1') {
 		// Remove default value so spdy can use its own better ones
 		delete options.NPNProtocols;
@@ -60,10 +59,10 @@ module.exports = function (keystone, app, created, callback) {
 	if (keystone.get('ssl passphrase')) {
 		options.passphrase = keystone.get('ssl passphrase');
 	}
-	sniFunc = keystone.get('ssl sni');
+	const sniFunc = keystone.get('ssl sni');
 	if (sniFunc) {
-		options.SNICallback = function (host, cb) {
-			var ctx = sniFunc(host);
+		options.SNICallback = (hostname, cb) => {
+			const ctx = sniFunc(hostname);
 			cb(null, ctx && tls.createSecureContext(ctx));
 		};
 	}
@@ -71,31 +70,29 @@ module.exports = function (keystone, app, created, callback) {
 	if ((!options.key || !options.cert) && !options.pfx && !keystone.get('letsencrypt')) {
 		if (sniFunc) {
 			// We populate the config with what sniFunc returns for localhost
-			var localCtx = sniFunc('localhost');
+			const localCtx = sniFunc('localhost');
 			if (localCtx) {
-				for (var prop in localCtx) {
-					if (localCtx.hasOwnProperty(prop)) {
-						options[prop] = localCtx[prop];
-					}
+				for (const [prop, value] of Object.entries(localCtx)) {
+					options[prop] = value;
 				}
 			}
 		}
 		if ((!options.key || !options.cert) && !options.pfx) {
 			if (ssl === 'only') {
-				console.log(keystone.get('name') + ' failed to start: invalid ssl configuration (certificate files required)');
+				console.log(`${keystone.get('name')} failed to start: invalid ssl configuration (certificate files required)`);
 				process.exit();
 			}
 			return callback(null, 'SSL Not Started: Invalid SSL Configuration (certificate files required)');
 		}
 	}
 
-	var server = https.createServer(options, app);
+	const server = https.createServer(options, app);
 	created();
 
 	function ready (err) {
 		callback(err, message);
 	}
 
-	message += 'https://' + host + ':' + port;
+	message += `https://${host}:${port}`;
 	keystone.httpsServer = server.listen(port, host, ready);
 };

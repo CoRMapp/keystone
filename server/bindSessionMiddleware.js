@@ -6,7 +6,7 @@ module.exports = function bindSessionMiddleware (keystone, app) {
 	if (typeof keystone.get('pre:session') === 'function') {
 		keystone.get('pre:session')(app);
 	}
-	app.use(function (req, res, next) {
+	app.use((req, res, next) => {
 		keystone.callHook('pre:session', req, res, next);
 	});
 
