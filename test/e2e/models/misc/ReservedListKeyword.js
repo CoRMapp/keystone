@@ -1,7 +1,7 @@
 // THIS MODEL IS USED TO QUICKLY DETECT RESERVED WORDS IN KEYSTONE LISTS
-var keystone = require('../../../../index');
+const keystone = require('../../../../index');
 
-var ReservedListKeyword = new keystone.List('ReservedListKeyword', {
+const ReservedListKeyword = new keystone.List('ReservedListKeyword', {
 	hidden: true,
 });
 

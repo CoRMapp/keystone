@@ -1,5 +1,5 @@
-var fieldTests = require('./commonFieldTestUtils.js');
-var ModelTestConfig = require('../../../modelTestConfig/FileModelTestConfig');
+const fieldTests = require('./commonFieldTestUtils.js');
+const ModelTestConfig = require('../../../modelTestConfig/FileModelTestConfig');
 
 module.exports = {
 	before: function (browser) {

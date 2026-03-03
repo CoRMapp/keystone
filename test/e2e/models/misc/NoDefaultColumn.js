@@ -1,7 +1,7 @@
-var keystone = require('../../../../index.js');
-var Types = keystone.Field.Types;
+const keystone = require('../../../../index.js');
+const Types = keystone.Field.Types;
 
-var NoDefaultColumn = new keystone.List('NoDefaultColumn', {
+const NoDefaultColumn = new keystone.List('NoDefaultColumn', {
 	track: true,
 });
 

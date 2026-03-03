@@ -1,5 +1,5 @@
-var fieldTests = require('./commonFieldTestUtils.js');
-var ModelTestConfig = require('../../../modelTestConfig/LocationModelTestConfig');
+const fieldTests = require('./commonFieldTestUtils.js');
+const ModelTestConfig = require('../../../modelTestConfig/LocationModelTestConfig');
 
 module.exports = {
 	'@disabled': true,

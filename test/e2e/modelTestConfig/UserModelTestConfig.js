@@ -1,10 +1,10 @@
-var fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
-var path = require('path');
-var NameFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'NameFieldTestObject'));
-var EmailFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'EmailFieldTestObject'));
-var PasswordFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'PasswordFieldTestObject'));
-var TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
-var BooleanFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'BooleanFieldTestObject'));
+const fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
+const path = require('path');
+const NameFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'NameFieldTestObject'));
+const EmailFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'EmailFieldTestObject'));
+const PasswordFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'PasswordFieldTestObject'));
+const TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
+const BooleanFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'BooleanFieldTestObject'));
 
 module.exports = function UserModelTestConfig (config) {
 	return {

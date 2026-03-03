@@ -1,7 +1,7 @@
-var keystone = require('../../../index.js');
-var User = require('./User');
+const keystone = require('../../../index.js');
+const User = require('./User');
 
-var Member = new keystone.List('Member', {
+const Member = new keystone.List('Member', {
 	inherits: User,
 	track: true,
 });

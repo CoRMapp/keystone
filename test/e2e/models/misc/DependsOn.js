@@ -1,9 +1,9 @@
-var keystone = require('../../../../index.js');
-var Types = keystone.Field.Types;
+const keystone = require('../../../../index.js');
+const Types = keystone.Field.Types;
 
 // Model to demonstrate issue #2929
 
-var DependsOn = new keystone.List('DependsOn', {
+const DependsOn = new keystone.List('DependsOn', {
 	autokey: {
 		path: 'key',
 		from: 'name',

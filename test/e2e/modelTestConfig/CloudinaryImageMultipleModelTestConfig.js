@@ -1,7 +1,7 @@
-var fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
-var path = require('path');
-var CloudinaryImageMultipleFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'CloudinaryImageMultipleFieldTestObject'));
-var TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
+const fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
+const path = require('path');
+const CloudinaryImageMultipleFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'CloudinaryImageMultipleFieldTestObject'));
+const TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
 
 module.exports = function CloudinaryImageMultipleModelTestConfig (config) {
 	return {

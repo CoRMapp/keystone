@@ -252,8 +252,8 @@ describe('Keystone.session', function () {
 					userId: null,
 					regenerate: function (callback) {
 						// Simulate express-session regenerate: clear session data
-						var regenerate = this.regenerate;
-						for (var key in req.session) {
+						const regenerate = this.regenerate;
+						for (const key of Object.keys(req.session)) {
 							if (key !== 'regenerate') {
 								delete req.session[key];
 							}

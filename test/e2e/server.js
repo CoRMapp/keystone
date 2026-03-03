@@ -1,37 +1,37 @@
-var async = require('async');
-var keystone = require('../..');
-var ReactEngine = require('react-engine');
-var engine = ReactEngine.server.create({});
-var request = require('superagent');
-var moment = require('moment');
-var mongoose = require('mongoose');
-var path = require('path');
-var keystoneNightwatchE2e = require('keystone-nightwatch-e2e');
+const async = require('async');
+const keystone = require('../..');
+const ReactEngine = require('react-engine');
+const engine = ReactEngine.server.create({});
+const request = require('superagent');
+const moment = require('moment');
+const mongoose = require('mongoose');
+const path = require('path');
+const keystoneNightwatchE2e = require('keystone-nightwatch-e2e');
 
 // Set app-specific env for nightwatch session
 process.env.KNE_TEST_PATHS = 'test/e2e/adminUI/tests';
 process.env.KNE_EXCLUDE_TEST_PATHS = 'test/e2e/adminUI/tests/group006Fields/commonFieldTestUtils.js,test/e2e/adminUI/tests/group999FixMe/*';
 
 // determine the mongo uri and database name
-var dbName = '/e2e' + (process.env.KEYSTONEJS_PORT || 3000);
-var mongoUri = 'mongodb://' + (process.env.KEYSTONEJS_HOST || 'localhost')  + ':27017' + dbName;
+const dbName = `/e2e${process.env.KEYSTONEJS_PORT || 3000}`;
+const mongoUri = `mongodb://${process.env.KEYSTONEJS_HOST || 'localhost'}:27017${dbName}`;
 
 // Function that drops the test database before starting testing
-function dropTestDatabase(done) {
-	console.log([moment().format('HH:mm:ss:SSS')] + ' e2e: dropping test database: ' + mongoUri);
+function dropTestDatabase (done) {
+	console.log(`${moment().format('HH:mm:ss:SSS')} e2e: dropping test database: ${mongoUri}`);
 
-	mongoose.connect(mongoUri, { useNewUrlParser: true },function(err){
+	mongoose.connect(mongoUri, { useNewUrlParser: true }, (err) => {
 		if (!err) {
-			mongoose.connection.db.dropDatabase(function (err) {
+			mongoose.connection.db.dropDatabase((err) => {
 				if (!err) {
-					console.log([moment().format('HH:mm:ss:SSS')] + ' e2e: dropped test database: ' + mongoUri);
+					console.log(`${moment().format('HH:mm:ss:SSS')} e2e: dropped test database: ${mongoUri}`);
 				}
-				mongoose.connection.close(function(err) {
+				mongoose.connection.close((err) => {
 					done(err);
-				})
+				});
 			});
 		} else {
-			console.error([moment().format('HH:mm:ss:SSS')] + ' e2e: failed to connect to mongo: ' + err);
+			console.error(`${moment().format('HH:mm:ss:SSS')} e2e: failed to connect to mongo: ${err}`);
 			done(err);
 		}
 	});
@@ -41,35 +41,35 @@ function dropTestDatabase(done) {
 function checkKeystoneReady (done) {
 	async.retry({
 		times: 10,
-		interval: 3000
-	}, function(done, result) {
-		console.log([moment().format('HH:mm:ss:SSS')] + ' e2e: checking if KeystoneJS ready for request');
+		interval: 3000,
+	}, (done, result) => {
+		console.log(`${moment().format('HH:mm:ss:SSS')} e2e: checking if KeystoneJS ready for request`);
 		request
-			.get('http://' + keystone.get('host') + ':' + keystone.get('port') + '/keystone')
+			.get(`http://${keystone.get('host')}:${keystone.get('port')}/keystone`)
 			.end(done);
-	}, function (err, result) {
+	}, (err, result) => {
 		if (!err) {
-			console.log([moment().format('HH:mm:ss:SSS')] + ' e2e: KeystoneJS Ready!');
+			console.log(`${moment().format('HH:mm:ss:SSS')} e2e: KeystoneJS Ready!`);
 			done();
 		} else {
-			console.log([moment().format('HH:mm:ss:SSS')] + ' e2e: KeystoneJS does not appear ready!');
+			console.log(`${moment().format('HH:mm:ss:SSS')} e2e: KeystoneJS does not appear ready!`);
 			done(err);
 		}
-	})
+	});
 }
 
 // Function that starts the e2e common framework
 function runE2E (options, done) {
-	console.log([moment().format('HH:mm:ss:SSS')] + ' e2e: starting tests...');
+	console.log(`${moment().format('HH:mm:ss:SSS')} e2e: starting tests...`);
 
 	keystoneNightwatchE2e.startE2E(options, done);
 }
 
 // Function that starts keystone
-function runKeystone(cb) {
-	console.log([moment().format('HH:mm:ss:SSS')] + ' e2e: starting KeystoneJS...');
+function runKeystone (cb) {
+	console.log(`${moment().format('HH:mm:ss:SSS')} e2e: starting KeystoneJS...`);
 
-// initialize keystone
+	// initialize keystone
 	keystone.init({
 		'name': 'e2e',
 		'brand': 'e2e',
@@ -95,13 +95,13 @@ function runKeystone(cb) {
 		'cloudinary config': 'cloudinary://api_key:api_secret@cloud_name',
 	});
 
-// import app models
+	// import app models
 	keystone.import('models');
 
-// setup any custom routes
+	// setup any custom routes
 	keystone.set('routes', require('./routes'));
 
-// setup application adminui navigation
+	// setup application adminui navigation
 	keystone.set('nav', {
 		'access': [
 			'users',
@@ -143,28 +143,28 @@ function runKeystone(cb) {
 			'hidden-relationships',
 			'source-relationships',
 			'target-relationships',
-		]
+		],
 	});
 
 	keystone.start({
-		onMount: function () {
-			console.log([moment().format('HH:mm:ss:SSS')] + ' e2e: KeystoneJS mounted Successfuly');
+		onMount: () => {
+			console.log(`${moment().format('HH:mm:ss:SSS')} e2e: KeystoneJS mounted Successfuly`);
 		},
-		onStart: function() {
-			console.log([moment().format('HH:mm:ss:SSS')] + ' e2e: KeystoneJS Started Successfully');
+		onStart: () => {
+			console.log(`${moment().format('HH:mm:ss:SSS')} e2e: KeystoneJS Started Successfully`);
 			cb();
 		},
 	});
 }
 
 // Function that bootstraps the e2e test service
-function start() {
-	var runTests = process.argv.indexOf('--notest') === -1;
-	var dropDB = process.argv.indexOf('--nodrop') === -1;
+function start () {
+	const runTests = process.argv.indexOf('--notest') === -1;
+	const dropDB = process.argv.indexOf('--nodrop') === -1;
 
 	async.series([
 
-		function (cb) {
+		(cb) => {
 			if (dropDB) {
 				dropTestDatabase(cb);
 			}	else {
@@ -172,29 +172,29 @@ function start() {
 			}
 		},
 
-		function (cb) {
+		(cb) => {
 			runKeystone(cb);
 		},
 
-		function (cb) {
+		(cb) => {
 			checkKeystoneReady(cb);
 		},
 
-		function (cb) {
+		(cb) => {
 			if (runTests) {
 				runE2E({
-					keystone: keystone
+					keystone: keystone,
 				}, cb);
 			} else {
 				cb();
 			}
-		}
+		},
 
-	], function(err) {
-		var exitProcess = false;
-		var exitCode = 0;
+	], (err) => {
+		let exitProcess = false;
+		let exitCode = 0;
 		if (err) {
-			console.error([moment().format('HH:mm:ss:SSS')] + ' e2e: ' + err);
+			console.error(`${moment().format('HH:mm:ss:SSS')} e2e: ${err}`);
 			exitProcess = true;
 			exitCode = 1;
 		}
@@ -202,7 +202,7 @@ function start() {
 			exitProcess = true;
 		}
 		if (exitProcess) {
-			console.error([moment().format('HH:mm:ss:SSS')] + ' e2e: exiting');
+			console.error(`${moment().format('HH:mm:ss:SSS')} e2e: exiting`);
 			process.exit(exitCode);
 		}
 	});

@@ -1,7 +1,7 @@
-var keystone = require('../../../../index.js');
-var Types = keystone.Field.Types;
+const keystone = require('../../../../index.js');
+const Types = keystone.Field.Types;
 
-var Date = new keystone.List('Date', {
+const Date = new keystone.List('Date', {
 	autokey: {
 		path: 'key',
 		from: 'name',

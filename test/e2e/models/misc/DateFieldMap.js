@@ -1,9 +1,9 @@
-var keystone = require('../../../../index.js');
-var Types = keystone.Field.Types;
+const keystone = require('../../../../index.js');
+const Types = keystone.Field.Types;
 
 // Model to demonstrate issue #2929
 
-var DateFieldMap = new keystone.List('DateFieldMap', {
+const DateFieldMap = new keystone.List('DateFieldMap', {
 	map: { name: 'datefield' },
 });
 

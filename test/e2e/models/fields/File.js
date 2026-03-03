@@ -1,7 +1,7 @@
-var keystone = require('../../../../index.js');
-var Types = keystone.Field.Types;
+const keystone = require('../../../../index.js');
+const Types = keystone.Field.Types;
 
-var File = new keystone.List('File', {
+const File = new keystone.List('File', {
 	autokey: {
 		path: 'key',
 		from: 'name',
@@ -10,7 +10,7 @@ var File = new keystone.List('File', {
 	track: true,
 });
 
-var localStorage = new keystone.Storage({
+const localStorage = new keystone.Storage({
 	adapter: keystone.Storage.Adapters.FS,
 	fs: {
 		path: 'data/files',

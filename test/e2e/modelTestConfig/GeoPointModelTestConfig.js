@@ -1,7 +1,7 @@
-var fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
-var path = require('path');
-var TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
-var GeoPointFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'GeoPointFieldTestObject'));
+const fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
+const path = require('path');
+const TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
+const GeoPointFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'GeoPointFieldTestObject'));
 
 module.exports = function GeoPointModelTestConfig (config) {
 	return {

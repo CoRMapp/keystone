@@ -1,7 +1,7 @@
-var keystone = require('../../../../index.js');
-var Types = keystone.Field.Types;
+const keystone = require('../../../../index.js');
+const Types = keystone.Field.Types;
 
-var ManyRelationship = new keystone.List('ManyRelationship');
+const ManyRelationship = new keystone.List('ManyRelationship');
 
 ManyRelationship.add({
 	name: { type: String, initial: true, index: true },

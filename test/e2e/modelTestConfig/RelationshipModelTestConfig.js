@@ -1,7 +1,7 @@
-var fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
-var path = require('path');
-var TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
-var RelationshipFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'RelationshipFieldTestObject'));
+const fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
+const path = require('path');
+const TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
+const RelationshipFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'RelationshipFieldTestObject'));
 
 module.exports = function RelationshipModelTestConfig (config) {
 	return {

@@ -1,7 +1,7 @@
-var keystone = require('../../../../index.js');
-var Types = keystone.Field.Types;
+const keystone = require('../../../../index.js');
+const Types = keystone.Field.Types;
 
-var CloudinaryImageMultiple = new keystone.List('CloudinaryImageMultiple', {
+const CloudinaryImageMultiple = new keystone.List('CloudinaryImageMultiple', {
 	autokey: {
 		path: 'key',
 		from: 'name',

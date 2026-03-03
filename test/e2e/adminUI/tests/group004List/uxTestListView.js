@@ -1,4 +1,4 @@
-var ModelTestConfig = require('../../../modelTestConfig/NameModelTestConfig');
+const ModelTestConfig = require('../../../modelTestConfig/NameModelTestConfig');
 
 module.exports = {
 	before: function (browser) {

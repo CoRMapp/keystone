@@ -1,7 +1,7 @@
-var fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
-var path = require('path');
-var TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
-var MoneyFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'MoneyFieldTestObject'));
+const fieldTestObjectsPath = require('keystone-nightwatch-e2e').fieldTestObjectsPath;
+const path = require('path');
+const TextFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'TextFieldTestObject'));
+const MoneyFieldTestObject = require(path.resolve(fieldTestObjectsPath, 'MoneyFieldTestObject'));
 
 module.exports = function MoneyModelTestConfig (config) {
 	return {

@@ -1,7 +1,7 @@
-var keystone = require('../../../../index.js');
-var Types = keystone.Field.Types;
+const keystone = require('../../../../index.js');
+const Types = keystone.Field.Types;
 
-var Textarea = new keystone.List('Textarea', {
+const Textarea = new keystone.List('Textarea', {
 	autokey: {
 		path: 'key',
 		from: 'name',
