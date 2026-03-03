@@ -7,7 +7,7 @@ import React, { PropTypes } from 'react';
 import classnames from 'classnames';
 import { Link } from 'react-router';
 
-const PrimaryNavItem = ({ children, className, href, label, title, to, active }) => {
+const PrimaryNavItem = ({ children, className, href, label, title, to, active, onClick }) => {
 	const itemClassName = classnames('primary-navbar__item', className);
 
 	const Button = to ? (
@@ -27,6 +27,7 @@ const PrimaryNavItem = ({ children, className, href, label, title, to, active })
 			className="primary-navbar__link"
 			href={href}
 			key={title}
+			onClick={onClick}
 			tabIndex="-1"
 			title={title}
 		>
@@ -50,6 +51,7 @@ PrimaryNavItem.propTypes = {
 	className: PropTypes.string,
 	href: PropTypes.string,
 	label: PropTypes.string,
+	onClick: PropTypes.func,
 	title: PropTypes.string,
 	to: PropTypes.string,
 };

@@ -6,6 +6,7 @@
 import React from 'react';
 import { Container } from '../../../elemental';
 import PrimaryNavItem from './NavItem';
+import ModelConfigModal from '../../Settings/ModelConfigModal';
 
 var PrimaryNavigation = React.createClass({
 	displayName: 'PrimaryNavigation',
@@ -16,7 +17,9 @@ var PrimaryNavigation = React.createClass({
 		signoutUrl: React.PropTypes.string,
 	},
 	getInitialState () {
-		return {};
+		return {
+			settingsIsOpen: false,
+		};
 	},
 	// Handle resizing, hide this navigation on mobile (i.e. < 768px) screens
 	componentDidMount () {
@@ -59,10 +62,30 @@ var PrimaryNavigation = React.createClass({
 			</PrimaryNavItem>
 		);
 	},
+	openSettings (event) {
+		event.preventDefault();
+		this.setState({ settingsIsOpen: true });
+	},
+	closeSettings () {
+		this.setState({ settingsIsOpen: false });
+	},
+	renderSettingsButton () {
+		return (
+			<PrimaryNavItem
+				href="javascript:;"
+				label="octicon-gear"
+				onClick={this.openSettings}
+				title="Counter Settings"
+			>
+				<span className="octicon octicon-gear" />
+			</PrimaryNavItem>
+		);
+	},
 	// Render the link to the webpage
 	renderFrontLink () {
 		return (
 			<ul className="app-nav app-nav--primary app-nav--right">
+				{this.renderSettingsButton()}
 				{this.renderBackButton()}
 				{this.renderSignout()}
 			</ul>
@@ -121,6 +144,7 @@ var PrimaryNavigation = React.createClass({
 						{this.renderNavigation()}
 					</ul>
 					{this.renderFrontLink()}
+					<ModelConfigModal isOpen={this.state.settingsIsOpen} onClose={this.closeSettings} />
 				</Container>
 			</nav>
 		);

@@ -87,6 +87,8 @@ module.exports = function createDynamicRouter (keystone) {
 	var initList = require('../middleware/initList');
 
 	// lists
+	router.get('/api/model-config', require('../api/modelConfig/get'));
+	router.post('/api/model-config', require('../api/modelConfig/update'));
 	router.all('/api/counts', require('../api/counts'));
 	router.get('/api/:list', initList, require('../api/list/get'));
 	router.get('/api/:list/:format(export.csv|export.json)', initList, require('../api/list/download'));

@@ -44,9 +44,8 @@ module.exports = function (req, res) {
 			if (!includeCount) {
 				return next(null, 0);
 			}
-			// Mongoose 7: countDocuments returns a Promise
-			req.list.model
-				.countDocuments(where)
+			req.list
+				.getCount(where)
 				.then(function (count) { next(null, count); })
 				.catch(next);
 		},
