@@ -9,7 +9,6 @@
 const letsencrypt = require('greenlock-express');
 
 module.exports = function (keystone, app) {
-
 	const options = keystone.get('letsencrypt');
 	const ssl = keystone.get('ssl');
 	if (!options) {

@@ -2,7 +2,6 @@ const dashes = '\n------------------------------------------------\n';
 const utils = require('keystone-utils');
 
 module.exports = function bindErrorHandlers (keystone, app) {
-
 	// Handle 404 (no route matched) errors
 	const default404Handler = (req, res) => {
 		if (req.headers.accept === 'application/json') {
@@ -42,7 +41,6 @@ module.exports = function bindErrorHandlers (keystone, app) {
 	});
 
 	// Handle other errors
-
 	const default500Handler = (err, req, res, next) => { // eslint-disable-line no-unused-vars
 		if (keystone.get('logger')) {
 			if (err instanceof Error) {

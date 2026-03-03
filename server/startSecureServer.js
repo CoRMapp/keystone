@@ -20,7 +20,6 @@ const tls = require('tls');
 const fs = require('fs');
 
 module.exports = function (keystone, app, created, callback) {
-
 	const ssl = keystone.get('ssl');
 	const host = keystone.get('ssl host') || keystone.get('host');
 	const port = keystone.get('ssl port');

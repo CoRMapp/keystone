@@ -1,5 +1,4 @@
 module.exports = function bindSessionMiddleware (keystone, app) {
-
 	app.use(keystone.get('session options').cookieParser);
 
 	// pre:session hooks
@@ -18,5 +17,4 @@ module.exports = function bindSessionMiddleware (keystone, app) {
 	} else if (typeof keystone.get('session') === 'function') {
 		app.use(keystone.get('session'));
 	}
-
 };

@@ -12,7 +12,6 @@
 const fs = require('fs');
 
 module.exports = function (keystone, app, callback) {
-
 	const unixSocket = keystone.get('unix socket');
 	const message = `${keystone.get('name')} is ready on ${unixSocket}`;
 
@@ -23,5 +22,4 @@ module.exports = function (keystone, app, callback) {
 		});
 		fs.chmod(unixSocket, 0x777);
 	});
-
 };

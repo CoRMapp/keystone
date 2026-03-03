@@ -6,7 +6,6 @@ const morgan = require('morgan');
 const language = require('../lib/middleware/language');
 
 module.exports = function createApp (keystone, express) {
-
 	if (!keystone.app) {
 		if (!express) {
 			express = require('express');
@@ -131,7 +130,6 @@ module.exports = function createApp (keystone, express) {
 		}
 	}
 
-
 	require('./bindRedirectsHandler')(keystone, app);
 
 	// Error config
@@ -144,5 +142,4 @@ module.exports = function createApp (keystone, express) {
 	require('./bindErrorHandlers')(keystone, app);
 
 	return app;
-
 };

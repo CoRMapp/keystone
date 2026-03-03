@@ -12,7 +12,6 @@
 const http = require('http');
 
 module.exports = function (keystone, app, callback) {
-
 	const host = keystone.get('host');
 	const port = keystone.get('port');
 	const forceSsl = (keystone.get('ssl') === 'force');
