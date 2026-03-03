@@ -1,7 +1,6 @@
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const FieldType = require('../Type');
-const util = require('util');
 const utils = require('keystone-utils');
 const dumbPasswords = require('dumb-passwords');
 
@@ -23,158 +22,180 @@ const detailMsg = {
 const defaultOptions = { min: 8, max: 72, workFactor: 10, rejectCommon: true };
 
 /**
- * password FieldType Constructor
+ * Password FieldType Constructor
  * @extends Field
  * @api public
  */
-function password (list, path, options) {
-	// Apply default and enforced options (you can't sort on password fields)
-	options = Object.assign({}, defaultOptions, options, { nosort: false });
+class password extends FieldType {
 
-	this._nativeType = String;
-	this._underscoreMethods = ['format', 'compare'];
-	this._fixedSize = 'full';
+	get _nativeType () { return String; }
+	get _underscoreMethods () { return ['format', 'compare']; }
 
-	password.super_.call(this, list, path, options);
+	constructor (list, path, options) {
+		// Apply default and enforced options (you can't sort on password fields)
+		options = Object.assign({}, defaultOptions, options, { nosort: false });
+		super(list, path, options);
+		this._fixedSize = 'full';
 
-	for (const key in this.options.complexity) {
-		if ({}.hasOwnProperty.call(this.options.complexity, key)) {
-			if (key in regexChunk !== key in this.options.complexity) {
-				throw new Error('FieldType.Password: options.complexity - option does not exist.');
-			}
-			if (typeof this.options.complexity[key] !== 'boolean') {
-				throw new Error('FieldType.Password: options.complexity - Value must be boolean.');
+		for (const key in this.options.complexity) {
+			if ({}.hasOwnProperty.call(this.options.complexity, key)) {
+				if (key in regexChunk !== key in this.options.complexity) {
+					throw new Error('FieldType.Password: options.complexity - option does not exist.');
+				}
+				if (typeof this.options.complexity[key] !== 'boolean') {
+					throw new Error('FieldType.Password: options.complexity - Value must be boolean.');
+				}
 			}
 		}
-	}
-	if (this.options.max && this.options.max < this.options.min) {
-		throw new Error('FieldType.Password: options - maximum password length cannot be less than the minimum length.');
-	}
-}
-password.properName = 'Password';
-util.inherits(password, FieldType);
-
-/**
- * Registers the field on the List's Mongoose Schema.
- *
- * Adds ...
- *
- * @api public
- */
-password.prototype.addToSchema = function (schema) {
-	const field = this;
-	const needs_hashing = `__${field.path}_needs_hashing`;
-
-	this.paths = {
-		confirm: this.options.confirmPath || `${this.path}_confirm`,
-		hash: this.options.hashPath || `${this.path}_hash`,
-	};
-
-	schema.path(this.path, _.defaults({
-		type: String,
-		set: function (newValue) {
-			this[needs_hashing] = true;
-			return newValue;
-		},
-	}, this.options));
-
-	schema.virtual(this.paths.hash).set(function (newValue) {
-		this.set(field.path, newValue);
-		this[needs_hashing] = false;
-	});
-
-	schema.pre('save', function (next) {
-		if (!this.isModified(field.path) || !this[needs_hashing]) {
-			return next();
+		if (this.options.max && this.options.max < this.options.min) {
+			throw new Error('FieldType.Password: options - maximum password length cannot be less than the minimum length.');
 		}
-		if (!this.get(field.path)) {
-			this.set(field.path, undefined);
+	}
+
+	/**
+	 * Registers the field on the List's Mongoose Schema.
+	 */
+	addToSchema (schema) {
+		const field = this;
+		const needs_hashing = `__${field.path}_needs_hashing`;
+
+		this.paths = {
+			confirm: this.options.confirmPath || `${this.path}_confirm`,
+			hash: this.options.hashPath || `${this.path}_hash`,
+		};
+
+		schema.path(this.path, _.defaults({
+			type: String,
+			set: function (newValue) {
+				this[needs_hashing] = true;
+				return newValue;
+			},
+		}, this.options));
+
+		schema.virtual(this.paths.hash).set(function (newValue) {
+			this.set(field.path, newValue);
 			this[needs_hashing] = false;
-			return next();
-		}
-		const item = this;
-		bcrypt.genSalt(field.options.workFactor, (err, salt) => {
-			if (err) {
-				return next(err);
+		});
+
+		schema.pre('save', function (next) {
+			if (!this.isModified(field.path) || !this[needs_hashing]) {
+				return next();
 			}
-			bcrypt.hash(item.get(field.path), salt, (err, hash) => {
+			if (!this.get(field.path)) {
+				this.set(field.path, undefined);
+				this[needs_hashing] = false;
+				return next();
+			}
+			const item = this;
+			bcrypt.genSalt(field.options.workFactor, (err, salt) => {
 				if (err) {
 					return next(err);
 				}
-				// override the cleartext password with the hashed one
-				item.set(field.path, hash);
-				// reset [needs_hashing] so that new values can't be hashed more than once
-				// (inherited models double up on pre save handlers for password fields)
-				item[needs_hashing] = false;
-				next();
+				bcrypt.hash(item.get(field.path), salt, (err, hash) => {
+					if (err) {
+						return next(err);
+					}
+					item.set(field.path, hash);
+					item[needs_hashing] = false;
+					next();
+				});
 			});
 		});
-	});
-	this.bindUnderscoreMethods();
-};
+		this.bindUnderscoreMethods();
+	}
 
-/**
- * Add filters to a query
- */
-password.prototype.addFilterToQuery = function (filter) {
-	const query = {};
-	query[this.path] = (filter.exists) ? { $ne: null } : null;
-	return query;
-};
+	/**
+	 * Add filters to a query
+	 */
+	addFilterToQuery (filter) {
+		const query = {};
+		query[this.path] = (filter.exists) ? { $ne: null } : null;
+		return query;
+	}
 
-/**
- * Retrieves the field value
- *
- * Password fields  values are returned as booleans to indicate whether a value
- * has been set or not, so that we don't leak hashed passwords via API
- *
- * @api public
- */
-password.prototype.getData = function (item) {
-	return item.get(this.path) ? true : false;
-};
+	/**
+	 * Retrieves the field value
+	 */
+	getData (item) {
+		return item.get(this.path) ? true : false;
+	}
 
-/**
- * Formats the field value
- *
- * Password fields are always formatted as a random no. of asterisks,
- * because the saved hash should never be displayed nor the length
- * of the actual password hinted at.
- *
- * @api public
- */
-password.prototype.format = function (item) {
-	if (!item.get(this.path)) return '';
-	const len = Math.round(Math.random() * 4) + 6;
-	let stars = '';
-	for (let i = 0; i < len; i++) stars += '*';
-	return stars;
-};
+	/**
+	 * Formats the field value
+	 */
+	format (item) {
+		if (!item.get(this.path)) return '';
+		const len = Math.round(Math.random() * 4) + 6;
+		let stars = '';
+		for (let i = 0; i < len; i++) stars += '*';
+		return stars;
+	}
 
-/**
- * Compares
- *
- * @api public
- */
-password.prototype.compare = function (item, candidate, callback) {
-	if (typeof callback !== 'function') throw new Error('Password.compare() requires a callback function.');
-	const value = item.get(this.path);
-	if (!value) return callback(null, false);
-	bcrypt.compare(candidate, item.get(this.path), callback);
-};
+	/**
+	 * Compares
+	 */
+	compare (item, candidate, callback) {
+		if (typeof callback !== 'function') throw new Error('Password.compare() requires a callback function.');
+		const value = item.get(this.path);
+		if (!value) return callback(null, false);
+		bcrypt.compare(candidate, item.get(this.path), callback);
+	}
 
-/**
- * Asynchronously confirms that the provided password is valid
- */
-password.prototype.validateInput = function (data, callback) {
-	const { min, max, complexity, rejectCommon } = this.options;
-	const confirmValue = this.getValueFromData(data, '_confirm');
-	const passwordValue = this.getValueFromData(data);
+	/**
+	 * Asynchronously confirms that the provided password is valid
+	 */
+	validateInput (data, callback) {
+		const { min, max, complexity, rejectCommon } = this.options;
+		const confirmValue = this.getValueFromData(data, '_confirm');
+		const passwordValue = this.getValueFromData(data);
 
-	const validation = validate(passwordValue, confirmValue, min, max, complexity, rejectCommon);
+		const validation = validate(passwordValue, confirmValue, min, max, complexity, rejectCommon);
 
-	utils.defer(callback, validation.result, validation.detail);
-};
+		utils.defer(callback, validation.result, validation.detail);
+	}
+
+	/**
+	 * Asynchronously confirms that the provided password is valid
+	 */
+	validateRequiredInput (item, data, callback) {
+		const hashValue = this.getValueFromData(data, '_hash');
+		const passwordValue = this.getValueFromData(data);
+		let result = hashValue || passwordValue ? true : false;
+		if (!result && passwordValue === undefined && hashValue === undefined && item.get(this.path)) result = true;
+		utils.defer(callback, result);
+	}
+
+	/**
+	 * If password fields are required, check that either a value has been
+	 * provided or already exists in the field.
+	 *
+	 * Deprecated
+	 */
+	inputIsValid (data, required, item) {
+		if (data[this.path] && this.paths.confirm in data) {
+			return data[this.path] === data[this.paths.confirm] ? true : false;
+		}
+		if (data[this.path] || data[this.paths.hash] || (item && item.get(this.path))) return true;
+		return required ? false : true;
+	}
+
+	/**
+	 * Updates the value for this field in the item from a data object
+	 */
+	updateItem (item, data, callback) {
+		const hashValue = this.getValueFromData(data, '_hash');
+		const passwordValue = this.getValueFromData(data);
+		if (passwordValue !== undefined) {
+			item.set(this.path, passwordValue);
+		} else if (hashValue !== undefined) {
+			item.set(this.paths.hash, hashValue);
+		}
+		process.nextTick(callback);
+	}
+
+}
+
+password.properName = 'Password';
 
 const validate = password.validate = (pass, confirm, min, max, complexity, rejectCommon) => {
 	const messages = [];
@@ -209,52 +230,6 @@ const validate = password.validate = (pass, confirm, min, max, complexity, rejec
 		result: messages.length === 0,
 		detail: messages.join(' \n'),
 	};
-};
-
-/**
- * Asynchronously confirms that the provided password is valid
- */
-password.prototype.validateRequiredInput = function (item, data, callback) {
-	const hashValue = this.getValueFromData(data, '_hash');
-	const passwordValue = this.getValueFromData(data);
-	let result = hashValue || passwordValue ? true : false;
-	if (!result && passwordValue === undefined && hashValue === undefined && item.get(this.path)) result = true;
-	utils.defer(callback, result);
-};
-
-/**
- * If password fields are required, check that either a value has been
- * provided or already exists in the field.
- *
- * Otherwise, input is always considered valid, as providing an empty
- * value will not change the password.
- *
- * Deprecated
- */
-password.prototype.inputIsValid = function (data, required, item) {
-	if (data[this.path] && this.paths.confirm in data) {
-		return data[this.path] === data[this.paths.confirm] ? true : false;
-	}
-	if (data[this.path] || data[this.paths.hash] || (item && item.get(this.path))) return true;
-	return required ? false : true;
-};
-
-/**
- * Updates the value for this field in the item from a data object
- *
- * Will accept either the field path, or paths.hash to bypass bcrypt
- *
- * @api public
- */
-password.prototype.updateItem = function (item, data, callback) {
-	const hashValue = this.getValueFromData(data, '_hash');
-	const passwordValue = this.getValueFromData(data);
-	if (passwordValue !== undefined) {
-		item.set(this.path, passwordValue);
-	} else if (hashValue !== undefined) {
-		item.set(this.paths.hash, hashValue);
-	}
-	process.nextTick(callback);
 };
 
 /* Export Field Type */
