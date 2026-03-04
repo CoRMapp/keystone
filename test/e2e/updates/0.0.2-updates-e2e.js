@@ -6,15 +6,15 @@ const keystone = require('../../../index.js');
 
 module.exports = function(done) {
 	const Member = keystone.list('User');
-	Member.model.findOneAndUpdate({isMember: true}, {$set: {isAdmin: false}}, {new: true}).exec(function (err, member) {
-		if (!err && member) {
-			//console.log("***updated member: " + JSON.stringify(member.id));
-			//console.log("***member is admin: " + JSON.stringify(member.isAdmin));
-		} else if (err) {
-			console.error("***failed to read member: "+ err);
-		} else if (!member) {
-			console.error("***did not find a member");
-		}
-		done(err);
-	});
+	Member.model.findOneAndUpdate({isMember: true}, {$set: {isAdmin: false}}, {new: true})
+		.then((member) => {
+			if (!member) {
+				console.error('***did not find a member');
+			}
+			done();
+		})
+		.catch((err) => {
+			console.error(`***failed to read member: ${err}`);
+			done(err);
+		});
 };

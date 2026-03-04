@@ -7,6 +7,6 @@ async function dropTestDatabase () {
   await mongoose.connection.close();
 }
 
-dropTestDatabase().catch(function (err) {
+dropTestDatabase().catch((err) => {
   console.error('Failed to drop test database:', err);
 });

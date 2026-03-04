@@ -74,9 +74,9 @@ describe('List schema pre/post save hooks', function () {
 			app.post('/using-save', function (req, res) {
 				req.user = dummyUser;
 				const item = new Test.model(req.body);
-				item.save().then(function () {
+				item.save().then(() => {
 					res.send('GOOD');
-				}).catch(function () {
+				}).catch(() => {
 					res.send('BAD');
 				});
 			});

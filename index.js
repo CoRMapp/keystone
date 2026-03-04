@@ -7,15 +7,18 @@ const importer = require('./lib/core/importer');
 
 /**
  * Don't use process.cwd() as it breaks module encapsulation
- * Instead, let's use module.parent if it's present, or the module itself if there is no parent (probably testing keystone directly if that's the case)
+ * Use the parent module's paths if available, otherwise fall back to this module's paths
  * This way, the consuming app/module can be an embedded node_module and path resolutions will still work
  * (process.cwd() breaks module encapsulation if the consuming app/module is itself a node_module)
+ * Note: module.parent is deprecated in Node 14+ but still functional in Node 22.
+ * require.main cannot be used here as it points to the test runner (mocha) in test contexts.
  */
-const moduleRoot = (function (_rootPath) {
-	const parts = _rootPath.split(path.sep);
+const moduleRoot = (() => {
+	const rootPath = (module.parent ? module.parent.paths[0] : module.paths[0]);
+	const parts = rootPath.split(path.sep);
 	parts.pop(); // get rid of /node_modules from the end of the path
 	return parts.join(path.sep);
-})(module.parent ? module.parent.paths[0] : module.paths[0]);
+})();
 
 
 /**

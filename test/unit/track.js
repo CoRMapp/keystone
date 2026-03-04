@@ -28,18 +28,20 @@ describe('List "track" option', function () {
 		});
 		User.register();
 
-		function getItem(id, done) {
+		const getItem = (id, done) => {
 			if (id) {
-				Test.model.findById(id).exec().then(function (found) {
-					if (!found) {
-						throw new Error('test document not found');
-					}
-					done(found);
-				}).catch(function (err) { throw err; });
+				Test.model.findById(id)
+					.then((found) => {
+						if (!found) {
+							throw new Error('test document not found');
+						}
+						done(found);
+					})
+					.catch((err) => { throw err; });
 			} else {
 				done(new Test.model());
 			}
-		}
+		};
 
 		// route to simulate use of updateHandler()
 		app.post('/using-update-handler/:id?', function (req, res) {
@@ -61,9 +63,9 @@ describe('List "track" option', function () {
 			getItem(req.params.id, function (item) {
 				item._req_user = req.params.id ? dummyUser2 : dummyUser1;
 				item.set(req.body);
-				item.save().then(function () {
+				item.save().then(() => {
 					res.send('GOOD');
-				}).catch(function () {
+				}).catch(() => {
 					res.send('BAD');
 				});
 			});

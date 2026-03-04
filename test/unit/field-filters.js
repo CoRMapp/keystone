@@ -15,7 +15,7 @@ function stringifyValue (value) {
 	return value !== undefined ? String(value) : value;
 }
 
-types.forEach(function (name) {
+types.forEach((name) => {
 	const filtersTestPath = typesLoc + '/' + name + '/test/filters.js';
 	if (!fs.existsSync(filtersTestPath)) return;
 
@@ -38,7 +38,7 @@ types.forEach(function (name) {
 			prop = null;
 		}
 		const where = List.addFiltersToQuery(filters);
-		List.model.find(where).then(function (results) {
+		List.model.find(where).then((results) => {
 			if (prop) {
 				results = _.map(results, prop);
 				if (stringify) {
@@ -55,22 +55,22 @@ types.forEach(function (name) {
 			const testItems = {};
 			if (test.getTestItems.length < 2) {
 				testItems[listKey] = test.getTestItems(List);
-				return new Promise(function (resolve, reject) {
-					keystone.createItems(testItems, function (err) {
+				return new Promise((resolve, reject) => {
+					keystone.createItems(testItems, (err) => {
 						if (err) return reject(err);
 						resolve();
 					});
 				});
 			} else {
-				const data = await new Promise(function (resolve, reject) {
-					test.getTestItems(List, function (err, data) {
+				const data = await new Promise((resolve, reject) => {
+					test.getTestItems(List, (err, data) => {
 						if (err) return reject(err);
 						resolve(data);
 					});
 				});
 				testItems[listKey] = data;
-				return new Promise(function (resolve, reject) {
-					keystone.createItems(testItems, function (err) {
+				return new Promise((resolve, reject) => {
+					keystone.createItems(testItems, (err) => {
 						if (err) return reject(err);
 						resolve();
 					});
